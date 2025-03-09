@@ -21,7 +21,7 @@ const logoFont = Anton_SC({
 
 export default function SideBar() {
   return (
-    <div>
+    <div className="fixed h-screen w-[12rem] flex flex-col">
       {/* logo */}
       <div className={logoFont.className}>
         <Link href="/">
@@ -29,7 +29,7 @@ export default function SideBar() {
         </Link>
       </div>
       {/* menu options */}
-      <div className="flex flex-col space-y-[1.5rem] mt-[2.2rem] text-2xl w-[12rem]">
+      <div className="flex flex-col flex-grow justify-center space-y-[1.5rem] text-2xl">
         <SideBarLink href="#" Icon={Search}>
           Explore
         </SideBarLink>
