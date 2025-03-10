@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={lato.className}>
       <body className="flex mx-[10.25rem] mt-[1.5rem]">
         <SideBar />
-        <main className="ml-[12rem] p-4 flex-grow">
+        <main className="ml-[15rem] flex-grow">
 
         {children}
         </main>
