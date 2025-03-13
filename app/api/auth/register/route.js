@@ -12,10 +12,10 @@ export const POST = catchAsync(async (req) => {
     console.log(reqBody)
 
     // check if user already exists or not
-    const user = await User.findOne({email});
-    if(user){
-        return NextResponse.json({error: "User already exists"}, {status: 400})
-    }
+    // const user = await User.findOne({email});
+    // if(user){
+    //     return NextResponse.json({error: "User already exists"}, {status: 400})
+    // }
 
     const newUser = new User({
         username,
