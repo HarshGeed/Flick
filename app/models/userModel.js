@@ -87,8 +87,7 @@ userSchema.pre("save", async function (next) {
 });
 
 // Add Indexes
-userSchema.index({ username: 1 }, { unique: true });
-userSchema.index({ email: 1 }, { unique: true });
+
 userSchema.index({ followers: 1 });
 userSchema.index({ following: 1 });
 userSchema.index({ watchlist: 1 });
