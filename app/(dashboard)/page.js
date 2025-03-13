@@ -1,6 +1,6 @@
 
-import RightsideBar from "./components/RightsideBar";
-import ClientButtons from "./components/ClientButtons";
+import RightsideBar from "../components/RightsideBar";
+import ClientButtons from "../components/ClientButtons";
 
 export default function HomePage(){
   
