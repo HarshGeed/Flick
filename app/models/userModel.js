@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import validator from "validator";
+import bcrypt from "bcryptjs"; // Import bcrypt
 
 const userSchema = new mongoose.Schema(
   {
@@ -15,7 +16,10 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      validate: [validator.isEmail, "Please provide a correct email"],
+      validate: {
+        validator: validator.isEmail,
+        message: "Please provide a valid email",
+      },
     },
     password: {
       type: String,
@@ -48,24 +52,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    followers: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    following: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    watchlist: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Movie",
-      },
-    ],
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    watchlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }],
     reviews: [
       {
         movieId: {
@@ -73,44 +62,31 @@ const userSchema = new mongoose.Schema(
           ref: "Movie",
           required: true,
         },
-        rating: {
-          type: Number,
-          min: 0,
-          max: 5,
-          required: true,
-        },
-        comment: {
-          type: String,
-          default: "",
-        },
-        createdAt: {
-          type: Date,
-          default: Date.now,
-        },
+        rating: { type: Number, min: 0, max: 5, required: true },
+        comment: { type: String, default: "" },
       },
     ],
-    likedReviews: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Review",
-      },
-    ],
-    likedPosts: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Post",
-      },
-    ],
-    posts: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Post",
-      },
-    ],
+    likedReviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }], // Corrected
+    likedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+    posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   },
   { timestamps: true }
 );
 
+// Hash password before saving
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = bcrypt.hash(this.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Add Indexes
 userSchema.index({ username: 1 }, { unique: true });
 userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ followers: 1 });
