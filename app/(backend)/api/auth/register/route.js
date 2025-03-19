@@ -1,8 +1,8 @@
 "use server"
-import { connect } from "@/app/lib/dbConn";
-import User from "@/app/models/userModel";
+import { connect } from "@/lib/dbConn";
+import User from "@/models/userModel";
 import { NextResponse } from "next/server";
-import { catchAsync } from "@/app/utils/catchAsync";
+import { catchAsync } from "@/utils/catchAsync";
 
 connect();
 

@@ -1,1 +1,0 @@
-export const hiddenRoutes = ["/login", "//signin"];

@@ -21,9 +21,15 @@ const userSchema = new mongoose.Schema(
         message: "Please provide a valid email",
       },
     },
+    isOauth: {
+      type: Boolean,
+      default: false
+    },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.get("isOauth"); // ✅ Corrected
+      },
     },
     passwordConfirm: {
       type: String,
@@ -35,6 +41,7 @@ const userSchema = new mongoose.Schema(
         },
         message: "Passwords are not the same!",
       },
+      select: false,
     },
     fullName: {
       type: String,
@@ -92,5 +99,5 @@ userSchema.index({ followers: 1 });
 userSchema.index({ following: 1 });
 userSchema.index({ watchlist: 1 });
 
-const User = mongoose.models.User || mongoose.model("User", userSchema);
+const User = mongoose.models?.User || mongoose.model("User", userSchema);
 export default User;
