@@ -1,6 +1,6 @@
 import { Lato } from "next/font/google";
-import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "next-auth/react";
+import SplitText from "@/components/LogoAnimation";
 import "./globals.css";
 
 export const lato = Lato({
@@ -20,8 +20,24 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={lato.className}>
-      <body className="flex mx-[10.25rem] mt-[1.5rem]">
-        <Toaster />
+      <body>
+        <div className="flex flex-col items-start justify-center h-screen ml-[6rem]">
+          <SplitText
+            text=".Flick"
+            className="text-9xl"
+            delay={250}
+            animationFrom={{ opacity: 0, transform: "translate3d(0,50px,0)" }}
+            animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+            easing="easeOutCubic"
+            threshold={0.2}
+            // rootMargin="-50px"
+            // onLetterAnimationComplete={handleAnimationComplete}
+          />
+          <p className="w-[25rem]">
+            Welcome to the world of cinephillis, where you can connect your
+            cinema interests with the people like you
+          </p>
+        </div>
         <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
