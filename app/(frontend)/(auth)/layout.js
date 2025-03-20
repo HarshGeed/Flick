@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={lato.className}>
       <body>
-        <div className="flex flex-col items-start justify-center h-screen ml-[6rem]">
+        <div className="flex flex-col items-start justify-center h-screen mx-[10.25rem]">
           <SplitText
             text=".Flick"
             className="text-9xl"
@@ -33,10 +33,14 @@ export default function RootLayout({ children }) {
             // rootMargin="-50px"
             // onLetterAnimationComplete={handleAnimationComplete}
           />
-          <p className="w-[25rem]">
-            Welcome to the world of cinephillis, where you can connect your
-            cinema interests with the people like you
-          </p>
+          <div className="w-[25rem] mt-[2rem] text-lg transform transition-transform duration-1000 ease-out translate-y-[-50px] animate-slide-in">
+            <p className="opacity-75">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus
+              eius adipisci minima deserunt sed aut corrupti nihil! Magni
+              numquam architecto, dolores, suscipit minima necessitatibus
+              reprehenderit officia quaerat quidem quibusdam eos.
+            </p>
+          </div>
         </div>
         <SessionProvider>{children}</SessionProvider>
       </body>
