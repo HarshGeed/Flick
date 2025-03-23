@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 export default function ClientButtons() {
-  const [activeBtn, setActiveBtn] = useState("forYou"); // Default active button
+  const [activeBtn, setActiveBtn] = useState<"forYou" | "genres">("forYou"); // Default active button
 
   return (
     <div className="flex justify-center space-x-[5rem]">

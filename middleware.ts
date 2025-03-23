@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth"; // Import NextAuth authentication function
 
-export async function middleware(req) {
+export async function middleware(req: NextRequest) {
   const session = await auth();
 
   // If user is not authenticated, redirect to sign-in page

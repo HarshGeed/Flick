@@ -1,13 +1,24 @@
 "use server"
 import { connect } from "@/lib/dbConn";
 import User from "@/models/userModel";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { catchAsync } from "@/utils/catchAsync";
 
 connect();
 
-export const POST = catchAsync(async (req) => {
-    const reqBody = await req.json();
+interface RegisterRequestBody {
+  username: string;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+  fullName?: string;
+  bio?: string;
+  profileImage?: string;
+  coverImage?: string;
+}
+
+export const POST = catchAsync(async (req: NextRequest) => {
+    const reqBody: RegisterRequestBody = await req.json();
     const { username, email, password, passwordConfirm, fullName, bio, profileImage, coverImage } = reqBody;
 
     console.log(reqBody);

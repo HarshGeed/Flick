@@ -1,8 +1,9 @@
 
 import RightsideBar from "../../../components/RightsideBar";
 import ClientButtons from "../../../components/ClientButtons";
+import React from "react";
 
-export default function HomePage(){
+const HomePage: React.FC = () => {
   
   return(
     <div className="flex">
@@ -16,3 +17,5 @@ export default function HomePage(){
     </div>
   )
 }
+
+export default HomePage;

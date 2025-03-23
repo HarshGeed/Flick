@@ -1,16 +1,21 @@
-import NextAuth from "next-auth";
+import NextAuth, {NextAuthConfig, Session, User as NextAuthUser} from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import User from "@/models/userModel";
 import { connect } from "@/lib/dbConn";
 
+interface CustomUser extends NextAuthUser{
+  id: string;
+  username?: string;
+  isOauth?: boolean;
+}
 
-export const { handlers, signIn, signOut, auth } = NextAuth({ 
+ const authConfig: NextAuthConfig = {
   providers: [
     GoogleProvider({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      clientId: process.env.AUTH_GOOGLE_ID!,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -18,20 +23,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      authorize: async ({ email, password }) => {
+      async authorize(credentials) {
         try {
-          connect();
+          if(!credentials?.email || !credentials?.password){
+            throw new Error("Missing Email or Password");
+          }
+          
+          await connect();
 
-          const user = await User.findOne({ email });
+          const user = await User.findOne({ email: credentials.email });
 
           if (!user) throw new Error("User not found");
 
-          const isValidPassword = await compare(password, user.password);
+          const isValidPassword = compare(credentials.password as string, user.password as string);
 
           if (!isValidPassword) throw new Error("Password is wrong");
 
           console.log(user);
-          return user;
+          return user as CustomUser;
         } catch (error) {
           console.log("Error =>", error.message);
           return null;
@@ -39,9 +48,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET!,
   session: {
-    jwt: true,
+    strategy: "jwt",
     maxAge: 7 * 24 * 60 * 60,
   },
   // pages: {
@@ -68,7 +77,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       } else if (user) {
         token.id = user.id;
         token.email = user.email;
-        token.name = user.username;
+        token.name = (user as CustomUser).username;
       }
       // console.log("Token after processing:", token);
       return token;
@@ -76,12 +85,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       // console.log("Session callback triggered with token:", token);
       if (token) {
-        session.user.id = token.id;
-        session.user.email = token.email;
-        session.user.name = token.name;
+       session.user = {
+        id: token.id as string,
+        email: token.email as string,
+        name: token.name as string,
+        emailVerified: new Date,
+       };
       }
       return session;
     },
   },
-});
+};
+
+export const { handlers, signIn, signOut, auth } = NextAuth(authConfig);
  

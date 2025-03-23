@@ -1,7 +1,8 @@
 import { Lato } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
-import SplitText from "@/components/LogoAnimation";
+import SplitText from "../../../components/LogoAnimation";
 import "./globals.css";
+import { ReactNode } from "react";
 
 export const lato = Lato({
   subsets: ["latin"],
@@ -17,7 +18,11 @@ export const metadata = {
     "Here you can share views about movies, chat, make stories and posts, and do a lot more!",
 };
 
-export default function RootLayout({ children }) {
+interface RootLayoutProps{
+  children: ReactNode
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className={lato.className}>
       <body>

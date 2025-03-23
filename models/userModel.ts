@@ -1,8 +1,34 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema, Model, model, models} from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs"; // Import bcrypt
 
-const userSchema = new mongoose.Schema(
+export interface IUser extends Document {
+  username: string;
+  email: string;
+  isOauth: boolean;
+  password?: Promise<string> | string;
+  passwordConfirm?: string;
+  fullName?: string;
+  bio?: string;
+  profileImage?: string;
+  coverImage?: string;
+  followers: mongoose.Types.ObjectId[];
+  following: mongoose.Types.ObjectId[];
+  watchlist: mongoose.Types.ObjectId[];
+  reviews: {
+    movieId: mongoose.Types.ObjectId;
+    rating: number;
+    comment?: string;
+  }[];
+  likedReviews: mongoose.Types.ObjectId[];
+  likedPosts: mongoose.Types.ObjectId[];
+  posts: mongoose.Types.ObjectId[];
+  createdAt?: Date;
+  updatedAt?: Date;
+  isModified: (field: string) => boolean;
+}
+
+const userSchema = new Schema<IUser>(
   {
     username: {
       type: String,
@@ -17,7 +43,7 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
       validate: {
-        validator: validator.isEmail,
+        validator: (value: string) => validator.isEmail(value),
         message: "Please provide a valid email",
       },
     },
@@ -27,8 +53,8 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: function () {
-        return !this.get("isOauth"); // ✅ Corrected
+      required: function (this: IUser) {
+        return !this.isOauth; // ✅ Corrected
       },
     },
     passwordConfirm: {
@@ -81,12 +107,12 @@ const userSchema = new mongoose.Schema(
 );
 
 // Hash password before saving
-userSchema.pre("save", async function (next) {
+userSchema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   try {
     const salt = await bcrypt.genSalt(10);
-    this.password = bcrypt.hash(this.password, salt);
+    this.password = await bcrypt.hash(await this.password, salt);
     next();
   } catch (err) {
     next(err);
@@ -99,5 +125,5 @@ userSchema.index({ followers: 1 });
 userSchema.index({ following: 1 });
 userSchema.index({ watchlist: 1 });
 
-const User = mongoose.models?.User || mongoose.model("User", userSchema);
+const User: Model<IUser> = models?.User || model<IUser>("User", userSchema);
 export default User;
