@@ -3,6 +3,7 @@ import { auth } from "@/auth"; // Import NextAuth authentication function
 
 export async function middleware(req: NextRequest) {
   const session = await auth();
+  // console.log("This is coming from middleware", session);
 
   // If user is not authenticated, redirect to sign-in page
   if (!session) {

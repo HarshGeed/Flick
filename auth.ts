@@ -79,11 +79,11 @@ interface CustomUser extends NextAuthUser{
         token.email = user.email;
         token.name = (user as CustomUser).username;
       }
-      console.log("Token after processing:", token);
+      // console.log("Token after processing:", token);
       return token;
     },
     async session({ session, token }) {
-      console.log("Session callback triggered with token:", token);
+      // console.log("Session callback triggered with token:", token);
       if (token) {
        session.user = {
         id: token.id as string,

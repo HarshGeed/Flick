@@ -4,6 +4,8 @@ import { connect } from "@/lib/dbConn";
 import Post from "@/models/postModel"
 import { auth } from "@/auth";
 
+export const runtime = "nodejs"
+
 interface PostRequestBody{
     content: string;
     image?: string;
@@ -16,7 +18,7 @@ export const POST = catchAsync(async (req: NextRequest) => {
 
     await connect();
 
-    const session = await auth();
+    const session = await auth(); // problem is in this line : auth is unable to provide any type of session
     console.log(session?.user.name);
     if(!session) return NextResponse.json({message: "Unauthorized"}, {status: 401});
 
@@ -31,6 +33,6 @@ export const POST = catchAsync(async (req: NextRequest) => {
     })
 
     await newPost.save();
-    NextResponse.json({message: "Post created successfully", post: newPost}, {status: 201})
+    return NextResponse.json({message: "Post created successfully", post: newPost}, {status: 201})
     
 })
