@@ -28,6 +28,7 @@ export const POST = catchAsync(async (req: NextRequest) => {
 
     const newPost = new Post({
         user: session.user.id,
+        username: session.user.name,
         content,
         image: image || null
     })

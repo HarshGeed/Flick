@@ -1,3 +1,4 @@
+// Look right now this code is working fine but we need to create a dialog box instead of a page for creating posts
 "use client";
 
 import { useState } from "react";

@@ -3,6 +3,7 @@ import ClientButtons from "../../../components/ClientButtons";
 import React from "react";
 import PostCard from "@/components/PostCard";
 import avatar from "@/public/avatar.jpg"
+import Post_content from "@/components/Post_content";
 
 const HomePage: React.FC = () => {
   
@@ -15,7 +16,7 @@ const HomePage: React.FC = () => {
       </div>
       {/* This section will contain infinite posts */}
       <div className="mt-[4rem]">
-        <PostCard user="Harsh"  content="This is the content mf" postImage={avatar}/>
+        <Post_content/>
       </div>
     </div>
     {/* <RightsideBar/> */}

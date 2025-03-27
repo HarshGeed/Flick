@@ -7,6 +7,10 @@ const postSchema = new Schema(
       ref: "User",
       required: true,
     },
+    username:{
+      type: String,
+      required: true,
+    },
     content: {
       type: String,
       required: true,
@@ -56,4 +60,5 @@ const postSchema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.Post || mongoose.model("Post", postSchema);
+const Post = mongoose.models.Post || mongoose.model("Post", postSchema);
+export default Post;
