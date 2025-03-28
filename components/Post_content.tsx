@@ -26,7 +26,7 @@ export default function PostContent() {
                 {posts.map((post: { _id: string; username: string; content: string }) => (
                     <li key={post._id} className="p-4 border rounded-lg shadow">
                         <h2 className="text-xl font-semibold">{post.username}</h2>
-                        <p className="text-gray-600">{post.content}</p>
+                        <p>{post.content}</p>
                     </li>
                 ))}
             </ul>
