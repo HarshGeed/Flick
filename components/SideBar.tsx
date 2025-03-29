@@ -13,6 +13,7 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
+import CreatePostModal from "./CreatePostModal";
 
 const logoFont = Anton_SC({
   weight: "400",
@@ -52,9 +53,10 @@ export default function SideBar() {
           Profile
         </SideBarLink>
 
-        <button className=" rounded-xl h-12 bg-amber-200 text-black hover:opacity-90 transition duration-300 ease-in-out">
+        {/* <button className=" rounded-xl h-12 text-xl bg-amber-200 text-black hover:opacity-90 transition duration-300 ease-in-out">
           Post
-        </button>
+        </button> */}
+        <CreatePostModal/>
         {/* showing the current user */}
         <div className=" h-[4rem] rounded-xl text-sm mt-[3rem] flex items-center p-2 hover:bg-gray-600/25 transition duration-300 ease-in-out">
         <div className="w-[2.5rem] h-[2.5rem] relative">
