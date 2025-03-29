@@ -2,7 +2,10 @@
 import Modal from "react-modal";
 import { useState } from "react";
 import Image from "next/image";
-import avatar from "@/public/avatar.jpg"
+import avatar from "@/public/avatar.jpg";
+import { ArrowUpFromLine } from "lucide-react";
+import { ImagePlay } from "lucide-react";
+import { MapPinPlus } from "lucide-react";
 
 // Set the app element for accessibility
 Modal.setAppElement("body");
@@ -15,9 +18,9 @@ export default function CreatePostModal() {
       {/* Button to open the modal */}
       <button
         onClick={() => setModalIsOpen(true)}
-        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
+        className=" rounded-xl w-[12rem] h-12 text-xl bg-amber-200 text-black hover:opacity-90 transition duration-300 ease-in-out"
       >
-        Create Post
+        Post
       </button>
 
       {/* Modal */}
@@ -28,33 +31,29 @@ export default function CreatePostModal() {
         overlayClassName="modal-overlay" // Custom overlay styling
       >
         <div className="flex flex-col h-full">
-          
           <textarea
             placeholder="What's on your mind?"
-            className="flex-grow border border-gray-500 bg-gray-800 text-white rounded-md p-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-grow ml-[3rem] text-white rounded-md p-2 resize-none focus:outline-none"
           ></textarea>
-          <div className="flex justify-end mt-4 space-x-2">
-            {/* <button
-              onClick={() => setModalIsOpen(false)}
-              className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-500 transition duration-300"
-            >
-              Cancel
-            </button> */}
-            <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
-            >
+          <div className="flex justify-between mt-4 items-center">
+            <div className="flex space-x-2">
+              <ArrowUpFromLine/>
+              <ImagePlay/>
+              <MapPinPlus/>
+            </div>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">
               Post
             </button>
           </div>
-          <div className="w-[2.5rem] h-[2.5rem] relative">
-          <Image
-            src={avatar}
-            alt="User Image"
-            className="rounded-full"
-            layout="fill"
-            objectFit="cover"
-          />
-        </div>
+          <div className="w-[2.5rem] h-[2.5rem] absolute">
+            <Image
+              src={avatar}
+              alt="User Image"
+              className="rounded-full"
+              layout="fill"
+              objectFit="cover"
+            />
+          </div>
         </div>
       </Modal>
 
@@ -90,7 +89,7 @@ export default function CreatePostModal() {
             opacity: 0;
           }
           to {
-            transform: translateY(-30%);
+            transform: translateY(-20%);
             opacity: 1;
           }
         }
