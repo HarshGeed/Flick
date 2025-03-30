@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import CreatePostModal from "./CreatePostModal";
 
+
 const logoFont = Anton_SC({
   weight: "400",
   subsets: ["latin"],
