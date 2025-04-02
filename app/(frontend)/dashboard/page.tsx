@@ -16,7 +16,8 @@ const HomePage: React.FC = () => {
       </div>
       {/* This section will contain infinite posts */}
       <div className="mt-[4rem]">
-        <Post_content/>
+        {/* <Post_content/> */}
+        <PostCard/>
       </div>
     </div>
     {/* <RightsideBar/> */}
