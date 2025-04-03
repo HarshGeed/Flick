@@ -23,6 +23,9 @@ export default function PostCard() {
         </button>
       </div>
       {/* Post content */}
+      <div>
+        {/* if the user uploads image it will come here */}
+      </div>
       <div className="mt-4">
         <p>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi maiores
