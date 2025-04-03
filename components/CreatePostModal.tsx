@@ -122,6 +122,7 @@ export default function CreatePostModal() {
           display: flex;
           justify-content: center;
           align-items: center;
+          z-index: 1050;
         }
 
         .modal-content {
@@ -134,6 +135,7 @@ export default function CreatePostModal() {
           transform: translateY(100%);
           animation: slide-up 0.3s ease-out forwards;
           color: white;
+          z-index: 1100;
         }
 
         @keyframes slide-up {

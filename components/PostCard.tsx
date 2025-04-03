@@ -2,6 +2,7 @@
 import avatar from "@/public/avatar.jpg";
 import Image from "next/image";
 import { MessageCircle, Heart, Share, Bookmark, Repeat } from "lucide-react";
+import Carousel from "./PostImageCarousel";
 
 export default function PostCard() {
   return (
@@ -23,8 +24,8 @@ export default function PostCard() {
         </button>
       </div>
       {/* Post content */}
-      <div>
-        {/* if the user uploads image it will come here */}
+      <div className="mt-4">
+        <Carousel/>
       </div>
       <div className="mt-4">
         <p>

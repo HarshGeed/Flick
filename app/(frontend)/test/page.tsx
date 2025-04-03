@@ -11,7 +11,7 @@ import Image from "next/image";
 
 export default function Test() {
   return (
-    <div className="w-[10rem] mx-auto">
+    <div className="w-full max-w-5xl mx-auto">
       <Swiper
         // Install Swiper modules
         modules={[Navigation, Pagination, Scrollbar, A11y]}
