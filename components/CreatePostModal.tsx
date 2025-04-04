@@ -6,6 +6,7 @@ import avatar from "@/public/avatar.jpg";
 import { ArrowUpFromLine } from "lucide-react";
 import { ImagePlay } from "lucide-react";
 import { MapPinPlus } from "lucide-react";
+import ImageUpload from "./ImageUpload";
 
 
 Modal.setAppElement("body");
@@ -81,9 +82,9 @@ export default function CreatePostModal() {
             ></textarea>
             <div className="flex justify-between mt-4 items-center">
               <div className="flex space-x-2">
-                <ArrowUpFromLine />
-                <ImagePlay />
-                <MapPinPlus />
+                <ImageUpload/>
+                <ImagePlay /> {/* this is for giphy */}
+                <MapPinPlus /> {/* this is for marking the location of the post */}
               </div>
               <button
                 type="submit"

@@ -4,20 +4,20 @@ import Image from "next/image";
 import { MessageCircle, Heart, Share, Bookmark, Repeat } from "lucide-react";
 import Carousel from "./PostImageCarousel";
 
-export default function PostCard() {
+export default function PostCard({username, content, likeNum, commentNum, shareNum, bookmarkNum, repostNum, profileUrl}) {
   return (
     <div className="p-[1rem] rounded-xl shadow-2xl bg-stone-900">
       {/* Username and profile image */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Image
-            src={avatar}
+            src={avatar} // profileUrl will come here
             alt="Profile image"
             width={40}
             height={40}
             className="rounded-full"
           />
-          <p className="font-medium">Username</p>
+          <p className="font-medium">{username}</p>
         </div>
         <button className="bg-amber-50 text-black px-3 py-2 rounded-md hover:bg-amber-100 transition">
           Follow
@@ -25,50 +25,34 @@ export default function PostCard() {
       </div>
       {/* Post content */}
       <div className="mt-4">
-        <Carousel/>
+        <Carousel/> {/* We need to create the functioning here itself because or we can figure it out */}
       </div>
       <div className="mt-4">
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi maiores
-          quisquam voluptatem, odit perspiciatis vel repellendus odio? Soluta
-          perspiciatis enim repellat voluptas, aut rerum accusamus qui dolore
-          officia illum ipsa dolor est in dicta natus ex accusantium esse
-          molestias pariatur? Eveniet ipsum ipsam, adipisci veritatis sed
-          quisquam fugiat est asperiores numquam illo doloribus eum temporibus
-          debitis dolore cupiditate eligendi quos magnam quaerat, fugit
-          repellendus sit ipsa expedita. Nostrum similique consequuntur labore
-          officia odio, temporibus, deleniti illo aliquid aut asperiores velit
-          ad! Officiis aspernatur dolorem exercitationem ratione ipsum saepe
-          ducimus natus est vel eligendi facilis architecto quo quasi quae
-          suscipit error sequi explicabo fugit dicta numquam pariatur,
-          dignissimos mollitia! Rem atque quas aliquid, nam nisi voluptates
-          similique a fugiat velit commodi nulla et aspernatur sint eaque rerum
-          cupiditate eveniet minima. Nulla laborum nesciunt officia fugit vero
-          aut voluptatibus dolorum cumque in? Natus ex esse porro officia vero
-          hic, quos quam consequuntur.
+         {content}
         </p>
       </div>
       {/* Post features */}
       <div className="flex mt-4 items-center space-x-3">
         <div className="flex items-center space-x-1">
           <Heart strokeWidth={1} />
-          <p className="text-sm">24</p>
+          <p className="text-sm">{likeNum}</p>
         </div>
         <div className="flex items-center space-x-1">
           <MessageCircle strokeWidth={1} />
-          <p className="text-sm">24</p>
+          <p className="text-sm">{commentNum}</p>
         </div>
         <div className="flex items-center space-x-1">
           <Share strokeWidth={1} />
-          <p className="text-sm">24</p>
+          <p className="text-sm">{shareNum}</p>
         </div>
         <div className="flex items-center space-x-1">
           <Bookmark strokeWidth={1} />
-          <p className="text-sm">24</p>
+          <p className="text-sm">{bookmarkNum}</p>
         </div>
         <div className="flex items-center space-x-1"> 
           <Repeat strokeWidth={1} />
-          <p className="text-sm">24</p>
+          <p className="text-sm">{repostNum}</p>
         </div>
       </div>
     </div>

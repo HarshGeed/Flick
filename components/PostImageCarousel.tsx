@@ -8,7 +8,7 @@ import "swiper/css/pagination";
 import avatar from "@/public/avatar.jpg";
 import Image from "next/image";
 
-export default function Carousel() {
+export default function Carousel({images}) {
   return (
     <div className="w-full max-w-5xl mx-auto"> 
       <Swiper
