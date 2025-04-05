@@ -94,6 +94,7 @@ export default function CreatePostModal() {
       console.error("Error creating post:", error);
     } finally {
       setLoading(false);
+      setPreview(null);
     }
   };
 
@@ -154,9 +155,9 @@ export default function CreatePostModal() {
             </div>
             <button
               type="submit"
-              disabled={!content.trim()}
+              disabled={!content.trim() && !preview}
               className={`bg-amber-200 text-black text-md px-4 py-2 rounded-md hover:opacity-90 transition duration-300 ease-in-out ${
-                content.trim()
+                content.trim() || preview
                   ? "bg-amber-200 text-black hover:opacity-90"
                   : "bg-white text-gray-700 cursor-not-allowed"
               }`}
