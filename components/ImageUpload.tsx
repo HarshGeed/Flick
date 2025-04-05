@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { ArrowUp } from "lucide-react";
 
 export default function ImageUpload() {
   const [file, setFile] = useState(null);
@@ -46,15 +47,24 @@ export default function ImageUpload() {
 
   return (
     <>
-      <input type="file" accept="image/*" onChange={handleFileChange} />
+      <div onClick={() => document.getElementById("fileInput")?.click()} style={{ cursor: "pointer" }}>
+      <ArrowUp/>
+      </div>
+      <input
+      id="fileInput"
+      type="file"
+      accept="image/*"
+      onChange={handleFileChange}
+      style={{ display: "none" }}
+      />
       {preview && <Image src={preview} alt="Preview" width={200} height={200} unoptimized />}
-      <button onClick={handleUpload}>Upload</button>
+      {/* <button onClick={handleUpload}>Upload</button> */}
 
       {uploadedUrl && (
-        <div>
-          <p>Uploaded Image:</p>
-          <Image src={uploadedUrl} alt="Uploaded" width={200} height={200} unoptimized />
-        </div>
+      <div>
+        <p>Uploaded Image:</p>
+        <Image src={uploadedUrl} alt="Uploaded" width={200} height={200} unoptimized />
+      </div>
       )}
     </>
   );
