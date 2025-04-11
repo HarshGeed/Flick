@@ -3,15 +3,18 @@ import avatar from "@/public/avatar.jpg";
 import Image from "next/image";
 import { MessageCircle, Heart, Share, Bookmark, Repeat } from "lucide-react";
 import Carousel from "./PostImageCarousel";
+import default_userImg from "@/public/default-userImg.png"
 
-export default function PostCard({username, content, likeNum, commentNum, shareNum, bookmarkNum, repostNum, profileUrl}) {
+// likeNum, commentNum, shareNum, bookmarkNum, repostNum, profileUrl
+
+export default function PostCard({username, content, likes, comment, shares, bookmarks, reposts, profileImg, postImg}) {
   return (
     <div className="p-[1rem] rounded-xl shadow-2xl bg-stone-900">
       {/* Username and profile image */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Image
-            src={avatar} // profileUrl will come here
+            src={profileImg || default_userImg} // profileUrl will come here
             alt="Profile image"
             width={40}
             height={40}
@@ -36,23 +39,23 @@ export default function PostCard({username, content, likeNum, commentNum, shareN
       <div className="flex mt-4 items-center space-x-3">
         <div className="flex items-center space-x-1">
           <Heart strokeWidth={1} />
-          <p className="text-sm">{likeNum}</p>
+          <p className="text-sm">{likes}</p>
         </div>
         <div className="flex items-center space-x-1">
           <MessageCircle strokeWidth={1} />
-          <p className="text-sm">{commentNum}</p>
+          <p className="text-sm">{comment}</p>
         </div>
         <div className="flex items-center space-x-1">
           <Share strokeWidth={1} />
-          <p className="text-sm">{shareNum}</p>
+          <p className="text-sm">{shares}</p>
         </div>
         <div className="flex items-center space-x-1">
           <Bookmark strokeWidth={1} />
-          <p className="text-sm">{bookmarkNum}</p>
+          <p className="text-sm">{bookmarks}</p>
         </div>
         <div className="flex items-center space-x-1"> 
           <Repeat strokeWidth={1} />
-          <p className="text-sm">{repostNum}</p>
+          <p className="text-sm">{reposts}</p>
         </div>
       </div>
     </div>

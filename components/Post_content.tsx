@@ -1,11 +1,19 @@
 "use client";
 import socket from "@/lib/socket";
 import { useEffect, useState } from "react";
+import PostCard from "./PostCard";
 
 interface Post {
   _id?: string;
   username: string;
   content: string;
+  shares?: number;
+  likes?: number;
+  comment?: number;
+  bookmarks?: number;
+  reposts?: number;
+  profileImg?: string;
+  postImg?: string[];
 }
 
 export default function PostContent() {
@@ -41,13 +49,11 @@ export default function PostContent() {
 
   return (
     <main className="max-w-3xl mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Latest Posts</h1>
       <ul className="space-y-4">
         {posts.map(
           (post, index) => (
-            <li key={post._id || `post-${index}`} className="p-4 border rounded-lg shadow">
-              <h2 className="text-xl font-semibold">{post.username}</h2>
-              <p>{post.content}</p>
+            <li key={post._id || `post-${index}`}>
+              <PostCard username={post.username} content={post.content} shares={post.shares || 0} likes={post.likes || 0} comment={post.comment || 0} bookmarks={post.bookmarks || 0} reposts={post.reposts || 0} profileImg={post.profileImg} postImg={post.postImg}/>
             </li>
           )
         )}

@@ -40,6 +40,10 @@ const postSchema = new Schema(
         },
       },
     ],
+    comment: {
+      type: Number,
+      default: 0,
+    },
     shares: {
       type: Number,
       default: 0,

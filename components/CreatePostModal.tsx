@@ -44,6 +44,7 @@ export default function CreatePostModal() {
     }
   };
 
+  // this is for image upload
   const handleUpload = async () => {
     if (!file) return alert("Please select a file first");
 
@@ -82,7 +83,7 @@ export default function CreatePostModal() {
         body: JSON.stringify({
           username: session?.user?.name,
           content,
-          image: uploadedUrl
+          image: uploadedUrl,
 
         }),
       });
