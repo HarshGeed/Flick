@@ -7,7 +7,7 @@ export async function middleware(req: NextRequest) {
 
   // If user is not authenticated, redirect to sign-in page
   if (!session) {
-    return NextResponse.redirect(new URL("/auth/signin", req.url)); // Redirect to actual auth page
+    return NextResponse.redirect(new URL("/api/auth/signin", req.url)); // Redirect to actual auth page
   }
 
   return NextResponse.next(); // Allow access if authenticated

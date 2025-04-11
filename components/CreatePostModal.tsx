@@ -1,5 +1,6 @@
 "use client";
 import Modal from "react-modal";
+import socket from "@/lib/socket";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import avatar from "@/public/avatar.jpg";
@@ -7,10 +8,12 @@ import { ArrowUpFromLine } from "lucide-react";
 import { ImagePlay } from "lucide-react";
 import { MapPinPlus } from "lucide-react";
 import ImageUpload from "./ImageUpload";
+import { useSession } from "next-auth/react";
 
 Modal.setAppElement("body");
 
 export default function CreatePostModal() {
+  const {data: session} = useSession();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +33,7 @@ export default function CreatePostModal() {
   // }, [modalIsOpen]);
   
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
 
@@ -65,8 +68,8 @@ export default function CreatePostModal() {
     setLoading(true);
 
     if (!content.trim()) {
-      throw new Error("Content cannot be empty");
       setLoading(false);
+      throw new Error("Content cannot be empty");
       return;
     }
 
@@ -76,7 +79,12 @@ export default function CreatePostModal() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ content }), // Wrap content in an object
+        body: JSON.stringify({
+          username: session?.user?.name,
+          content,
+          image: uploadedUrl
+
+        }),
       });
 
       const data = await response.json();
@@ -86,7 +94,16 @@ export default function CreatePostModal() {
         return;
       }
 
-      {file && handleUpload()};
+      //emit the post to data server
+      socket.emit("new_post", {
+        username: session?.user?.name,
+        content,
+        image: uploadedUrl,
+      })
+
+      if(file && !uploadedUrl){
+        await handleUpload();
+      }
 
       setContent(""); // Clear the textarea
       setModalIsOpen(false); // Close the modal

@@ -2,6 +2,7 @@ import { Lato } from "next/font/google";
 import "./globals.css";
 import SideBar from "@/components/SideBar";
 import { ReactNode } from "react";
+import { SessionProvider } from "next-auth/react";
 
 export const lato = Lato({
   subsets: ["latin"],
@@ -23,6 +24,7 @@ interface RootLayoutProps{
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
+    <SessionProvider>
     <html lang="en" className={lato.className}>
       <body className="flex mx-[10.25rem] mt-[1.5rem]">
         <SideBar />
@@ -32,5 +34,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </main>
       </body>
     </html>
+    </SessionProvider>
   );
 }
