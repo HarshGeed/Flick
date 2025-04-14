@@ -28,8 +28,7 @@ export default function PostCard({username, content, likes, comment, shares, boo
       </div>
       {/* Post content */}
       <div className="mt-4">
-        <Carousel/> {/* We need to create the functioning here itself because or we can figure it out */}
-      </div>
+        {postImg && <Carousel images={postImg}/>}
       <div className="mt-4">
         <p>
          {content}
@@ -58,6 +57,7 @@ export default function PostCard({username, content, likes, comment, shares, boo
           <p className="text-sm">{reposts}</p>
         </div>
       </div>
+    </div>
     </div>
   );
 }

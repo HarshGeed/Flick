@@ -8,9 +8,13 @@ import "swiper/css/pagination";
 import avatar from "@/public/avatar.jpg";
 import Image from "next/image";
 
-export default function Carousel({images}) {
+interface CarouselProps {
+  images: string[];
+}
+
+export default function Carousel({ images = [] }: CarouselProps) {
   return (
-    <div className="w-full max-w-5xl mx-auto"> 
+    <div className="w-full max-w-5xl mx-auto">
       <Swiper
         // Install Swiper modules
         modules={[Navigation, Pagination, A11y]}
@@ -22,61 +26,19 @@ export default function Carousel({images}) {
         onSwiper={(swiper) => console.log(swiper)}
         onSlideChange={() => console.log("slide change")}
       >
-        <SwiperSlide>
-          <div className="relative w-full h-64 md:h-96">
-            <Image
-              src={avatar}
-              alt="Test image 1"
-              layout="fill"
-              objectFit="cover"
-              className="rounded-lg"
-            />
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="relative w-full h-64 md:h-96">
-            <Image
-              src={avatar}
-              alt="Test image 2"
-              layout="fill"
-              objectFit="cover"
-              className="rounded-lg"
-            />
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="relative w-full h-64 md:h-96">
-            <Image
-              src={avatar}
-              alt="Test image 3"
-              layout="fill"
-              objectFit="cover"
-              className="rounded-lg"
-            />
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="relative w-full h-64 md:h-96">
-            <Image
-              src={avatar}
-              alt="Test image 4"
-              layout="fill"
-              objectFit="cover"
-              className="rounded-lg"
-            />
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="relative w-full h-64 md:h-96">
-            <Image
-              src={avatar}
-              alt="Test image 5"
-              layout="fill"
-              objectFit="cover"
-              className="rounded-lg"
-            />
-          </div>
-        </SwiperSlide>
+        {images.map((image, index) => (
+          <SwiperSlide key={index}>
+            <div className="relative w-full h-64 md:h-96">
+              <Image
+                src={image}
+                alt={`post image index - ${index}`}
+                layout="fill"
+                objectFit="cover"
+                className="rounded-lg"
+              />
+            </div>
+          </SwiperSlide>
+        ))}
       </Swiper>
     </div>
   );

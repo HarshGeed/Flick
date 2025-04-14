@@ -1,13 +1,12 @@
 "use client";
 import Modal from "react-modal";
 import socket from "@/lib/socket";
-import { useEffect, useState } from "react";
+import {useState} from "react";
 import Image from "next/image";
 import avatar from "@/public/avatar.jpg";
 import { ArrowUpFromLine } from "lucide-react";
 import { ImagePlay } from "lucide-react";
 import { MapPinPlus } from "lucide-react";
-import ImageUpload from "./ImageUpload";
 import { useSession } from "next-auth/react";
 
 Modal.setAppElement("body");
@@ -20,18 +19,6 @@ export default function CreatePostModal() {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [uploadedUrl, setUploadedUrl] = useState("");
-
-  // 🔥 IF ANY ERROR OCCURS WITH HANDLING THE INPUT DATA THROUGH MODAL TRY THIS OR REMOVE IT LATER
-  // useEffect(() => {
-  //   if (modalIsOpen) {
-  //     const textarea = document.getElementById("content") as HTMLTextAreaElement;
-  //     if (textarea) {
-  //       textarea.style.height = "auto";
-  //       textarea.style.height = Math.min(textarea.scrollHeight, 300) + "px";
-  //     }
-  //   }
-  // }, [modalIsOpen]);
-  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files[0];
@@ -46,7 +33,7 @@ export default function CreatePostModal() {
 
   // this is for image upload
   const handleUpload = async () => {
-    if (!file) return alert("Please select a file first");
+    if (!file) return null;
 
     const formData = new FormData();
     formData.append("file", file);
@@ -58,9 +45,10 @@ export default function CreatePostModal() {
 
     const data = await res.json();
     if (data.url) {
-      setUploadedUrl(data.url);
+      return data.url;
     } else {
       alert("Upload failed");
+      return null;
     }
   };
 
@@ -68,13 +56,18 @@ export default function CreatePostModal() {
     e.preventDefault();
     setLoading(true);
 
-    if (!content.trim()) {
+    if (!content.trim() || !file) {
       setLoading(false);
       throw new Error("Content cannot be empty");
-      return;
     }
 
     try {
+      let imageUrl = "";
+      if(file){
+        imageUrl = await handleUpload();
+        if(!imageUrl) throw new Error("Image upload failed");
+      }
+
       const response = await fetch("/api/createPost", {
         method: "POST",
         headers: {
@@ -83,7 +76,7 @@ export default function CreatePostModal() {
         body: JSON.stringify({
           username: session?.user?.name,
           content,
-          image: uploadedUrl,
+          image: imageUrl,
 
         }),
       });
@@ -99,12 +92,8 @@ export default function CreatePostModal() {
       socket.emit("new_post", {
         username: session?.user?.name,
         content,
-        image: uploadedUrl,
+        image: imageUrl,
       })
-
-      if(file && !uploadedUrl){
-        await handleUpload();
-      }
 
       setContent(""); // Clear the textarea
       setModalIsOpen(false); // Close the modal
@@ -113,6 +102,8 @@ export default function CreatePostModal() {
     } finally {
       setLoading(false);
       setPreview(null);
+      setUploadedUrl("");
+      setFile(null);
     }
   };
 

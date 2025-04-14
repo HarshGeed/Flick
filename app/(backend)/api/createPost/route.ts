@@ -30,7 +30,8 @@ export const POST = catchAsync(async (req: NextRequest) => {
         user: session.user.id,
         username: session.user.name,
         content,
-        image: image || null
+        image: image ? [image] : []
+
     })
 
     await newPost.save();
