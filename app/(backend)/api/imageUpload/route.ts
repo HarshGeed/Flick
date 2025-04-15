@@ -9,11 +9,12 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUDINARY_API_SECRET!,
 });
 
-export const POST = catchAsync(async (req: NextRequest) => {
+export const POST = async (req: NextRequest) => {
+  try{
   const formData = await req.formData();
   const files = formData.getAll("file");
 
-  if (!files || !(files instanceof File)) {
+  if (!files || !Array.isArray(files) || files.length === 0) {
     return NextResponse.json(
       { error: "No valid file uploaded" },
       { status: 400 }
@@ -48,4 +49,7 @@ export const POST = catchAsync(async (req: NextRequest) => {
   }
 
   return NextResponse.json({ urls }, { status: 200 });
-});
+}catch(error){
+  console.log(error);
+}
+};

@@ -16,9 +16,11 @@ const postSchema = new Schema(
       required: true,
       trim: true,
     },
-    image: [{
-      type: String,
-    }],
+    image: [
+      {
+        type: String,
+      },
+    ],
     likes: {
       type: Schema.Types.ObjectId,
       ref: "User",

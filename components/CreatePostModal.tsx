@@ -58,9 +58,13 @@ export default function CreatePostModal() {
         body: formData,
       });
 
+      if(!res.ok){
+        console.error("The response is not OK..")
+      }
+
       const data = await res.json();
-      if (data.url) {
-        urls.push(data.url);
+      if (data.urls) {
+        urls.push(...data.urls);
       } else {
         alert("One of the image upload failed");
       }
@@ -132,6 +136,7 @@ export default function CreatePostModal() {
         onRequestClose={() => setModalIsOpen(false)}
         className="modal-content" // Apply animation class
         overlayClassName="modal-overlay" // Custom overlay styling
+        bodyOpenClassName="overflow-hidden"
       >
         <form
           onSubmit={handleSubmit}
@@ -239,6 +244,10 @@ export default function CreatePostModal() {
           animation: slide-up 0.3s ease-out forwards;
           color: white;
           z-index: 1100;
+        }
+        
+        .overflow-hidden {
+          overflow: hidden;
         }
 
         /* Scrollbar Customization */
