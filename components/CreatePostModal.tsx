@@ -1,73 +1,84 @@
 "use client";
 import Modal from "react-modal";
 import socket from "@/lib/socket";
-import {useState} from "react";
+import { useState } from "react";
 import Image from "next/image";
 import avatar from "@/public/avatar.jpg";
 import { ArrowUpFromLine } from "lucide-react";
 import { ImagePlay } from "lucide-react";
 import { MapPinPlus } from "lucide-react";
 import { useSession } from "next-auth/react";
+import Carousel from "./PostImageCarousel";
 
 Modal.setAppElement("body");
 
 export default function CreatePostModal() {
-  const {data: session} = useSession();
+  const { data: session } = useSession();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState(null);
   const [preview, setPreview] = useState(null);
-  const [uploadedUrl, setUploadedUrl] = useState("");
+  const MAX_IMAGES = 7;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files[0];
-    setFile(selectedFile);
+    if (!e.target.files) return;
+    const selectedFiles = Array.from(e.target.files || []);
 
-    if (selectedFile) {
-      const reader = new FileReader();
-      reader.onloadend = () => setPreview(reader.result);
-      reader.readAsDataURL(selectedFile);
+    if (selectedFiles.length > MAX_IMAGES) {
+      alert(`You can only post ${MAX_IMAGES} at a time`);
+      return;
     }
+
+    setFiles(selectedFiles);
+
+    const newPreview: string[] = [];
+    selectedFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newPreview.push(reader.result as string);
+        if (newPreview.length === selectedFiles.length) {
+          setPreview(newPreview);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   // this is for image upload
   const handleUpload = async () => {
-    if (!file) return null;
+    const urls: string[] = [];
 
-    const formData = new FormData();
-    formData.append("file", file);
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    const res = await fetch("/api/imageUpload", {
-      method: "POST",
-      body: formData,
-    });
+      const res = await fetch("/api/imageUpload", {
+        method: "POST",
+        body: formData,
+      });
 
-    const data = await res.json();
-    if (data.url) {
-      return data.url;
-    } else {
-      alert("Upload failed");
-      return null;
+      const data = await res.json();
+      if (data.url) {
+        urls.push(data.url);
+      } else {
+        alert("One of the image upload failed");
+      }
     }
+    return urls;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    if (!content.trim() || !file) {
+    if (!content.trim() && files.length === 0) {
       setLoading(false);
       throw new Error("Content cannot be empty");
     }
 
     try {
-      let imageUrl = "";
-      if(file){
-        imageUrl = await handleUpload();
-        if(!imageUrl) throw new Error("Image upload failed");
-      }
-
+      const imageUrls = await handleUpload();
       const response = await fetch("/api/createPost", {
         method: "POST",
         headers: {
@@ -76,8 +87,7 @@ export default function CreatePostModal() {
         body: JSON.stringify({
           username: session?.user?.name,
           content,
-          image: imageUrl,
-
+          image: imageUrls,
         }),
       });
 
@@ -92,8 +102,8 @@ export default function CreatePostModal() {
       socket.emit("new_post", {
         username: session?.user?.name,
         content,
-        image: imageUrl,
-      })
+        image: imageUrls,
+      });
 
       setContent(""); // Clear the textarea
       setModalIsOpen(false); // Close the modal
@@ -101,9 +111,8 @@ export default function CreatePostModal() {
       console.error("Error creating post:", error);
     } finally {
       setLoading(false);
-      setPreview(null);
-      setUploadedUrl("");
-      setFile(null);
+      setPreview([]);
+      setFiles([]);
     }
   };
 
@@ -124,26 +133,38 @@ export default function CreatePostModal() {
         className="modal-content" // Apply animation class
         overlayClassName="modal-overlay" // Custom overlay styling
       >
-        <form onSubmit={handleSubmit} className="flex flex-col h-full min-h-[300px] max-h-[80vh] overflow-hidden">
-          <textarea
-            name="content"
-            id="content"
-            placeholder="What's on your mind?"
-            className="flex-grow ml-[3rem] text-white rounded-md p-2 resize-none focus:outline-none overflow-y-auto"
-            value={content}
-            onChange={(e) => {
-              const textarea = e.target;
-              textarea.style.height = "auto"; // reset first
-              textarea.style.height = Math.min(textarea.scrollHeight, 300) + "px"; // max height = 300px
-              setContent(e.target.value);
-            }}
-            style={{ lineHeight: "1.5", minHeight: "100px" }}
-          ></textarea>
-          <div>
-            {/* image preview will come here for creating the post and we need to send it to the carouesl as a prop*/}
-            {preview && <div  className="mt-4 flex-grow overflow-y-auto border border-gray-600 rounded-md p-2"><Image src={preview} alt="Preview" width={200} height={200} unoptimized /></div>}
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col h-full min-h-[300px] max-h-[80vh] overflow-hidden"
+        >
+          <div className="flex-grow overflow-y-auto">
+            <textarea
+              name="content"
+              id="content"
+              placeholder="What's on your mind?"
+              className="pl-[3rem] w-full text-white rounded-md resize-none focus:outline-none overflow-y-auto"
+              value={content}
+              onChange={(e) => {
+                const textarea = e.target;
+                textarea.style.height = "auto"; // reset first
+                textarea.style.height =
+                  Math.min(textarea.scrollHeight, 400) + "px"; // max height = 300px
+                setContent(e.target.value);
+              }}
+              style={{ lineHeight: "1.5", minHeight: "100px" }}
+            ></textarea>
+            <div>
+              {/* Testing */}
+              {/* image preview will come here for creating the post and we need to send it to the carouesl as a prop*/}
+              {preview !== null && (
+                <div className="mt-4 w-full h-[400px] overflow-hidden border border-gray-600 rounded-md ">
+                  <Carousel images={preview} pageNos={true} />
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex justify-between mt-4 items-center">
+          {/* REVIEW: */}
+          <div className="flex justify-between items-center bg-black mt-2">
             <div className="flex space-x-2">
               <div
                 onClick={() => document.getElementById("fileInput")?.click()}
@@ -155,6 +176,7 @@ export default function CreatePostModal() {
                 id="fileInput"
                 type="file"
                 accept="image/*"
+                multiple
                 onChange={handleFileChange}
                 style={{ display: "none" }}
               />
@@ -205,15 +227,42 @@ export default function CreatePostModal() {
 
         .modal-content {
           width: 800px;
-          /*height: 300px*/
+          max-height: 80vh;
+          display: flex;
+          flex-direction: column;
           padding: 20px;
           background: black; /* Changed background to black */
           border-radius: 10px;
           box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+          overflow-y: auto;
           transform: translateY(100%);
           animation: slide-up 0.3s ease-out forwards;
           color: white;
           z-index: 1100;
+        }
+
+        /* Scrollbar Customization */
+        .modal-content::-webkit-scrollbar,
+        .flex-grow::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb,
+        .flex-grow::-webkit-scrollbar-thumb {
+          background-color: black !important; /* Scrollbar thumb color */
+          border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-track,
+        .flex-grow::-webkit-scrollbar-track {
+          background-color: gray !important; /* Scrollbar track color */
+        }
+
+        /* Firefox Scrollbar */
+        .modal-content,
+        .flex-grow {
+          scrollbar-color: black #f0f0f0; /* Thumb color and track color */
+          scrollbar-width: thin; /* Make the scrollbar thinner */
         }
 
         @keyframes slide-up {

@@ -10,9 +10,10 @@ import Image from "next/image";
 
 interface CarouselProps {
   images: string[];
+  pageNos?: boolean;
 }
 
-export default function Carousel({ images = [] }: CarouselProps) {
+export default function Carousel({ images = [],  pageNos = false }: CarouselProps) {
   return (
     <div className="w-full max-w-5xl mx-auto">
       <Swiper
@@ -21,10 +22,8 @@ export default function Carousel({ images = [] }: CarouselProps) {
         spaceBetween={30}
         slidesPerView={1}
         navigation
-        pagination={{ clickable: true }}
+        pagination={pageNos ? {type: "fraction"} : {clickable: true}}
         scrollbar={{ draggable: true }}
-        onSwiper={(swiper) => console.log(swiper)}
-        onSlideChange={() => console.log("slide change")}
       >
         {images.map((image, index) => (
           <SwiperSlide key={index}>
@@ -33,13 +32,25 @@ export default function Carousel({ images = [] }: CarouselProps) {
                 src={image}
                 alt={`post image index - ${index}`}
                 layout="fill"
-                objectFit="cover"
+                objectFit="contain"
                 className="rounded-lg"
               />
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
+      <style jsx global>{`
+        .swiper-pagination-fraction {
+          color: black;
+          font-weight: medium;
+        }
+        .swiper-pagination-current {
+          color: black;
+        }
+        .swiper-pagination-total {
+          color: black;
+        }
+      `}</style>
     </div>
   );
 }

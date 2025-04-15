@@ -11,34 +11,41 @@ cloudinary.v2.config({
 
 export const POST = catchAsync(async (req: NextRequest) => {
   const formData = await req.formData();
-  const file = formData.get("file");
+  const files = formData.getAll("file");
 
-  if (!file || !(file instanceof File)) {
+  if (!files || !(files instanceof File)) {
     return NextResponse.json(
       { error: "No valid file uploaded" },
       { status: 400 }
     );
   }
 
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  const urls: string[] = [];
 
-  const result = await new Promise<cloudinary.UploadApiResponse>(
-    (resolve, reject) => {
-      const stream = cloudinary.v2.uploader.upload_stream(
-        {
-          folder: "Flick_Post_images",
-          resource_type: "auto", // handles image/video/etc
-        },
-        (error, result) => {
-          if (error || !result) reject(error);
-          else resolve(result);
-        }
-      );
+  for (const file of files) {
+    if (!(file instanceof File)) continue;
 
-      stream.end(buffer);
-    }
-  );
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-  return NextResponse.json({ url: result.secure_url }, { status: 200 });
+    const result = await new Promise<cloudinary.UploadApiResponse>(
+      (resolve, reject) => {
+        const stream = cloudinary.v2.uploader.upload_stream(
+          {
+            folder: "Flick_Post_images",
+            resource_type: "auto", // handles image/video/etc
+          },
+          (error, result) => {
+            if (error || !result) reject(error);
+            else resolve(result);
+          }
+        );
+
+        stream.end(buffer);
+      }
+    );
+    urls.push(result.secure_url);
+  }
+
+  return NextResponse.json({ urls }, { status: 200 });
 });
