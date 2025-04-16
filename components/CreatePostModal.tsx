@@ -21,6 +21,20 @@ export default function CreatePostModal() {
   const [preview, setPreview] = useState(null);
   const MAX_IMAGES = 7;
 
+
+  const resetModalState = () => {
+    setContent("");
+    setLoading(false);
+    setFiles(null);
+    setPreview(null);
+  };
+
+  // Function to handle modal close
+  const handleCloseModal = () => {
+    resetModalState(); // Reset the modal state
+    setModalIsOpen(false); // Close the modal
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const selectedFiles = Array.from(e.target.files || []);
@@ -47,6 +61,7 @@ export default function CreatePostModal() {
 
   // this is for image upload
   const handleUpload = async () => {
+    if (!files || files.length === 0) return [];
     const urls: string[] = [];
 
     for (const file of files) {
@@ -76,9 +91,10 @@ export default function CreatePostModal() {
     e.preventDefault();
     setLoading(true);
 
-    if (!content.trim() && files.length === 0) {
+    if (!content.trim() && (!files || files.length === 0)) {
       setLoading(false);
-      throw new Error("Content cannot be empty");
+      alert("Oops there is not content to post");
+      return;
     }
 
     try {
@@ -90,7 +106,7 @@ export default function CreatePostModal() {
         },
         body: JSON.stringify({
           username: session?.user?.name,
-          content,
+          content: content.trim() || null,
           image: imageUrls,
         }),
       });
@@ -109,14 +125,11 @@ export default function CreatePostModal() {
         image: imageUrls,
       });
 
-      setContent(""); // Clear the textarea
-      setModalIsOpen(false); // Close the modal
+      handleCloseModal();
     } catch (error: any) {
       console.error("Error creating post:", error);
     } finally {
       setLoading(false);
-      setPreview([]);
-      setFiles([]);
     }
   };
 
@@ -133,7 +146,7 @@ export default function CreatePostModal() {
       {/* Modal */}
       <Modal
         isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
+        onRequestClose={handleCloseModal}
         className="modal-content" // Apply animation class
         overlayClassName="modal-overlay" // Custom overlay styling
         bodyOpenClassName="overflow-hidden"
@@ -162,13 +175,12 @@ export default function CreatePostModal() {
               {/* Testing */}
               {/* image preview will come here for creating the post and we need to send it to the carouesl as a prop*/}
               {preview !== null && (
-                <div className="mt-4 w-full h-[400px] overflow-hidden border border-gray-600 rounded-md ">
+                <div className="mt-4 w-full h-[400px] overflow-hidden border border-gray-600 rounded-md">
                   <Carousel images={preview} pageNos={true} />
                 </div>
               )}
             </div>
           </div>
-          {/* REVIEW: */}
           <div className="flex justify-between items-center bg-black mt-2">
             <div className="flex space-x-2">
               <div

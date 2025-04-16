@@ -13,7 +13,7 @@ interface Post {
   bookmarks?: number;
   reposts?: number;
   profileImg?: string;
-  postImg?: string[];
+  image?: string[];
 }
 
 export default function PostContent() {
@@ -53,7 +53,7 @@ export default function PostContent() {
         {posts.map(
           (post, index) => (
             <li key={post._id || `post-${index}`}>
-              <PostCard username={post.username} content={post.content} shares={post.shares || 0} likes={post.likes || 0} comment={post.comment || 0} bookmarks={post.bookmarks || 0} reposts={post.reposts || 0} profileImg={post.profileImg} postImg={post.postImg}/>
+              <PostCard username={post.username} content={post.content} shares={post.shares || 0} likes={post.likes || 0} comment={post.comment || 0} bookmarks={post.bookmarks || 0} reposts={post.reposts || 0} profileImg={post.profileImg} postImg={post.image}/>
             </li>
           )
         )}

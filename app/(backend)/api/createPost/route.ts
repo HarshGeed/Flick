@@ -11,7 +11,8 @@ interface PostRequestBody {
   image?: string;
 }
 
-export const POST = catchAsync(async (req: NextRequest) => {
+export const POST = async (req: NextRequest) => {
+    try{
   if (req.method !== "POST") {
     return NextResponse.json(
       { message: "Method not allowed" },
@@ -28,9 +29,9 @@ export const POST = catchAsync(async (req: NextRequest) => {
 
   const body: PostRequestBody = await req.json();
   const { content, image } = body;
-  if (!content)
+  if (!content?.trim() && (!image || image.length === 0))
     return NextResponse.json(
-      { message: "Post content is required" },
+      { message: "Post content cannot be empty" },
       { status: 400 }
     );
 
@@ -54,8 +55,8 @@ export const POST = catchAsync(async (req: NextRequest) => {
   const newPost = new Post({
     user: session.user.id,
     username: session.user.name,
-    content,
-    image: image,
+    content : content?.trim() || null,
+    image: image || [],
   });
 
   await newPost.save();
@@ -63,4 +64,7 @@ export const POST = catchAsync(async (req: NextRequest) => {
     { message: "Post created successfully", post: newPost },
     { status: 201 }
   );
-});
+}catch(error){
+    console.log("This is the 🔥", error);
+}
+};

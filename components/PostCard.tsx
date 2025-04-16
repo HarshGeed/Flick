@@ -3,11 +3,21 @@ import avatar from "@/public/avatar.jpg";
 import Image from "next/image";
 import { MessageCircle, Heart, Share, Bookmark, Repeat } from "lucide-react";
 import Carousel from "./PostImageCarousel";
-import default_userImg from "@/public/default-userImg.png"
+import default_userImg from "@/public/default-userImg.png";
 
 // likeNum, commentNum, shareNum, bookmarkNum, repostNum, profileUrl
 
-export default function PostCard({username, content, likes, comment, shares, bookmarks, reposts, profileImg, postImg}) {
+export default function PostCard({
+  username,
+  content,
+  likes,
+  comment,
+  shares,
+  bookmarks,
+  reposts,
+  profileImg,
+  postImg,
+}) {
   return (
     <div className="p-[1rem] rounded-xl shadow-2xl bg-stone-900">
       {/* Username and profile image */}
@@ -26,38 +36,37 @@ export default function PostCard({username, content, likes, comment, shares, boo
           Follow
         </button>
       </div>
-      {/* Post content */}
       <div className="mt-4">
-        {postImg && <Carousel images={postImg}/>}
-      <div className="mt-4">
-        <p>
-         {content}
-        </p>
+        {Array.isArray(postImg) && postImg.length > 0 && (
+          <Carousel images={postImg} />
+        )}
+        <div className="mt-4">
+          <p>{content}</p>
+        </div>
+        {/* Post features */}
+        <div className="flex mt-4 items-center space-x-3">
+          <div className="flex items-center space-x-1">
+            <Heart strokeWidth={1} />
+            <p className="text-sm">{likes}</p>
+          </div>
+          <div className="flex items-center space-x-1">
+            <MessageCircle strokeWidth={1} />
+            <p className="text-sm">{comment}</p>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Share strokeWidth={1} />
+            <p className="text-sm">{shares}</p>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Bookmark strokeWidth={1} />
+            <p className="text-sm">{bookmarks}</p>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Repeat strokeWidth={1} />
+            <p className="text-sm">{reposts}</p>
+          </div>
+        </div>
       </div>
-      {/* Post features */}
-      <div className="flex mt-4 items-center space-x-3">
-        <div className="flex items-center space-x-1">
-          <Heart strokeWidth={1} />
-          <p className="text-sm">{likes}</p>
-        </div>
-        <div className="flex items-center space-x-1">
-          <MessageCircle strokeWidth={1} />
-          <p className="text-sm">{comment}</p>
-        </div>
-        <div className="flex items-center space-x-1">
-          <Share strokeWidth={1} />
-          <p className="text-sm">{shares}</p>
-        </div>
-        <div className="flex items-center space-x-1">
-          <Bookmark strokeWidth={1} />
-          <p className="text-sm">{bookmarks}</p>
-        </div>
-        <div className="flex items-center space-x-1"> 
-          <Repeat strokeWidth={1} />
-          <p className="text-sm">{reposts}</p>
-        </div>
-      </div>
-    </div>
     </div>
   );
 }

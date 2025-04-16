@@ -14,6 +14,8 @@ interface CarouselProps {
 }
 
 export default function Carousel({ images = [],  pageNos = false }: CarouselProps) {
+  
+  if (!Array.isArray(images) || images.length === 0) return null;
   return (
     <div className="w-full max-w-5xl mx-auto">
       <Swiper
@@ -30,7 +32,7 @@ export default function Carousel({ images = [],  pageNos = false }: CarouselProp
             <div className="relative w-full h-64 md:h-96">
               <Image
                 src={image}
-                alt={`post image index - ${index}`}
+                alt=""
                 layout="fill"
                 objectFit="contain"
                 className="rounded-lg"
