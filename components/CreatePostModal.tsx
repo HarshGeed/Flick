@@ -9,6 +9,7 @@ import { ImagePlay } from "lucide-react";
 import { MapPinPlus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Carousel from "./PostImageCarousel";
+import default_userImg from "@/public/default-userImg.png";
 
 Modal.setAppElement("body");
 
@@ -192,7 +193,7 @@ export default function CreatePostModal() {
               <input
                 id="fileInput"
                 type="file"
-                accept="image/*"
+                accept="image/*,video/*"
                 multiple
                 onChange={handleFileChange}
                 style={{ display: "none" }}
@@ -215,7 +216,7 @@ export default function CreatePostModal() {
           </div>
           <div className="w-[2.5rem] h-[2.5rem] absolute">
             <Image
-              src={avatar}
+              src={default_userImg}
               alt="User Image"
               className="rounded-full"
               layout="fill"

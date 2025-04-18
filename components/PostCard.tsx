@@ -4,10 +4,14 @@ import Image from "next/image";
 import { MessageCircle, Heart, Share, Bookmark, Repeat } from "lucide-react";
 import Carousel from "./PostImageCarousel";
 import default_userImg from "@/public/default-userImg.png";
+import { useState } from "react";
+import clsx from 'clsx'
+import LikeButton from "./LikeButton";
 
 // likeNum, commentNum, shareNum, bookmarkNum, repostNum, profileUrl
 
 export default function PostCard({
+  postId,
   username,
   content,
   likes,
@@ -17,6 +21,7 @@ export default function PostCard({
   reposts,
   profileImg,
   postImg,
+  likedInitially
 }) {
   return (
     <div className="p-[1rem] rounded-xl shadow-2xl bg-stone-900">
@@ -46,8 +51,7 @@ export default function PostCard({
         {/* Post features */}
         <div className="flex mt-4 items-center space-x-3">
           <div className="flex items-center space-x-1">
-            <Heart strokeWidth={1} />
-            <p className="text-sm">{likes}</p>
+            <LikeButton postId={postId} initialLikes={likes} likedInitially={likedInitially} />
           </div>
           <div className="flex items-center space-x-1">
             <MessageCircle strokeWidth={1} />

@@ -11,6 +11,9 @@ const postSchema = new Schema(
       type: String,
       required: true,
     },
+    profileImg: {
+      type: String // we will do referencing here from user db.
+    },
     content: {
       type: String,
       trim: true,
@@ -21,9 +24,16 @@ const postSchema = new Schema(
       },
     ],
     likes: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+      type: Number,
+      default: 0,
+      min: [0, "Likes cannot be negative"],
     },
+    likedBy: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      }
+    ],
     comments: [
       {
         user: {

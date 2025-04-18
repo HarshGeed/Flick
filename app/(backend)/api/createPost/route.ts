@@ -1,4 +1,3 @@
-import { catchAsync } from "@/utils/catchAsync";
 import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/lib/dbConn";
 import Post from "@/models/postModel";
