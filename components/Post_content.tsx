@@ -25,7 +25,7 @@ export default function PostContent() {
       try {
         const res = await fetch("/api/fetchPosts", { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to fetch posts");
-        const data = await res.json();
+        const data : Post[] = await res.json();
         setPosts(data);
       } catch (error) {
         console.error(error);
@@ -36,7 +36,7 @@ export default function PostContent() {
     // listen to real-time post updates
     socket.on("new_post", (newPost: Post) => {
       try {
-        setPosts((prevPosts) => [newPost, ...prevPosts]);
+        fetchPosts();
       } catch (error){
         console.error("Error handling new post:", error);
       }
