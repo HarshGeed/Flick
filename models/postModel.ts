@@ -12,7 +12,7 @@ const postSchema = new Schema(
       required: true,
     },
     profileImg: {
-      type: String // we will do referencing here from user db.
+      type: String, // we will do referencing here from user db.
     },
     content: {
       type: String,
@@ -32,7 +32,7 @@ const postSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: "User",
-      }
+      },
     ],
     comments: [
       {
@@ -44,6 +44,22 @@ const postSchema = new Schema(
           type: String,
           required: true,
         },
+        image: [
+          {
+            type: String,
+          },
+        ],
+        likes: {
+          type: Number,
+          default: 0,
+          min: [0, "Likes cannot be negative"],
+        },
+        likedBy: [
+          {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+          },
+        ],
         createdAt: {
           type: Date,
           default: Date.now,

@@ -1,68 +1,29 @@
-"use client";
-
-import { Navigation, Pagination, Scrollbar, A11y } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
-import avatar from "@/public/avatar.jpg";
-import Image from "next/image";
-
 export default function Test() {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const text = formData.get("text");
+    console.log("Submitted text:", text);
+  };
+
   return (
-    <div className="w-full max-w-5xl mx-auto">
-      <Swiper
-        // Install Swiper modules
-        modules={[Navigation, Pagination, Scrollbar, A11y]}
-        spaceBetween={30}
-        slidesPerView={1}
-        navigation
-        pagination={{ clickable: true }}
-        scrollbar={{ draggable: true }}
-        onSwiper={(swiper) => console.log(swiper)}
-        onSlideChange={() => console.log("slide change")}
-      >
-        <SwiperSlide>
-          <Image
-            src={avatar}
-            alt="Test image 1"
-            width={300}
-            height={300}
-            className="rounded-lg"
-          />
-        </SwiperSlide>
-        <SwiperSlide>
-          <Image
-            src={avatar}
-            alt="Test image 2"
-            width={300}
-            height={300}
-            className="rounded-lg"
-          />
-        </SwiperSlide>
-        <SwiperSlide>
-          <Image
-            src={avatar}
-            alt="Test image 3"
-            width={300}
-            height={300}
-            className="rounded-lg"
-          />
-        </SwiperSlide>
-        <SwiperSlide>
-          <Image
-            src={avatar}
-            alt="Test image 4"
-            width={300}
-            height={300}
-            className="rounded-lg"
-          />
-        </SwiperSlide>
-      </Swiper>
-      <p>
-        
-      </p>
-    </div>
+    <>
+      <div className="p-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <textarea
+            name="text"
+            rows={4}
+            placeholder="Enter your text here..."
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
+    </>
   );
 }
