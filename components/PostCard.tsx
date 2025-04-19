@@ -7,6 +7,7 @@ import default_userImg from "@/public/default-userImg.png";
 import { useState } from "react";
 import clsx from 'clsx'
 import LikeButton from "./LikeButton";
+import CommentBtn from "./CommentBtn";
 
 // likeNum, commentNum, shareNum, bookmarkNum, repostNum, profileUrl
 
@@ -15,7 +16,7 @@ export default function PostCard({
   username,
   content,
   likes,
-  comment,
+  commentCount,
   shares,
   bookmarks,
   reposts,
@@ -54,8 +55,7 @@ export default function PostCard({
             <LikeButton postId={postId} initialLikes={likes} likedInitially={likedInitially} />
           </div>
           <div className="flex items-center space-x-1">
-            <MessageCircle strokeWidth={1} />
-            <p className="text-sm">{comment}</p>
+            <CommentBtn postId={postId} content={content} username={username} profileImg={profileImg} commentCount={commentCount}/>
           </div>
           <div className="flex items-center space-x-1">
             <Share strokeWidth={1} />

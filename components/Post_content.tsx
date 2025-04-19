@@ -9,28 +9,30 @@ interface Post {
   content: string;
   shares?: number;
   likes?: number;
-  comment?: number;
   bookmarks?: number;
   reposts?: number;
   profileImg?: string;
   image?: string[];
   likedInitially: boolean;
+  commentCount: number;
 }
 
 export default function PostContent() {
   const [posts, setPosts] = useState<Post[]>([]);
 
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const res = await fetch("/api/fetchPosts", { cache: "no-store" });
-        if (!res.ok) throw new Error("Failed to fetch posts");
-        const data : Post[] = await res.json();
-        setPosts(data);
-      } catch (error) {
-        console.error(error);
-      }
+  async function fetchPosts() {
+    try {
+      const res = await fetch("/api/fetchPosts", { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch posts");
+      const data : Post[] = await res.json();
+      setPosts(data);
+    } catch (error) {
+      console.error(error);
     }
+  }
+
+  useEffect(() => {
+    
     fetchPosts();
 
     // listen to real-time post updates
@@ -54,7 +56,7 @@ export default function PostContent() {
         {posts.map(
           (post, index) => (
             <li key={post._id || `post-${index}`}>
-              <PostCard username={post.username} content={post.content} shares={post.shares || 0} likes={post.likes || 0} comment={post.comment || 0} bookmarks={post.bookmarks || 0} reposts={post.reposts || 0} profileImg={post.profileImg} postImg={post.image} postId={post._id} likedInitially={post.likedInitially}/>
+              <PostCard username={post.username} content={post.content} shares={post.shares || 0} likes={post.likes || 0} bookmarks={post.bookmarks || 0} reposts={post.reposts || 0} profileImg={post.profileImg} postImg={post.image} postId={post._id} likedInitially={post.likedInitially} commentCount={post.commentCount}/>
             </li>
           )
         )}

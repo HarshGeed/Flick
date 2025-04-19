@@ -10,7 +10,7 @@ const server = http.createServer();
 const io = new Server(server, {
     cors:{
         origin: "*",
-        methods: ["GET", "POST"],
+        methods: ["GET", "POST", "PUT"],
     }
 })
 
@@ -25,6 +25,10 @@ io.on("connection", (socket) => {
 
     socket.on("like_post", ({postId, liked, likes}) => {
         io.emit("post_liked", {postId, liked, likes});
+    })
+
+    socket.on("new_comment", (data) => {
+        io.emit("new_comment", data)
     })
 
     socket.on("disconnect", () => {

@@ -34,39 +34,7 @@ const postSchema = new Schema(
         ref: "User",
       },
     ],
-    comments: [
-      {
-        user: {
-          type: Schema.Types.ObjectId,
-          ref: "User",
-        },
-        text: {
-          type: String,
-          required: true,
-        },
-        image: [
-          {
-            type: String,
-          },
-        ],
-        likes: {
-          type: Number,
-          default: 0,
-          min: [0, "Likes cannot be negative"],
-        },
-        likedBy: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-          },
-        ],
-        createdAt: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
-    comment: {
+    commentCount: {
       type: Number,
       default: 0,
     },

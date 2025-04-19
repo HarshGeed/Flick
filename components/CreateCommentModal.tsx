@@ -12,15 +12,20 @@ import default_userImg from "@/public/default-userImg.png";
 
 Modal.setAppElement("body");
 
-export default function CreatePostModal() {
+export default function CreateCommentModal({
+  postId,
+  previewContent,
+  postUsername,
+  postProfileImg,
+  onClose,
+  onOpen,
+}) {
   const { data: session } = useSession();
-  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState(null);
   const [preview, setPreview] = useState(null);
   const MAX_IMAGES = 7;
-
 
   const resetModalState = () => {
     setContent("");
@@ -32,7 +37,7 @@ export default function CreatePostModal() {
   // Function to handle modal close
   const handleCloseModal = () => {
     resetModalState(); // Reset the modal state
-    setModalIsOpen(false); // Close the modal
+    onClose();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,8 +78,8 @@ export default function CreatePostModal() {
         body: formData,
       });
 
-      if(!res.ok){
-        console.error("The response is not OK..")
+      if (!res.ok) {
+        console.error("The response is not OK..");
       }
 
       const data = await res.json();
@@ -99,14 +104,15 @@ export default function CreatePostModal() {
 
     try {
       const imageUrls = await handleUpload();
-      const response = await fetch("/api/createPost", {
+      const response = await fetch(`/api/posts/${postId}/comment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: session?.user?.name,
-          content: content.trim() || null,
+          postId,
+          user: session?.user?.id,
+          text: content.trim() || null,
           image: imageUrls,
         }),
       });
@@ -118,11 +124,13 @@ export default function CreatePostModal() {
         return;
       }
 
-      //emit the post to data server
-      socket.emit("new_post", {
+      //emit the comment to data server
+      socket.emit("new_comment", {
         username: session?.user?.name,
-        content,
+        text: content.trim() || null,
+        postId,
         image: imageUrls,
+        commentCount: data.commentCount,
       });
 
       handleCloseModal();
@@ -135,18 +143,10 @@ export default function CreatePostModal() {
 
   return (
     <div className="flex justify-center items-center">
-      {/* Button to open the modal */}
-      <button
-        onClick={() => setModalIsOpen(true)}
-        className=" rounded-xl w-[12rem] h-12 text-xl bg-amber-200 text-black hover:opacity-90 transition duration-300 ease-in-out"
-      >
-        Post
-      </button>
-
       {/* Modal */}
       <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={handleCloseModal}
+        isOpen={onOpen}
+        onRequestClose={handleCloseModal} // here onClose prop will come
         className="modal-content" // Apply animation class
         overlayClassName="modal-overlay" // Custom overlay styling
         bodyOpenClassName="overflow-hidden"
@@ -155,7 +155,32 @@ export default function CreatePostModal() {
           onSubmit={handleSubmit}
           className="flex flex-col h-full min-h-[300px] max-h-[80vh] overflow-hidden"
         >
-          <div className="flex-grow overflow-y-auto">
+          {/* here the preview of post will come  */}
+          <div className="flex opacity-80">
+            <div className="w-[2.5rem] h-[2.5rem]">
+              <Image
+                src={default_userImg}
+                alt="user_profile_image"
+                className="rounded-full"
+                width={40}
+                height={40}
+              />
+            </div>
+            <div className="ml-2">
+              <p className="font-semibold text-sm">{postUsername}</p>
+              <p>{previewContent}</p>
+            </div>
+          </div>
+          <div className="flex-grow overflow-y-auto mt-[2rem]">
+            <div className="w-[2.5rem] h-[2.5rem] relative">
+              <Image
+                src={default_userImg}
+                alt="User Image"
+                className="rounded-full"
+                width={40}
+                height={40}
+              />
+            </div>
             <textarea
               name="content"
               id="content"
@@ -213,15 +238,6 @@ export default function CreatePostModal() {
               {loading ? "Posting..." : "Post"}
             </button>
           </div>
-          <div className="w-[2.5rem] h-[2.5rem] absolute">
-            <Image
-              src={default_userImg}
-              alt="User Image"
-              className="rounded-full"
-              layout="fill"
-              objectFit="cover"
-            />
-          </div>
         </form>
       </Modal>
 
@@ -257,7 +273,7 @@ export default function CreatePostModal() {
           color: white;
           z-index: 1100;
         }
-        
+
         .overflow-hidden {
           overflow: hidden;
         }

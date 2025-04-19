@@ -10,7 +10,7 @@ export const GET = catchAsync(async () => {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const posts = await Post.find({}).select("username content image likes comment shares bookmarks reposts likedBy").sort({ createdAt: -1 }).lean();
+  const posts = await Post.find({}).select("username content image likes shares bookmarks reposts likedBy commentCount").sort({ createdAt: -1 }).lean();
 
   const enhancedPosts = posts.map((post) => ({
     ...post,
