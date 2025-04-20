@@ -170,7 +170,7 @@ export default function CreateCommentModal({
                 <p>{previewContent}</p>
               </div>
             </div>
-            <div className="flex-grow overflow-y-auto mt-[2rem]">
+            <div className="flex items-start overflow-y-auto mt-[2rem]">
               <div className="w-[2.5rem] h-[2.5rem] relative">
                 <Image
                   src={default_userImg}
@@ -184,7 +184,7 @@ export default function CreateCommentModal({
                 contentEditable
                 id="content"
                 placeholder="What's on your mind?"
-                className="pl-[3rem] w-full text-white rounded-md resize-none focus:outline-none overflow-y-auto"
+                className="px-3 w-full text-white rounded-md resize-none focus:outline-none overflow-y-auto"
                 value={content}
                 // onChange={(e) => {
                 //   const textarea = e.target;
@@ -203,7 +203,8 @@ export default function CreateCommentModal({
                   color: "white",
                 }}
               ></div>
-              <div>
+            </div>
+              <div className="px-3">
                 {/* Testing */}
                 {/* image preview will come here for creating the post and we need to send it to the carouesl as a prop*/}
                 {preview !== null && (
@@ -212,7 +213,6 @@ export default function CreateCommentModal({
                   </div>
                 )}
               </div>
-            </div>
           </div>
           {/* fixed section */}
           <div className="flex justify-between items-center bg-black mt-2">

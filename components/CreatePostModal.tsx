@@ -159,7 +159,7 @@ export default function CreatePostModal() {
               contentEditable
               id="content"
               placeholder="What's on your mind?"
-              className="pl-[3rem] w-full text-white rounded-md resize-none focus:outline-none overflow-y-auto"
+              className="pl-[3rem] pr-2 w-full text-white rounded-md resize-none focus:outline-none overflow-y-auto"
               value={content}
               // onChange={(e) => {
               //   const textarea = e.target;
@@ -174,7 +174,7 @@ export default function CreatePostModal() {
               }}
               style={{ lineHeight: "1.5", minHeight: "100px", color: "white" }}
             ></div>
-            <div>
+            <div className="px-3">
               {/* Testing */}
               {/* image preview will come here for creating the post and we need to send it to the carouesl as a prop*/}
               {preview !== null && (
