@@ -151,61 +151,70 @@ export default function CreateCommentModal({
         overlayClassName="modal-overlay" // Custom overlay styling
         bodyOpenClassName="overflow-hidden"
       >
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col h-full min-h-[300px] max-h-[80vh] overflow-hidden"
-        >
+        <form onSubmit={handleSubmit} className="flex flex-col h-full min-h-[300px] max-h-[80vh] overflow-hidden">
           {/* here the preview of post will come  */}
-          <div className="flex opacity-80">
-            <div className="w-[2.5rem] h-[2.5rem]">
-              <Image
-                src={default_userImg}
-                alt="user_profile_image"
-                className="rounded-full"
-                width={40}
-                height={40}
-              />
+
+          <div className="flex-grow overflow-y-auto">
+            <div className="flex opacity-80">
+              <div className="w-[2.5rem] h-[2.5rem]">
+                <Image
+                  src={default_userImg}
+                  alt="user_profile_image"
+                  className="rounded-full"
+                  width={40}
+                  height={40}
+                />
+              </div>
+              <div className="ml-2">
+                <p className="font-semibold text-sm">{postUsername}</p>
+                <p>{previewContent}</p>
+              </div>
             </div>
-            <div className="ml-2">
-              <p className="font-semibold text-sm">{postUsername}</p>
-              <p>{previewContent}</p>
+            <div className="flex-grow overflow-y-auto mt-[2rem]">
+              <div className="w-[2.5rem] h-[2.5rem] relative">
+                <Image
+                  src={default_userImg}
+                  alt="User Image"
+                  className="rounded-full"
+                  width={40}
+                  height={40}
+                />
+              </div>
+              <div
+                contentEditable
+                id="content"
+                placeholder="What's on your mind?"
+                className="pl-[3rem] w-full text-white rounded-md resize-none focus:outline-none overflow-y-auto"
+                value={content}
+                // onChange={(e) => {
+                //   const textarea = e.target;
+                //   textarea.style.height = "auto"; // reset first
+                //   textarea.style.height =
+                //     Math.min(textarea.scrollHeight, 400) + "px"; // max height = 300px
+                //   setContent(e.target.value);
+                // }}
+                onInput={(e) => {
+                  const div = e.target as HTMLDivElement;
+                  setContent(div.innerText);
+                }}
+                style={{
+                  lineHeight: "1.5",
+                  minHeight: "150px",
+                  color: "white",
+                }}
+              ></div>
+              <div>
+                {/* Testing */}
+                {/* image preview will come here for creating the post and we need to send it to the carouesl as a prop*/}
+                {preview !== null && (
+                  <div className="mt-4 w-full h-[400px] overflow-hidden border border-gray-600 rounded-md">
+                    <Carousel images={preview} pageNos={true} />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-          <div className="flex-grow overflow-y-auto mt-[2rem]">
-            <div className="w-[2.5rem] h-[2.5rem] relative">
-              <Image
-                src={default_userImg}
-                alt="User Image"
-                className="rounded-full"
-                width={40}
-                height={40}
-              />
-            </div>
-            <textarea
-              name="content"
-              id="content"
-              placeholder="What's on your mind?"
-              className="pl-[3rem] w-full text-white rounded-md resize-none focus:outline-none overflow-y-auto"
-              value={content}
-              onChange={(e) => {
-                const textarea = e.target;
-                textarea.style.height = "auto"; // reset first
-                textarea.style.height =
-                  Math.min(textarea.scrollHeight, 400) + "px"; // max height = 300px
-                setContent(e.target.value);
-              }}
-              style={{ lineHeight: "1.5", minHeight: "100px" }}
-            ></textarea>
-            <div>
-              {/* Testing */}
-              {/* image preview will come here for creating the post and we need to send it to the carouesl as a prop*/}
-              {preview !== null && (
-                <div className="mt-4 w-full h-[400px] overflow-hidden border border-gray-600 rounded-md">
-                  <Carousel images={preview} pageNos={true} />
-                </div>
-              )}
-            </div>
-          </div>
+          {/* fixed section */}
           <div className="flex justify-between items-center bg-black mt-2">
             <div className="flex space-x-2">
               <div
@@ -267,7 +276,7 @@ export default function CreateCommentModal({
           background: black; /* Changed background to black */
           border-radius: 10px;
           box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
-          overflow-y: auto;
+          oveflow-y: auto;
           transform: translateY(100%);
           animation: slide-up 0.3s ease-out forwards;
           color: white;
@@ -311,6 +320,12 @@ export default function CreateCommentModal({
             transform: translateY(-20%);
             opacity: 1;
           }
+        }
+
+        #content:empty::before {
+          content: attr(placeholder);
+          color: gray;
+          pointer-events: none;
         }
       `}</style>
     </div>

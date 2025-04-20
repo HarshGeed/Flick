@@ -21,7 +21,6 @@ export default function CreatePostModal() {
   const [preview, setPreview] = useState(null);
   const MAX_IMAGES = 7;
 
-
   const resetModalState = () => {
     setContent("");
     setLoading(false);
@@ -73,8 +72,8 @@ export default function CreatePostModal() {
         body: formData,
       });
 
-      if(!res.ok){
-        console.error("The response is not OK..")
+      if (!res.ok) {
+        console.error("The response is not OK..");
       }
 
       const data = await res.json();
@@ -156,21 +155,25 @@ export default function CreatePostModal() {
           className="flex flex-col h-full min-h-[300px] max-h-[80vh] overflow-hidden"
         >
           <div className="flex-grow overflow-y-auto">
-            <textarea
-              name="content"
+            <div
+              contentEditable
               id="content"
               placeholder="What's on your mind?"
               className="pl-[3rem] w-full text-white rounded-md resize-none focus:outline-none overflow-y-auto"
               value={content}
-              onChange={(e) => {
-                const textarea = e.target;
-                textarea.style.height = "auto"; // reset first
-                textarea.style.height =
-                  Math.min(textarea.scrollHeight, 400) + "px"; // max height = 300px
-                setContent(e.target.value);
+              // onChange={(e) => {
+              //   const textarea = e.target;
+              //   textarea.style.height = "auto"; // reset first
+              //   textarea.style.height =
+              //     Math.min(textarea.scrollHeight, 400) + "px"; // max height = 300px
+              //   setContent(e.target.value);
+              // }}
+              onInput={(e) => {
+                const div = e.target as HTMLDivElement;
+                setContent(div.innerText);
               }}
-              style={{ lineHeight: "1.5", minHeight: "100px" }}
-            ></textarea>
+              style={{ lineHeight: "1.5", minHeight: "100px", color: "white" }}
+            ></div>
             <div>
               {/* Testing */}
               {/* image preview will come here for creating the post and we need to send it to the carouesl as a prop*/}
@@ -257,7 +260,7 @@ export default function CreatePostModal() {
           color: white;
           z-index: 1100;
         }
-        
+
         .overflow-hidden {
           overflow: hidden;
         }
@@ -295,6 +298,12 @@ export default function CreatePostModal() {
             transform: translateY(-20%);
             opacity: 1;
           }
+        }
+
+        #content:empty::before {
+          content: attr(placeholder);
+          color: gray;
+          pointer-events: none;
         }
       `}</style>
     </div>

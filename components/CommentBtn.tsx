@@ -39,9 +39,9 @@ export default function CommentBtn({postId, content, username, profileImg, comme
     <>
       <button
         onClick={handleOpenModal}
-        className="flex items-center gap-1 text-gray-500 hover:text-gray-700 transition"
+        className="flex items-center gap-1 text-stone-400 hover:text-gray-700 transition"
       >
-        <MessageCircle strokeWidth={1} className="h-5 w-5" />
+        <MessageCircle strokeWidth={1} className="h-6 w-6" />
         <span className="text-sm">{liveCommentCount}</span>
       </button>
 

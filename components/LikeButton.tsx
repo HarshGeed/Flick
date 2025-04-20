@@ -84,12 +84,12 @@ export default function LikeButton({
       <Heart
         className={clsx(
           "h-6 w-6 transition-all duration-300",
-          liked ? "fill-red-500 stroke-red-500" : "stroke-gray-400",
+          liked ? "fill-red-500 stroke-red-500" : "stroke-stone-400",
           animate && liked && "animate-bounce-like"
         )}
         strokeWidth={1}
       />
-      <span className="text-sm text-gray-700">{likes}</span>
+      <span className={clsx("text-sm transition-all duration-300", liked ? "text-red-400" : "text-stone-400")}>{likes}</span>
     </button>
   );
 }
