@@ -42,8 +42,17 @@ const commentSchema = new Schema(
       default: 0,
     }
   },
-  { timestamps: true }
+  { timestamps: true ,
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
+  },
 );
+
+commentSchema.virtual("replies", {
+  ref: "Comment",
+  localField: "_id",
+  foreignField: "parentComment"
+})
 
 const Comment =
   mongoose.models.Comment || mongoose.model("Comment", commentSchema);
