@@ -16,17 +16,17 @@ export const GET = async (
   try {
     connect();
 
-    const post = await Post.findById(id).lean();
+    const post = await Post.findById(id).populate("user", "username profileImg").lean();
     if(post){
-      const comments = await Comment.find({postId: id}).populate("user", "name").lean();
+      const comments = await Comment.find({postId: id}).populate("user", "username profileImg").lean();
 
       return NextResponse.json({post, comments}, {status: 200})
     }
 
     // if not post then here we will check for comment
-    const comment = await Comment.findById(id).populate("user", "name").populate({
+    const comment = await Comment.findById(id).populate( "user", "username profileImg").populate({
       path: "replies",
-      populate: {path: "user", select: "name"}
+      populate: {path: "user", select: "username profileImg"}
     }).lean();
 
 

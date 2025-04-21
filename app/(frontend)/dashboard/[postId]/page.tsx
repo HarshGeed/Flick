@@ -40,7 +40,10 @@ export default function SpecificPostContent() {
             setComments(data.comments || []);
             setReplies([])
           } else if(data.comment){
-            setPost(data.comment)
+            setPost(
+             { ...data.comment,
+              content: data.comment.text,}
+            )
             setComments([])
             setReplies(data.replies || [])
           }
