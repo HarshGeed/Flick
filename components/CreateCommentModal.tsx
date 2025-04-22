@@ -37,6 +37,7 @@ export default function CreateCommentModal({
   // Function to handle modal close
   const handleCloseModal = () => {
     resetModalState(); // Reset the modal state
+    document.body.classList.remove("overflow-hidden");
     onClose();
   };
 

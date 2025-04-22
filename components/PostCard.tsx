@@ -1,13 +1,14 @@
 "use client";
 import avatar from "@/public/avatar.jpg";
 import Image from "next/image";
-import { MessageCircle, Heart, Share, Bookmark, Repeat } from "lucide-react";
+import { ArrowRightFromLine, Share, Bookmark, Repeat } from "lucide-react";
 import Carousel from "./PostImageCarousel";
 import default_userImg from "@/public/default-userImg.png";
 import { useState } from "react";
 import clsx from 'clsx'
 import LikeButton from "./LikeButton";
 import CommentBtn from "./CommentBtn";
+import { useRouter } from "next/navigation";
 
 // likeNum, commentNum, shareNum, bookmarkNum, repostNum, profileUrl
 
@@ -19,11 +20,16 @@ export default function PostCard({
   commentCount,
   shares,
   bookmarks,
-  reposts,
   profileImg,
   postImg,
-  likedInitially
+  likedInitially,
+  navigateTo
 }) {
+  const router = useRouter();
+  const handleCardClick = (e) => {
+    // prevent click from firing when buttons inside are clicked
+    if (navigateTo) router.push(navigateTo);
+  };
   return (
     <div className="p-[1rem] rounded-xl shadow-2xl bg-stone-900">
       {/* Username and profile image */}
@@ -66,8 +72,7 @@ export default function PostCard({
             <p className="text-sm">{bookmarks}</p>
           </div>
           <div className="flex items-center space-x-1">
-            <Repeat strokeWidth={1} />
-            <p className="text-sm">{reposts}</p>
+            <ArrowRightFromLine strokeWidth={1.5} onClick={handleCardClick}/>
           </div>
         </div>
       </div>

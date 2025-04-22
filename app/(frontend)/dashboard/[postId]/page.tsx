@@ -77,10 +77,10 @@ export default function SpecificPostContent() {
           commentCount={comments.length}
           shares={post.shares || 0}
           bookmarks={post.bookmarks || 0}
-          reposts={post.reposts || 0}
           profileImg={post.user?.profileImg || null}
           postImg={Array.isArray(post.images) ? post.images : []}
           likedInitially={post.likedBy?.includes(currentUserId)}
+          navigateTo={null}
         />)}
         {/* vertical line */}
         <div className="h-[3rem] border-1 border-white w-0 ml-[2rem] opacity-80"></div>
@@ -90,7 +90,7 @@ export default function SpecificPostContent() {
           <div className="space-y-3">
             {comments.map((comment) => (
               <div key={comment._id}>
-                <Link href={`/dashboard/${comment._id}/`}>
+                
                   <PostCard
                     postId={comment._id}
                     username={comment.user?.username || "Anonymous"}
@@ -99,12 +99,12 @@ export default function SpecificPostContent() {
                     commentCount={comment.replyCount || 0}
                     shares={0}
                     bookmarks={0}
-                    reposts={0}
                     profileImg={comment.user?.profileImg || null}
                     postImg={Array.isArray(comment.image) ? comment.image : []}
                     likedInitially={comment.likedBy?.includes(currentUserId)}
+                    navigateTo={`/dashboard/${comment._id}/`}
                   />
-                </Link>
+                
               </div>
             ))}
           </div>
@@ -123,10 +123,10 @@ export default function SpecificPostContent() {
                 commentCount={reply.replyCount || 0}
                 shares={0}
                 bookmarks={0}
-                reposts={0}
                 profileImg={reply.user?.profileImg || null}
                 postImg={Array.isArray(reply.image) ? reply.image : []}
                 likedInitially={reply.likedBy?.includes(currentUserId)} 
+                navigateTo={null}
               />
             ))}
           </div>

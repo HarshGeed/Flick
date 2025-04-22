@@ -57,9 +57,9 @@ export default function PostContent() {
         {posts.map(
           (post, index) => (
             <li key={post._id || `post-${index}`}>
-              <Link href={`/dashboard/${post._id}/`}>
-              <PostCard username={post.username} content={post.content} shares={post.shares || 0} likes={post.likes || 0} bookmarks={post.bookmarks || 0} reposts={post.reposts || 0} profileImg={post.profileImg} postImg={post.image} postId={post._id} likedInitially={post.likedInitially} commentCount={post.commentCount}/>
-              </Link>
+              
+              <PostCard username={post.username} content={post.content} shares={post.shares || 0} likes={post.likes || 0} bookmarks={post.bookmarks || 0} profileImg={post.profileImg} postImg={post.image} postId={post._id} likedInitially={post.likedInitially} commentCount={post.commentCount} navigateTo={`/dashboard/${post._id}/`}/>
+              
             </li>
           )
         )}
