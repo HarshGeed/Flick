@@ -112,7 +112,7 @@ export default function SpecificPostContent() {
         </div>
          {/* Render Replies */}
          {replies.length > 0 && (
-          <div className="space-y-3 mt-6">
+          <div className="space-y-3">
             {replies.map((reply) => (
               <PostCard
                 key={reply._id}

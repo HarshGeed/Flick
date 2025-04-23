@@ -156,7 +156,7 @@ export default function CreateCommentModal({
           {/* here the preview of post will come  */}
 
           <div className="flex-grow overflow-y-auto">
-            <div className="flex opacity-80">
+            <div className="flex opacity-80 ">
               <div className="w-[2.5rem] h-[2.5rem]">
                 <Image
                   src={default_userImg}
@@ -171,7 +171,8 @@ export default function CreateCommentModal({
                 <p>{previewContent}</p>
               </div>
             </div>
-            <div className="flex items-start overflow-y-auto mt-[2rem]">
+            <div className=" border-white border-1 h-10 w-0 ml-5 opacity-80"></div>
+            <div className="flex items-start overflow-y-auto">
               <div className="w-[2.5rem] h-[2.5rem] relative">
                 <Image
                   src={default_userImg}
