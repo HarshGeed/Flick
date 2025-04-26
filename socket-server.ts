@@ -28,7 +28,11 @@ io.on("connection", (socket) => {
     })
 
     socket.on("new_comment", (data) => {
-        io.emit("new_comment", data)
+        io.emit("new_comment", data);
+    })
+   
+    socket.on("new_reply", (data) => {
+        io.emit("new_reply", data);
     })
 
     socket.on("disconnect", () => {

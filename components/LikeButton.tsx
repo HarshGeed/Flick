@@ -12,7 +12,7 @@ type LikeButtonProps = {
 
 export default function LikeButton({
   postId,
-  likedInitially = false,
+  likedInitially,
   initialLikes = 0,
 }: LikeButtonProps) {
   const [liked, setLiked] = useState(likedInitially);

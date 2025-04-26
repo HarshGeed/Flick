@@ -14,6 +14,7 @@ Modal.setAppElement("body");
 
 export default function CreateCommentModal({
   postId,
+  parentCommentId = null,
   previewContent,
   postUsername,
   postProfileImg,
@@ -125,14 +126,40 @@ export default function CreateCommentModal({
         return;
       }
 
-      //emit the comment to data server
-      socket.emit("new_comment", {
-        username: session?.user?.name,
-        text: content.trim() || null,
-        postId,
-        image: imageUrls,
-        commentCount: data.commentCount,
-      });
+      if (parentCommentId) {
+        // It's a reply
+        socket.emit("new_reply", {
+          reply: {
+            _id: data.commentId,
+            text: content.trim(),
+            user: {
+              username: session?.user?.name,
+              profileImg: session?.user?.image || null,
+            },
+            likes: 0,
+            replyCount: 0,
+            image: imageUrls,
+          },
+          parentCommentId,
+          postId,
+        });
+      } else {
+        // It's a top-level comment
+        socket.emit("new_comment", {
+          comment: {
+            _id: data.commentId,
+            text: content.trim(),
+            user: {
+              username: session?.user?.name,
+              profileImg: session?.user?.image || null,
+            },
+            likes: 0,
+            replyCount: 0,
+            image: imageUrls,
+          },
+          postId,
+        });
+      }
 
       handleCloseModal();
     } catch (error: any) {
