@@ -1,14 +1,12 @@
 "use client";
-import avatar from "@/public/avatar.jpg";
 import Image from "next/image";
 import { ArrowRightFromLine, Share, Bookmark, Repeat } from "lucide-react";
 import Carousel from "./PostImageCarousel";
 import default_userImg from "@/public/default-userImg.png";
-import { useState } from "react";
-import clsx from 'clsx'
 import LikeButton from "./LikeButton";
 import CommentBtn from "./CommentBtn";
 import { useRouter } from "next/navigation";
+import BookmarkBtn from "./BookmarkBtn";
 
 // likeNum, commentNum, shareNum, bookmarkNum, repostNum, profileUrl
 
@@ -19,11 +17,12 @@ export default function PostCard({
   likes,
   commentCount,
   shares,
-  bookmarks,
   profileImg,
   postImg,
   likedInitially,
-  navigateTo
+  initialBookmarkCount,
+  initiallySaved,
+  navigateTo,
 }) {
   const router = useRouter();
   const handleCardClick = (e) => {
@@ -58,21 +57,37 @@ export default function PostCard({
         {/* Post features */}
         <div className="flex mt-4 items-center space-x-3">
           <div className="flex items-center space-x-1">
-            <LikeButton postId={postId} initialLikes={likes} likedInitially={likedInitially} />
+            <LikeButton
+              postId={postId}
+              initialLikes={likes}
+              likedInitially={likedInitially}
+            />
           </div>
           <div className="flex items-center space-x-1">
-            <CommentBtn postId={postId} content={content} username={username} profileImg={profileImg} commentCount={commentCount}/>
+            <CommentBtn
+              postId={postId}
+              content={content}
+              username={username}
+              profileImg={profileImg}
+              commentCount={commentCount}
+            />
           </div>
           <div className="flex items-center space-x-1">
-            <Share strokeWidth={1} />
+            <Share strokeWidth={2} />
             <p className="text-sm">{shares}</p>
           </div>
           <div className="flex items-center space-x-1">
-            <Bookmark strokeWidth={1} />
-            <p className="text-sm">{bookmarks}</p>
+            <BookmarkBtn
+              postId={postId}
+              initialBookmarkCount={initialBookmarkCount}
+              initiallySaved={initiallySaved}
+            />
           </div>
-          <div className="flex items-center space-x-1">
-            <ArrowRightFromLine strokeWidth={1.5} onClick={handleCardClick}/>
+          <div className="flex items-center space-x-1 cursor-pointer relative group">
+            <ArrowRightFromLine strokeWidth={2} onClick={handleCardClick} />
+            <span className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+              View Post
+            </span>
           </div>
         </div>
       </div>

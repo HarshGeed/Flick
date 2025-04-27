@@ -16,7 +16,8 @@ function CommentWithReplies({ comment, currentUserId }) {
         likes={comment.likes || 0}
         commentCount={comment.replyCount || 0}
         shares={0}
-        bookmarks={0}
+        initiallySaved={false}
+        initialBookmarkCount={0}
         profileImg={comment.user?.profileImg || null}
         postImg={Array.isArray(comment.image) ? comment.image : []}
         likedInitially={comment.likedBy?.includes(currentUserId)}
@@ -78,9 +79,8 @@ export default function SpecificPostContent() {
     socket.on("new_reply", (data) => {
       if (data.postId === postId) {
         const { parentCommentId, parentReplyId, reply } = data;
-
+    
         if (parentCommentId) {
-          // If the reply is for a comment
           setComments((prevComments) =>
             prevComments.map((comment) =>
               comment._id === parentCommentId
@@ -92,20 +92,23 @@ export default function SpecificPostContent() {
             )
           );
         } else if (parentReplyId) {
-          // If the reply is for another reply (nested reply)
           const updateNestedReplies = (replies) =>
-            replies.map((parentReply) =>
-              parentReply._id === parentReplyId
-                ? {
-                    ...parentReply,
-                    replies: [...(parentReply.replies || []), reply],
-                  }
-                : {
-                    ...parentReply,
-                    replies: updateNestedReplies(parentReply.replies || []),
-                  }
-            );
-
+            replies.map((parentReply) => {
+              if (parentReply._id === parentReplyId) {
+                return {
+                  ...parentReply,
+                  replies: [...(parentReply.replies || []), reply],
+                };
+              } else if (parentReply.replies && parentReply.replies.length > 0) {
+                return {
+                  ...parentReply,
+                  replies: updateNestedReplies(parentReply.replies),
+                };
+              } else {
+                return parentReply;
+              }
+            });
+    
           setComments((prevComments) =>
             prevComments.map((comment) => ({
               ...comment,
@@ -115,7 +118,7 @@ export default function SpecificPostContent() {
         }
       }
     });
-
+    
     return () => {
       socket.off("new_comment");
       socket.off("new_reply");
@@ -132,6 +135,7 @@ export default function SpecificPostContent() {
       fetch(`/api/posts/${postId}/specificPost`)
         .then((res) => res.json())
         .then((data) => {
+          console.log("The data fetched from backend", data);
           if (data.error) {
             console.error(data.error);
             setLoading(false);
@@ -178,9 +182,10 @@ export default function SpecificPostContent() {
             likes={post.likes || 0}
             commentCount={comments.length}
             shares={post.shares || 0}
-            bookmarks={post.bookmarks || 0}
+            initiallySaved={post.savedBy?.includes(currentUserId)}
+            initialBookmarkCount={post.saveCounts}
             profileImg={post.user?.profileImg || null}
-            postImg={Array.isArray(post.images) ? post.images : []}
+            postImg={Array.isArray(post.image) ? post.image : []}
             likedInitially={post.likedBy?.includes(currentUserId)}
             navigateTo={null}
           />

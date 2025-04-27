@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema, Model, model, models} from "mongoose";
+import mongoose, { Document, Schema, Model, model, models } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs"; // Import bcrypt
 
@@ -26,6 +26,7 @@ export interface IUser extends Document {
   createdAt?: Date;
   updatedAt?: Date;
   isModified: (field: string) => boolean;
+  savedPosts: mongoose.Types.ObjectId[];
 }
 
 const userSchema = new Schema<IUser>(
@@ -49,7 +50,7 @@ const userSchema = new Schema<IUser>(
     },
     isOauth: {
       type: Boolean,
-      default: false
+      default: false,
     },
     password: {
       type: String,
@@ -101,7 +102,7 @@ const userSchema = new Schema<IUser>(
     ],
     likedReviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }], // Corrected
     likedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
-    posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+    savedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   },
   { timestamps: true }
 );

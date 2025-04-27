@@ -7,36 +7,79 @@ export const GET = async (
   req: NextRequest,
   { params }: { params: { id: string } }
 ) => {
-  const { id } = await params;
+  const { id } = params;
 
   if (!id) {
     return NextResponse.json({ error: "Post ID is required" }, { status: 400 });
   }
 
   try {
-    connect();
+    await connect();
 
-    const post = await Post.findById(id).populate("user", "username profileImg").lean();
-    if(post){
-      const comments = await Comment.find({postId: id}).populate("user", "username profileImg").lean();
+    // 1. Try finding the Post
+    const post = await Post.findById(id)
+      .populate("user", "username profileImg")
+      .lean();
 
-      return NextResponse.json({post, comments}, {status: 200})
+    if (post) {
+      // Fetch all comments related to this post
+      const allComments = await Comment.find({ postId: id })
+        .populate("user", "username profileImg")
+        .lean();
+
+      // Create a map for fast lookup
+      const commentMap = new Map<string, any>();
+      allComments.forEach((comment) => {
+        comment.replies = []; // Initialize replies
+        commentMap.set(comment._id.toString(), comment);
+      });
+
+      // Organize comments into nested structure
+      const topLevelComments: any[] = [];
+
+      allComments.forEach((comment) => {
+        if (comment.parentCommentId) {
+          const parentComment = commentMap.get(comment.parentCommentId.toString());
+          if (parentComment) {
+            parentComment.replies.push(comment);
+          }
+        } else {
+          topLevelComments.push(comment);
+        }
+      });
+
+      return NextResponse.json(
+        { post, comments: topLevelComments },
+        { status: 200 }
+      );
     }
 
-    // if not post then here we will check for comment
-    const comment = await Comment.findById(id).populate( "user", "username profileImg").populate({
-      path: "replies",
-      populate: {path: "user", select: "username profileImg"}
-    }).lean();
+    // 2. If not a post, maybe it’s a Comment
+    const comment = await Comment.findById(id)
+      .populate("user", "username profileImg")
+      .populate({
+        path: "replies",
+        populate: { path: "user", select: "username profileImg" },
+      })
+      .lean();
 
-
-    if(comment){
-      return NextResponse.json({comment, replies: comment.replies}, {status: 200})
+    if (comment) {
+      return NextResponse.json(
+        { comment, replies: comment.replies || [] },
+        { status: 200 }
+      );
     }
 
-    return NextResponse.json({error: "Post or comment not found"}, {status: 400})
+    // 3. Nothing found
+    return NextResponse.json(
+      { error: "Post or Comment not found" },
+      { status: 404 }
+    );
   } catch (error) {
-    console.error("Error fetching the post:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error("Error fetching post/comment:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 };

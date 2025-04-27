@@ -54,6 +54,10 @@ const postSchema = new Schema(
         ref: "User",
       },
     ],
+    saveCounts: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

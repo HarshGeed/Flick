@@ -79,7 +79,7 @@ export default function LikeButton({
     <button
       onClick={handleLike}
       disabled={isPending}
-      className="flex items-center gap-1 transition-transform duration-200 hover:scale-110 active:scale-95"
+      className="flex items-center cursor-pointer gap-1 transition-transform duration-200 hover:scale-110 active:scale-95"
     >
       <Heart
         className={clsx(
@@ -87,7 +87,8 @@ export default function LikeButton({
           liked ? "fill-red-500 stroke-red-500" : "stroke-stone-400",
           animate && liked && "animate-bounce-like"
         )}
-        strokeWidth={1}
+        strokeWidth={2}
+        size={24}
       />
       <span className={clsx("text-sm transition-all duration-300", liked ? "text-red-400" : "text-stone-400")}>{likes}</span>
     </button>
