@@ -13,7 +13,7 @@ export const PUT = async (req, { params }) => {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params; // Post ID
+    const { id } = await params; // Post ID
     const userId = session.user.id;
 
     // Find the post by ID

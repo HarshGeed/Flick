@@ -47,7 +47,7 @@ export default function SideBar() {
         <SideBarLink href="#" Icon={Users}>
           Communities
         </SideBarLink>
-        <SideBarLink href="#" Icon={Bookmark}>
+        <SideBarLink href="/dashboard/bookmarks" Icon={Bookmark}>
           Bookmarks
         </SideBarLink>
         <SideBarLink href="#" Icon={User}>
