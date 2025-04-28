@@ -1,9 +1,5 @@
-import RightsideBar from "../../../components/RightsideBar";
 import ClientButtons from "../../../components/ClientButtons";
 import React from "react";
-import PostCard from "@/components/PostCard";
-import avatar from "@/public/avatar.jpg"
-import Post_content from "@/components/Post_content";
 import PostContent from "@/components/Post_content";
 
 const HomePage: React.FC = () => {

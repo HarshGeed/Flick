@@ -135,7 +135,6 @@ export default function SpecificPostContent() {
       fetch(`/api/posts/${postId}/specificPost`)
         .then((res) => res.json())
         .then((data) => {
-          console.log("The data fetched from backend", data);
           if (data.error) {
             console.error(data.error);
             setLoading(false);

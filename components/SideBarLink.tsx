@@ -4,7 +4,9 @@ export default function SideBarLink({children, href, Icon}){
     return(
         <>
         <div className="flex flex-row w-[12rem] opacity-75 hover:opacity-100 rounded transition duration-200 ease-in-out">
+            <div className="mt-1">
             <Icon/>
+            </div>
             <Link href={href} className="ml-[1.2rem]">{children}</Link>
         </div>
         </>

@@ -8,7 +8,7 @@ import {
   TrendingUp,
   MessageCircleMore,
   Megaphone,
-  Users,
+  House,
   Bookmark,
   User,
 } from "lucide-react";
@@ -32,6 +32,9 @@ export default function SideBar() {
       </div>
       {/* menu options */}
       <div className="flex flex-col flex-grow justify-center space-y-[1.5rem] text-2xl">
+      <SideBarLink href="/dashboard" Icon={House}>
+          Home
+        </SideBarLink>
         <SideBarLink href="#" Icon={Search}>
           Explore
         </SideBarLink>
@@ -43,9 +46,6 @@ export default function SideBar() {
         </SideBarLink>
         <SideBarLink href="#" Icon={Megaphone}>
           Notifications
-        </SideBarLink>
-        <SideBarLink href="#" Icon={Users}>
-          Communities
         </SideBarLink>
         <SideBarLink href="/dashboard/bookmarks" Icon={Bookmark}>
           Bookmarks

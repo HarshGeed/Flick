@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bookmark, BookmarkCheck } from "lucide-react"; // Assuming you have these icons
+import { Bookmark, BookmarkCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function BookmarkBtn({
