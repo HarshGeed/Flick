@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/lib/dbConn";
 import Post from "@/models/postModel";
 import { auth } from "@/auth";
+import User from "@/models/userModel";
 
 export const runtime = "nodejs";
 
@@ -21,7 +22,7 @@ export const POST = async (req: NextRequest) => {
 
   await connect();
 
-  const session = await auth(); // problem is in this line : auth is unable to provide any type of session
+  const session = await auth();
   console.log(session?.user.name);
   if (!session)
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -59,6 +60,12 @@ export const POST = async (req: NextRequest) => {
   });
 
   await newPost.save();
+
+  await User.findByIdAndUpdate(session.user.id, {
+    $push: {userCreatedPosts: newPost._id}
+  },
+  {new: true}
+);
   return NextResponse.json(
     { message: "Post created successfully", post: newPost },
     { status: 201 }

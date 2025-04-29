@@ -50,7 +50,7 @@ export default function SideBar() {
         <SideBarLink href="/dashboard/bookmarks" Icon={Bookmark}>
           Bookmarks
         </SideBarLink>
-        <SideBarLink href="#" Icon={User}>
+        <SideBarLink href="/dashboard/profilePage" Icon={User}>
           Profile
         </SideBarLink>
 
