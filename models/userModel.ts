@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs"; // Import bcrypt
 
 export interface IUser extends Document {
   username: string;
+  userID: string;
   email: string;
   isOauth: boolean;
   password?: Promise<string> | string;
@@ -35,8 +36,13 @@ const userSchema = new Schema<IUser>(
     username: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
+    },
+    userID:{
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
     },
     email: {
       type: String,

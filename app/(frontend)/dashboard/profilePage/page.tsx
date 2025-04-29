@@ -1,6 +1,7 @@
 'use client';
-
+import EditProfileModal from "@/components/EditProfileModal";
 import PostCard from "@/components/PostCard";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const btnClass =
@@ -11,6 +12,24 @@ export default function ProfilePage() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+  useEffect(() => {
+    const fetchUserData = async() => {
+      try{
+        const res = await fetch("/api/profilePageData/profileData");
+        if(!res.ok) throw new Error("Failed to fetch the user data");
+        const userData = await res.json();
+        setUser(userData);
+      }catch(err){
+        console.error("Error fetching user data:", err);
+      }
+    }
+
+    fetchUserData();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,46 +80,63 @@ export default function ProfilePage() {
     );
   };
 
+  if(!user){
+    return <p>Loading the user data...</p>
+  }
+
   return (
     <div className="flex flex-col h-screen w-[36.5rem] relative">
       {/* Top Profile Section */}
       <div className="flex flex-col flex-shrink-0">
         {/* Cover Image */}
-        <div className="w-full h-[12rem] bg-white rounded-t-2xl relative overflow-hidden">
-          {/* Cover image will come here */}
+        <div className="w-full h-[12rem] rounded-t-2xl relative overflow-hidden">
+          {user.coverImage ? (
+            <Image
+            src={user.coverImage}
+            alt="Cover Image"
+            className="w-full h-full object-cover"
+            />
+          ): (
+              <div className="w-full h-full bg-gray-800"></div>
+          )}
         </div>
 
         {/* Profile Image */}
         <div className="w-[8rem] h-[8rem] rounded-full bg-amber-900 absolute top-[8rem] left-6 z-20">
-          {/* Profile image */}
+        {user.profileImage ? (
+            <Image
+            src={user.coverImage}
+            alt="Profile Image"
+            className="w-full h-full object-cover"
+            />
+          ): (
+              <div className="w-full h-full rounded-full bg-gray-700"></div>
+          )}
         </div>
 
         {/* Profile Details */}
         <div className="mt-[5rem] ml-4">
           <div className="flex justify-between items-center">
-            <p className="text-xl font-bold">Harsh Geed 🚀</p>
-            <button className="bg-stone-900 rounded-2xl px-4 py-1 font-light opacity-80 transition ease-in-out duration-300 cursor-pointer shadow-2xl hover:bg-stone-800">
+            <p className="text-xl font-bold">{user.username}</p>
+            <button className="bg-stone-900 rounded-2xl px-4 py-1 font-light opacity-80 transition ease-in-out duration-300 cursor-pointer shadow-2xl hover:bg-stone-800"
+            onClick={() => setIsModalOpen(true)}
+            >
               <p>Edit Profile</p>
             </button>
           </div>
-          <p className="text-sm opacity-60 font-medium">@GeedHarsh</p>
+          <p className="text-sm opacity-60 font-medium">{user.userID}</p>
           <p className="mt-4">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis,
-            iure voluptatibus possimus doloremque nesciunt molestiae adipisci,
-            necessitatibus similique natus minima ex maxime pariatur quaerat dolorum,
-            laboriosam blanditiis! Dolor laudantium ab omnis odit, eum nisi culpa
-            sequi accusamus, laborum cupiditate tenetur explicabo? Repudiandae aliquid
-            cum deserunt dolorem accusantium cumque rem nesciunt.
+            {user.bio}
           </p>
 
           {/* Followers and Following */}
           <div className="flex space-x-5 mt-4">
             <div className="flex space-x-1">
-              <p>43</p>
+              <p>{user.followers || 0}</p>
               <p className="opacity-50 font-light">Followers</p>
             </div>
             <div className="flex space-x-1">
-              <p>78</p>
+              <p>{user.following || 0}</p>
               <p className="opacity-50">Following</p>
             </div>
           </div>
@@ -128,6 +164,8 @@ export default function ProfilePage() {
         {renderMainContent()}
         </div>
       </div>
+
+      <EditProfileModal openState={isModalOpen} onClose={() => setIsModalOpen(false)}/>
     </div>
   );
 }
