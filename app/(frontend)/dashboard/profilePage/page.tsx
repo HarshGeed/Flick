@@ -107,14 +107,15 @@ export default function ProfilePage() {
         </div>
 
         {/* Session Buttons */}
+        {/* Right now sticky is not working but make it work later */}
         <div className="sticky top-0 z-50 mt-8 shadow-md">
          
           <div className="flex justify-center space-x-4">
-            <button onClick={() => setActiveSection("Posts")} className={btnClass}>Posts</button>
-            <button onClick={() => setActiveSection("Reviews")} className={btnClass}>Reviews</button>
-            <button onClick={() => setActiveSection("LikedPosts")} className={btnClass}>Liked Posts</button>
-            <button onClick={() => setActiveSection("LikedReviews")} className={btnClass}>Liked Reviews</button>
-            <button onClick={() => setActiveSection("Watchlist")} className={btnClass}>Watchlist</button>
+            <button onClick={() => setActiveSection("Posts")} className={`${btnClass} ${activeSession === "Posts" ? "bg-stone-900" : ""}`}>Posts</button>
+            <button onClick={() => setActiveSection("Reviews")} className={`${btnClass} ${activeSession === "Reviews" ? "bg-stone-900" : ""}`}>Reviews</button>
+            <button onClick={() => setActiveSection("LikedPosts")} className={`${btnClass} ${activeSession === "LikedPosts" ? "bg-stone-900" : ""}`}>Liked Posts</button>
+            <button onClick={() => setActiveSection("LikedReviews")} className={`${btnClass} ${activeSession === "LikedReviews" ? "bg-stone-900" : ""}`}>Liked Reviews</button>
+            <button onClick={() => setActiveSection("Watchlist")} className={`${btnClass} ${activeSession === "Watchlist" ? "bg-stone-900" : ""}`}>Watchlist</button>
           </div>
           
         </div>
