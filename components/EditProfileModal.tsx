@@ -19,6 +19,8 @@ export default function EditProfileModal({
   const [location, setLocation] = useState("");
   const [coverImage, setCoverImage] = useState(initialCoverImage);
   const [profileImage, setProfileImage] = useState(initialProfileImage);
+  const [loadingCover, setLoadingCover] = useState(false)
+  const [loadingProfile, setLoadingProfile] = useState(false)
 
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
@@ -76,6 +78,8 @@ export default function EditProfileModal({
       const updatedUser = await res.json();
       setUser(updatedUser);
       onClose();
+
+      window.location.reload();
     } catch (err) {
       console.error("Error updating profile", err);
     }
@@ -85,7 +89,17 @@ export default function EditProfileModal({
     const file = e.target.files[0];
     if (!file) return;
     const url = await uploadImage(file);
-    type === "cover" ? setCoverImage(url) : setProfileImage(url);
+    if (type === "cover") {
+      setLoadingCover(true); // Start loading for cover image
+      const url = await uploadImage(file);
+      setCoverImage(url);
+      setLoadingCover(false); // Stop loading for cover image
+    } else if (type === "profile") {
+      setLoadingProfile(true); // Start loading for profile image
+      const url = await uploadImage(file);
+      setProfileImage(url);
+      setLoadingProfile(false); // Stop loading for profile image
+    }
   };
 
   if (!user) return <p>Loading...</p>;
@@ -110,6 +124,11 @@ export default function EditProfileModal({
             </button>
           </div>
           <div className="w-full h-[10rem] bg-gray-800 rounded-t-xl opacity-70 relative mt-4 z-10">
+          {loadingCover && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30">
+                <div className="loader"></div> {/* Spinner */}
+              </div>
+            )}
             {coverImage && (
               <Image
                 src={coverImage}
@@ -134,6 +153,11 @@ export default function EditProfileModal({
             </button>
           </div>
           <div className="bg-gray-700 w-[7rem] h-[7rem] left-10 absolute top-[11rem] rounded-full overflow-hidden z-10">
+          {loadingProfile && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30">
+                <div className="loader"></div> {/* Spinner */}
+              </div>
+            )}
             <Image
               src={profileImage || defaultProfileImg}
               alt="profile image"
@@ -262,6 +286,24 @@ export default function EditProfileModal({
         .flex-grow {
           scrollbar-color: black #f0f0f0; /* Thumb color and track color */
           scrollbar-width: thin; /* Make the scrollbar thinner */
+        }
+        
+         .loader {
+          border: 4px solid rgba(255, 255, 255, 0.3);
+          border-top: 4px solid white;
+          border-radius: 50%;
+          width: 30px;
+          height: 30px;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
         }
 
         @keyframes slide-up {
