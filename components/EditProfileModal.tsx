@@ -19,8 +19,10 @@ export default function EditProfileModal({
   const [location, setLocation] = useState("");
   const [coverImage, setCoverImage] = useState(initialCoverImage);
   const [profileImage, setProfileImage] = useState(initialProfileImage);
-  const [loadingCover, setLoadingCover] = useState(false)
-  const [loadingProfile, setLoadingProfile] = useState(false)
+  const [previousCoverImage, setPreviousCoverImage] = useState(initialCoverImage); // Track previous cover image
+  const [previousProfileImage, setPreviousProfileImage] = useState(initialProfileImage); // Track previous profile image
+  const [loadingCover, setLoadingCover] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(false);
 
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
@@ -58,6 +60,25 @@ export default function EditProfileModal({
     return data.urls[0];
   };
 
+  const handleImageSelect = async (e, type) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (type === "cover") {
+      setLoadingCover(true);
+      const url = await uploadImage(file);
+      setPreviousCoverImage(coverImage); // Store the current cover image as the previous one
+      setCoverImage(url);
+      setLoadingCover(false);
+    } else if (type === "profile") {
+      setLoadingProfile(true);
+      const url = await uploadImage(file);
+      setPreviousProfileImage(profileImage); // Store the current profile image as the previous one
+      setProfileImage(url);
+      setLoadingProfile(false);
+    }
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     try {
@@ -70,6 +91,8 @@ export default function EditProfileModal({
           location,
           coverImage,
           profileImage,
+          previousCoverImage, // Send the previous cover image URL
+          previousProfileImage, // Send the previous profile image URL
         }),
       });
 
@@ -82,23 +105,6 @@ export default function EditProfileModal({
       window.location.reload();
     } catch (err) {
       console.error("Error updating profile", err);
-    }
-  };
-
-  const handleImageSelect = async (e, type) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const url = await uploadImage(file);
-    if (type === "cover") {
-      setLoadingCover(true); // Start loading for cover image
-      const url = await uploadImage(file);
-      setCoverImage(url);
-      setLoadingCover(false); // Stop loading for cover image
-    } else if (type === "profile") {
-      setLoadingProfile(true); // Start loading for profile image
-      const url = await uploadImage(file);
-      setProfileImage(url);
-      setLoadingProfile(false); // Stop loading for profile image
     }
   };
 
@@ -124,7 +130,7 @@ export default function EditProfileModal({
             </button>
           </div>
           <div className="w-full h-[10rem] bg-gray-800 rounded-t-xl opacity-70 relative mt-4 z-10">
-          {loadingCover && (
+            {loadingCover && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30">
                 <div className="loader"></div> {/* Spinner */}
               </div>
@@ -153,7 +159,7 @@ export default function EditProfileModal({
             </button>
           </div>
           <div className="bg-gray-700 w-[7rem] h-[7rem] left-10 absolute top-[11rem] rounded-full overflow-hidden z-10">
-          {loadingProfile && (
+            {loadingProfile && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30">
                 <div className="loader"></div> {/* Spinner */}
               </div>
