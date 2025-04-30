@@ -12,11 +12,11 @@ export const PUT = async (req) => {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { username, bio, location } = await req.json();
+    const { username, bio, location, coverImage, profileImage } = await req.json();
 
     const updatedUser = await User.findByIdAndUpdate(
       session.user.id,
-      { username, bio, location },
+      { username, bio, location, coverImage, profileImage },
       { new: true, runValidators: true }
     );
 

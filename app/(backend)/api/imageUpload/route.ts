@@ -1,7 +1,5 @@
-// This code should work i don't know what is happening
 import { NextRequest, NextResponse } from "next/server";
 import cloudinary from "cloudinary";
-import { catchAsync } from "@/utils/catchAsync";
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,

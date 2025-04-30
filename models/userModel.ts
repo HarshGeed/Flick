@@ -29,6 +29,7 @@ export interface IUser extends Document {
   isModified: (field: string) => boolean;
   savedPosts: mongoose.Types.ObjectId[];
   userCreatedPosts: mongoose.Types.ObjectId[];
+  location?: string;
 }
 
 const userSchema = new Schema<IUser>(
@@ -111,6 +112,9 @@ const userSchema = new Schema<IUser>(
     likedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
     savedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
     userCreatedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+    location: {
+      type: String, // enhance it more
+    }
   },
   { timestamps: true }
 );

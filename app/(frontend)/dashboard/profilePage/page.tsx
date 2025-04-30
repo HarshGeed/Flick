@@ -3,6 +3,7 @@ import EditProfileModal from "@/components/EditProfileModal";
 import PostCard from "@/components/PostCard";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import defaultProfileImg from '@/public/default-userImg.png'
 
 const btnClass =
   "cursor-pointer px-4 py-2 rounded-xl opacity-60 hover:bg-stone-900 transition ease-in-out duration-200";
@@ -94,6 +95,8 @@ export default function ProfilePage() {
             <Image
             src={user.coverImage}
             alt="Cover Image"
+            layout="fill"
+            objectFit="cover"
             className="w-full h-full object-cover"
             />
           ): (
@@ -102,16 +105,16 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Image */}
-        <div className="w-[8rem] h-[8rem] rounded-full bg-amber-900 absolute top-[8rem] left-6 z-20">
-        {user.profileImage ? (
+        <div className="w-[8rem] h-[8rem] rounded-full bg-amber-900 absolute top-[8rem] left-6 z-20 overflow-hidden">
+        
             <Image
-            src={user.coverImage}
+            src={user.profileImage || defaultProfileImg}
             alt="Profile Image"
+            layout="fill"
+            objectFit="cover"
             className="w-full h-full object-cover"
             />
-          ): (
-              <div className="w-full h-full rounded-full bg-gray-700"></div>
-          )}
+          
         </div>
 
         {/* Profile Details */}

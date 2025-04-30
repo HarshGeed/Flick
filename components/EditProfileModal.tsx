@@ -1,13 +1,27 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import defaultProfileImg from "@/public/default-userImg.png";
 import { Pencil } from "lucide-react";
 import Modal from "react-modal";
-export default function EditProfileModal({ openState, onClose }) {
+
+Modal.setAppElement("body");
+
+export default function EditProfileModal({
+  openState,
+  onClose,
+  initialCoverImage,
+  initialProfileImage,
+}) {
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
+  const [coverImage, setCoverImage] = useState(initialCoverImage);
+  const [profileImage, setProfileImage] = useState(initialProfileImage);
+
+  const coverInputRef = useRef(null);
+  const profileInputRef = useRef(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -19,6 +33,8 @@ export default function EditProfileModal({ openState, onClose }) {
         setUsername(userData.username || "");
         setBio(userData.bio || "");
         setLocation(userData.location || "");
+        setCoverImage(userData.coverImage || "");
+        setProfileImage(userData.profileImage || "");
       } catch (err) {
         console.error("Error fetching user data:", err);
       }
@@ -26,6 +42,54 @@ export default function EditProfileModal({ openState, onClose }) {
 
     fetchUserData();
   }, []);
+
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/imageUpload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    return data.urls[0];
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/profilePageData/updateProfile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username,
+          bio,
+          location,
+          coverImage,
+          profileImage,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update profile");
+
+      const updatedUser = await res.json();
+      setUser(updatedUser);
+      onClose();
+    } catch (err) {
+      console.error("Error updating profile", err);
+    }
+  };
+
+  const handleImageSelect = async (e, type) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const url = await uploadImage(file);
+    type === "cover" ? setCoverImage(url) : setProfileImage(url);
+  };
+
+  if (!user) return <p>Loading...</p>;
+
   return (
     <>
       <Modal
@@ -40,23 +104,59 @@ export default function EditProfileModal({ openState, onClose }) {
             <h3>Edit Profile</h3>
             <button
               className="bg-gray-900 px-4 py-2 rounded-lg shadow-lg cursor-pointer hover:bg-gray-700 transition ease-in-out duration-300"
-              type="submit"
+              onClick={handleSave}
             >
               Save
             </button>
           </div>
-          <div className="w-full h-[10rem] bg-gray-800 rounded-t-xl opacity-70 relative mt-4">
-            <button className="w-full h-full flex items-center justify-center cursor-pointer z-10">
+          <div className="w-full h-[10rem] bg-gray-800 rounded-t-xl opacity-70 relative mt-4 z-10">
+            {coverImage && (
+              <Image
+                src={coverImage}
+                alt="cover image"
+                layout="fill"
+                objectFit="cover"
+                className="absolute top-0 left-0 w-full h-full z-0"
+              />
+            )}
+            <input
+              type="file"
+              ref={coverInputRef}
+              accept="image/*"
+              onChange={(e) => handleImageSelect(e, "cover")}
+              className="hidden"
+            />
+            <button
+              className="absolute top-2 right-2 flex items-center justify-center cursor-pointer z-20 bg-gray-900 p-2 rounded-full hover:bg-gray-700 transition ease-in-out duration-300"
+              onClick={() => coverInputRef.current?.click()}
+            >
               <Pencil />
             </button>
-            <div className="bg-gray-700 w-[7rem] h-[7rem] left-8 absolute top-[7rem] rounded-full">
-              <button className="w-full h-full flex items-center justify-center cursor-pointer z-10">
-                <Pencil />
-              </button>
-            </div>
+          </div>
+          <div className="bg-gray-700 w-[7rem] h-[7rem] left-10 absolute top-[11rem] rounded-full overflow-hidden z-10">
+            <Image
+              src={profileImage || defaultProfileImg}
+              alt="profile image"
+              layout="fill"
+              objectFit="cover"
+              className="absolute top-0 left-0 w-full h-full z-0"
+            />
+            <input
+              ref={profileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleImageSelect(e, "profile")}
+              className="hidden"
+            />
+            <button
+              className="absolute bottom-2 right-2 flex items-center justify-center cursor-pointer z-20 bg-gray-900 p-2 rounded-full hover:bg-gray-700 transition ease-in-out duration-300"
+              onClick={() => profileInputRef.current?.click()}
+            >
+              <Pencil />
+            </button>
           </div>
           {/* form data */}
-          <form action="" className="mt-[5rem]">
+          <form className="mt-[5rem]">
             <div className="relative z-0 w-full mb-6 group">
               <input
                 type="text"
