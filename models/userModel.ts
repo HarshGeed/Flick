@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, Model, model, models } from "mongoose";
 import validator from "validator";
-import bcrypt from "bcryptjs"; // Import bcrypt
+import bcrypt from "bcryptjs"; 
 
 export interface IUser extends Document {
   username: string;
@@ -41,7 +41,6 @@ const userSchema = new Schema<IUser>(
     },
     userID:{
       type: String,
-      required: true,
       trim: true,
       unique: true,
     },

@@ -5,6 +5,11 @@ import PostCard from "./PostCard";
 import Link from "next/link";
 
 interface Post {
+  user: {
+    _id: string; // User ID
+    username: string; // Username of the post creator
+    profileImg?: string; // Profile image of the post creator
+  };
   _id?: string;
   username: string;
   content: string;
@@ -73,14 +78,14 @@ export default function PostContent() {
   }, []);
 
   return (
-    <main className="max-w-3xl mx-auto p-4">
+    <main className="max-w-3xl mx-auto">
       <ul className="space-y-4">
         {posts.map(
           (post, index) => (
             <li key={post._id || `post-${index}`}>
               
               <PostCard username={post.username} content={post.content} shares={post.shares || 0} likes={post.likes || 0} profileImg={post.profileImg} postImg={post.image} postId={post._id} likedInitially={post.likedInitially} commentCount={post.commentCount} navigateTo={`/dashboard/${post._id}/`}
-              initialBookmarkCount={post.saveCounts} initiallySaved={currentUserId ? post.savedBy?.includes(currentUserId) : false}
+              initialBookmarkCount={post.saveCounts} initiallySaved={currentUserId ? post.savedBy?.includes(currentUserId) : false} userId={post.user._id}
               />
               
             </li>

@@ -7,10 +7,12 @@ import LikeButton from "./LikeButton";
 import CommentBtn from "./CommentBtn";
 import { useRouter } from "next/navigation";
 import BookmarkBtn from "./BookmarkBtn";
+import FollowBtn from "./FollowBtn";
 
 // likeNum, commentNum, shareNum, bookmarkNum, repostNum, profileUrl
 
 export default function PostCard({
+  userId,
   postId,
   username,
   content,
@@ -30,7 +32,7 @@ export default function PostCard({
     if (navigateTo) router.push(navigateTo);
   };
   return (
-    <div className="p-[1rem] rounded-xl shadow-2xl bg-stone-900">
+    <div className="p-[1rem] rounded-xl shadow-2xl" style={{backgroundColor: "#070707"}}>
       {/* Username and profile image */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
@@ -43,9 +45,7 @@ export default function PostCard({
           />
           <p className="font-medium">{username}</p>
         </div>
-        <button className="bg-amber-50 text-black px-3 py-2 rounded-md hover:bg-amber-100 transition">
-          Follow
-        </button>
+        <FollowBtn userId={userId}/>
       </div>
       <div className="mt-4">
         {Array.isArray(postImg) && postImg.length > 0 && (

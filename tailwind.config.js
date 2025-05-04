@@ -8,13 +8,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // background: "var(--background)",
-        foreground: "var(--foreground)",
-        'linkHover': '#252424'
+        linkHover: '#252424',
+        rightBarColor: "#0f0f0f",
       },
-      fontFamily: {
-        
-      }
     },
   },
   plugins: [],

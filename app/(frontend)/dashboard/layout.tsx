@@ -3,6 +3,7 @@ import "./globals.css";
 import SideBar from "@/components/SideBar";
 import { ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
+import RightsideBar from "@/components/RightsideBar";
 
 export const lato = Lato({
   subsets: ["latin"],
@@ -18,22 +19,21 @@ export const metadata = {
     "Here you can share views about movies, chat, make stories and posts, and do a lot more!",
 };
 
-interface RootLayoutProps{
-  children: ReactNode
+interface RootLayoutProps {
+  children: ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <SessionProvider>
-    <html lang="en" className={lato.className}>
-      <body className="flex mx-[10.25rem] mt-[1.5rem]">
-        <SideBar />
-        <main className="ml-[15rem] flex-grow">
+      <html lang="en" className={lato.className}>
+        <body className="flex mx-[10.25rem] mt-[1.5rem]">
+          <SideBar />
+          <main className="ml-[15rem] flex-grow">{children}</main>
 
-        {children}
-        </main>
-      </body>
-    </html>
+          <RightsideBar />
+        </body>
+      </html>
     </SessionProvider>
   );
 }
