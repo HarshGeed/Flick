@@ -30,6 +30,8 @@ export interface IUser extends Document {
   savedPosts: mongoose.Types.ObjectId[];
   userCreatedPosts: mongoose.Types.ObjectId[];
   location?: string;
+  followerCount: Number;
+  followingCount: Number;
 }
 
 const userSchema = new Schema<IUser>(
@@ -95,6 +97,14 @@ const userSchema = new Schema<IUser>(
     },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    followerCount: {
+      type: Number,
+      default: 0,
+    },
+    followingCount: {
+      type: Number,
+      default: 0,
+    },
     watchlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }],
     reviews: [
       {

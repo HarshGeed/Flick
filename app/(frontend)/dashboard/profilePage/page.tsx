@@ -135,11 +135,11 @@ export default function ProfilePage() {
           {/* Followers and Following */}
           <div className="flex space-x-5 mt-4">
             <div className="flex space-x-1">
-              <p>{user.followers || 0}</p>
+              <p>{user.followerCount || 0}</p>
               <p className="opacity-50 font-light">Followers</p>
             </div>
             <div className="flex space-x-1">
-              <p>{user.following || 0}</p>
+              <p>{user.followingCount || 0}</p>
               <p className="opacity-50">Following</p>
             </div>
           </div>
