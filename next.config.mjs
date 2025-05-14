@@ -7,6 +7,11 @@ const nextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "/det4iaj3p/image/upload/**",
       },
+      {
+        protocol: "https",
+        hostname: "image.tmdb.org",
+        pathname: "/t/p/w500/**",
+      },
     ],
   },
 };

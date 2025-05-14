@@ -1,3 +1,4 @@
+// if cron starts working you should delete it later
 import { syncToSanity } from "@/sanity/sanity-utils";
 import { NextResponse } from "next/server";
 

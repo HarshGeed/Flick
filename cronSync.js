@@ -1,10 +1,9 @@
-// this is not working fine we need to fix it so that it can update the news content at sanity
-import cron from "node-cron";
-import { syncToSanity } from "./sanity/sanity-utils";
+const cron = require("node-cron");
+const { syncToSanity } = require("./sanity/sanity-utils");
+
 
 console.log("⏰ Scheduling cron job...");
 
-// Schedule to run every hour at minute 0 (you can change this pattern)
 cron.schedule("0 * * * *", async () => {
   console.log("🚀 Running scheduled sync to Sanity...");
 
@@ -16,4 +15,5 @@ cron.schedule("0 * * * *", async () => {
   }
 });
 
-console.log("✅ Cron job scheduled. Waiting for next execution...");
+// Keep the process alive
+setInterval(() => {}, 1000 * 60 * 60);

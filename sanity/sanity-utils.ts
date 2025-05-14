@@ -81,3 +81,76 @@ export async function getNewsArticles() {
   }
   
 }
+
+async function fetchTrendingMovies() {
+  try {
+    const url = `https://api.themoviedb.org/3/trending/movie/day?api_key=${process.env.TMDB_API_KEY}`;
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch trending movies: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return data.results || [];
+  } catch (error) {
+    console.error("Error fetching trending movies:", error.message);
+    return [];
+  }
+}
+
+export async function syncTrendingMoviesToSanity() {
+  try {
+    const movies = await fetchTrendingMovies();
+
+    if (movies.length === 0) {
+      console.log("No trending movies to sync.");
+      return;
+    }
+
+    for (const movie of movies) {
+      if (!movie.title || !movie.id) continue;
+
+      const existing = await client.fetch(
+        `*[_type == "hotPick" && tmbdUrl == $url][0]`,
+        { url: `https://www.themoviedb.org/movie/${movie.id}` }
+      );
+
+      if (existing) continue;
+
+      await client.create({
+        _type: "hotPick",
+        movieName: movie.title,
+        posterUrl: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+        overview: movie.overview || "No overview available.",
+        tmbdUrl: `https://www.themoviedb.org/movie/${movie.id}`,
+        isApproved: false,
+        isFromAPI: true,
+      });
+
+      console.log(`🎥 Created: ${movie.title}`);
+    }
+
+    console.log("✅ Trending movies sync complete");
+  } catch (error) {
+    console.error("Error syncing trending movies to Sanity:", error.message);
+  }
+}
+
+export async function getHotPicks() {
+  try {
+    const hotPicks = await client.fetch(
+      groq`*[_type == "hotPick"]{
+        _id,
+        movieName,
+        posterUrl,
+        overview,
+        tmbdUrl
+      }`
+    );
+    return hotPicks;
+  } catch (error) {
+    console.error("Error fetching hot picks from Sanity:", error.message);
+    return [];
+  }
+}

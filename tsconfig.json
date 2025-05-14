@@ -32,7 +32,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "cronSync.ts"  ],
+, "cronSync.js"  ],
   "exclude": [
     "node_modules"
   ]

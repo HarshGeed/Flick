@@ -38,7 +38,7 @@ export default function SideBar() {
         <SideBarLink href="#" Icon={Search}>
           Explore
         </SideBarLink>
-        <SideBarLink href="#" Icon={TrendingUp}>
+        <SideBarLink href="/dashboard/trending" Icon={TrendingUp}>
           Trending
         </SideBarLink>
         <SideBarLink href="#" Icon={MessageCircleMore}>
