@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  console.log("token", process.env.TMDB_API_TOKEN);
-  const url = "https://api.themoviedb.org/3/trending/movie/day?language=en-US";
+  const url = "https://api.themoviedb.org/3/trending/all/day?language=en-US";
 
   try {
     const res = await fetch(url, {

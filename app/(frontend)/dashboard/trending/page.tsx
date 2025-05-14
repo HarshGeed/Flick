@@ -44,13 +44,13 @@ export default function Trending() {
               <div className="relative w-full h-64">
                 <Image
                   src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                  alt={movie.title}
+                  alt={movie.title || "image"}
                   fill
                   className="object-cover"
                 />
               </div>
               <div className="p-4">
-                <h2 className="text-lg font-semibold">{movie.title}</h2>
+                <h2 className="text-lg font-semibold">{movie.title || movie.name}</h2>
                 <p className="mt-2 text-sm opacity-70 line-clamp-3">
                   {movie.overview || "No description available."}
                 </p>

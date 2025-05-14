@@ -3,7 +3,7 @@ import "./globals.css";
 import SideBar from "@/components/SideBar";
 import { ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
-import RightsideBar from "@/components/RightsideBar";
+
 
 
 export const lato = Lato({
@@ -32,8 +32,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <body className="flex mx-[10.25rem] mt-[1.5rem]">
           <SideBar />
           <main className="ml-[15rem] flex-grow">{children}</main>
-
-          <RightsideBar/>
         </body>
       </html>
     </SessionProvider>
