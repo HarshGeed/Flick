@@ -35,7 +35,7 @@ export default function SideBar() {
       <SideBarLink href="/dashboard" Icon={House}>
           Home
         </SideBarLink>
-        <SideBarLink href="/dashboard/explore" Icon={Search}>
+        <SideBarLink href="/explore" Icon={Search}>
           Explore
         </SideBarLink>
         <SideBarLink href="/dashboard/trending" Icon={TrendingUp}>

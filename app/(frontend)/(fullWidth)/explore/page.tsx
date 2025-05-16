@@ -7,6 +7,18 @@ import { Search } from "lucide-react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { useRouter } from "next/navigation";
+
+const genres = [
+  { name: "Action", id: 28, color: "bg-indigo-700" },
+  { name: "Adventure", id: 12, color: "bg-indigo-800" },
+  { name: "Romance", id: 10749, color: "bg-indigo-900" },
+  { name: "Animation", id: 16, color: "bg-indigo-950" },
+  { name: "Comedy", id: 35, color: "bg-violet-700" },
+  { name: "Thriller", id: 53, color: "bg-violet-800" },
+  { name: "Drama", id: 18, color: "bg-violet-900" },
+  { name: "Horror", id: 27, color: "bg-violet-950" },
+];
 
 export default function Explore() {
   const [query, setQuery] = useState("");
@@ -18,6 +30,8 @@ export default function Explore() {
   const [shows, setShows] = useState([]);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchMovie(){
@@ -172,7 +186,7 @@ export default function Explore() {
           >
             {popular.map((item) => (
               <SwiperSlide key={item.id}>
-                <div className="relative w-full h-full">
+                <div className="relative w-full h-full cursor-pointer">
                   <Image
                     src={
                       item.poster_path
@@ -200,30 +214,15 @@ export default function Explore() {
 
       {/* Genres box */}
       <div className="grid grid-cols-4 grid-rows-2 gap-4 mt-6">
-        <div className="bg-indigo-700 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
-          Action
-        </div>
-        <div className="bg-indigo-800 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
-          Adventure
-        </div>
-        <div className="bg-indigo-900 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
-          Romance
-        </div>
-        <div className="bg-indigo-950 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
-          Animation
-        </div>
-        <div className="bg-violet-700 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
-          Comedy
-        </div>
-        <div className="bg-violet-800 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
-          Thriller
-        </div>
-        <div className="bg-violet-900 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
-          Drama
-        </div>
-        <div className="bg-violet-950 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
-          Horror
-        </div>
+        {genres.map((genre) => (
+          <div
+          key={genre.id}
+          className={`${genre.color} text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer`}
+          onClick={() => router.push(`/explore/${genre.id}`)}
+          >
+            {genre.name}
+          </div>
+        ))}
       </div>
 
       {/* Movies */}
@@ -231,17 +230,16 @@ export default function Explore() {
         <h2 className="text-3xl font-semibold">Movies</h2>
         <div className="w-full max-w-[60rem] h-[20rem] mt-4">
         <Swiper
-          modules={[Pagination, Navigation]}
+          modules={[Navigation]}
           spaceBetween={20}
           slidesPerView={5}
           navigation
-          pagination={{ clickable: true }}
           className="w-full"
         >
           {movies.map((item) => (
             <SwiperSlide key={item.id}>
               <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px]">
-                <div className="relative w-full h-[220px]">
+                <div className="relative w-full h-[220px] cursor-pointer hover:opacity-80">
                   <Image
                     src={
                       item.poster_path
@@ -277,17 +275,16 @@ export default function Explore() {
         <h2 className="text-3xl font-semibold">TV Shows</h2>
         <div className="w-full max-w-[60rem] h-[20rem] mt-4">
         <Swiper
-          modules={[Pagination, Navigation]}
+          modules={[Navigation]}
           spaceBetween={20}
           slidesPerView={5}
           navigation
-          pagination={{ clickable: true }}
           className="w-full"
         >
           {shows.map((item) => (
             <SwiperSlide key={item.id}>
               <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px]">
-                <div className="relative w-full h-[220px]">
+                <div className="relative w-full h-[220px] cursor-pointer hover:opacity-80">
                   <Image
                     src={
                       item.poster_path
