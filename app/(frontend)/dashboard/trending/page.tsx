@@ -11,7 +11,7 @@ export default function Trending() {
     async function fetchTrendingMovies() {
       setLoading(true);
     try {
-      const res = await fetch("/api/trendingMovies");
+      const res = await fetch("/api/movies_section/trendingMovies");
 
       if (!res.ok) {
         throw new Error("Failed to fetch trending movies");

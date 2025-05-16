@@ -7,7 +7,6 @@ import { Search } from "lucide-react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import tempImage from "@/public/temp-image.jpg";
 
 export default function Explore() {
   const [query, setQuery] = useState("");
@@ -15,26 +14,53 @@ export default function Explore() {
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [popular, setPopular] = useState([]);
+  const [movies, setMovies] = useState([]);
+  const [shows, setShows] = useState([]);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    async function fetchPopular() {
-      try {
-        const res = await fetch("/api/popularMovies");
-
-        if (!res.ok) {
-          return new Error("Fetching popular movies failed");
-        }
-
-        const data = await res.json();
-        setPopular(data);
-      } catch (err) {
-        console.error("Failed to fetch popular movies", err);
+    async function fetchMovie(){
+      try{
+        const moviesRes = await fetch("/api/movies_section/movies");
+        if(!moviesRes.ok) throw new Error("Fetching movies failed");
+        const moviesData = await moviesRes.json();
+        setMovies(moviesData);
+      }catch(err){
+        console.error("Unable to fetch movie data", err);
       }
     }
+    fetchMovie();
+  },[])
+
+  useEffect(() => {
+    async function fetchShows(){
+      try{
+        const showRes = await fetch("/api/movies_section/tvShows");
+        if(!showRes.ok) throw new Error("Fetching TV shows failed");
+        const showsData = await showRes.json();
+        setShows(showsData);
+      }catch(err){
+        console.log("Failed to fetch shows", err);
+      }
+    }
+     fetchShows();
+  },[])
+
+  useEffect(() => {
+    async function fetchPopular(){
+      try{
+        const popularRes = await fetch("/api/movies_section/popularMovies");
+        if(!popularRes.ok) throw new Error("Fetching Popular movies failed");
+        const popularData = await popularRes.json();
+        setPopular(popularData);
+      }catch(err){
+        console.error("Failed to fetch Popular", err)
+      }
+    }
+
     fetchPopular();
-  }, []);
+  },[])
 
   useEffect(() => {
     if (!query.trim()) {
@@ -50,7 +76,7 @@ export default function Explore() {
     debounceRef.current = setTimeout(async () => {
       try {
         const res = await fetch(
-          `/api/searchMovie?query=${encodeURIComponent(query)}`
+          `/api/movies_section/searchMovie?query=${encodeURIComponent(query)}`
         );
         const data = await res.json();
         setResults(data.results || []);
@@ -173,33 +199,135 @@ export default function Explore() {
       </div>
 
       {/* Genres box */}
-
       <div className="grid grid-cols-4 grid-rows-2 gap-4 mt-6">
-        <div className="bg-gray-800 text-white flex items-center justify-center h-24 rounded">
-          Box 1
+        <div className="bg-indigo-700 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
+          Action
         </div>
-        <div className="bg-gray-800 text-white flex items-center justify-center h-24 rounded">
-          Box 2
+        <div className="bg-indigo-800 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
+          Adventure
         </div>
-        <div className="bg-gray-800 text-white flex items-center justify-center h-24 rounded">
-          Box 3
+        <div className="bg-indigo-900 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
+          Romance
         </div>
-        <div className="bg-gray-800 text-white flex items-center justify-center h-24 rounded">
-          Box 4
+        <div className="bg-indigo-950 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
+          Animation
         </div>
-        <div className="bg-gray-800 text-white flex items-center justify-center h-24 rounded">
-          Box 5
+        <div className="bg-violet-700 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
+          Comedy
         </div>
-        <div className="bg-gray-800 text-white flex items-center justify-center h-24 rounded">
-          Box 6
+        <div className="bg-violet-800 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
+          Thriller
         </div>
-        <div className="bg-gray-800 text-white flex items-center justify-center h-24 rounded">
-          Box 7
+        <div className="bg-violet-900 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
+          Drama
         </div>
-        <div className="bg-gray-800 text-white flex items-center justify-center h-24 rounded">
-          Box 8
+        <div className="bg-violet-950 text-white flex items-center justify-center h-24 rounded shadow-lg hover:opacity-80 transform duration-300 ease-in-out cursor-pointer">
+          Horror
+        </div>
+      </div>
+
+      {/* Movies */}
+      <div className="mt-8 ">
+        <h2 className="text-3xl font-semibold">Movies</h2>
+        <div className="w-full max-w-[60rem] h-[20rem] mt-4">
+        <Swiper
+          modules={[Pagination, Navigation]}
+          spaceBetween={20}
+          slidesPerView={5}
+          navigation
+          pagination={{ clickable: true }}
+          className="w-full"
+        >
+          {movies.map((item) => (
+            <SwiperSlide key={item.id}>
+              <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px]">
+                <div className="relative w-full h-[220px]">
+                  <Image
+                    src={
+                      item.poster_path
+                        ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+                        : "/placeholder.jpg"
+                    }
+                    alt={item.title || item.name || "Untitled"}
+                    fill
+                    className="object-cover"
+                    priority={false}
+                  />
+                </div>
+                <div className="p-3 flex-1 flex flex-col">
+                  <h3 className="text-white text-base font-semibold line-clamp-2">
+                    {item.title || item.name}
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                    {item.overview || "No description."}
+                  </p>
+                  <span className="mt-auto text-xs text-yellow-400">
+                    ⭐ {item.vote_average}
+                  </span>
+                </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        </div>
+      </div>
+
+      {/* TV shows */}
+      <div className="mt-10">
+        <h2 className="text-3xl font-semibold">TV Shows</h2>
+        <div className="w-full max-w-[60rem] h-[20rem] mt-4">
+        <Swiper
+          modules={[Pagination, Navigation]}
+          spaceBetween={20}
+          slidesPerView={5}
+          navigation
+          pagination={{ clickable: true }}
+          className="w-full"
+        >
+          {shows.map((item) => (
+            <SwiperSlide key={item.id}>
+              <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px]">
+                <div className="relative w-full h-[220px]">
+                  <Image
+                    src={
+                      item.poster_path
+                        ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+                        : "/placeholder.jpg"
+                    }
+                    alt={item.title || item.name || "Untitled"}
+                    fill
+                    className="object-cover"
+                    priority={false}
+                  />
+                </div>
+                <div className="p-3 flex-1 flex flex-col">
+                  <h3 className="text-white text-base font-semibold line-clamp-2">
+                    {item.title || item.name}
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                    {item.overview || "No description."}
+                  </p>
+                  <span className="mt-auto text-xs text-yellow-400">
+                    ⭐ {item.vote_average}
+                  </span>
+                </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
         </div>
       </div>
     </>
   );
 }
+
+// Action
+// Adventure
+// Animation
+// comedy
+// crime
+// drama
+// horror
+// mystery
+// romance
+// thriller

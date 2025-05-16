@@ -31,7 +31,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <html lang="en" className={lato.className}>
         <body className="flex mx-[10.25rem] mt-[1.5rem]">
           <SideBar />
-          <main className="ml-[15rem] flex-grow">{children}</main>
+          <main className="ml-[15rem] flex-grow pb-8">{children}</main>
         </body>
       </html>
     </SessionProvider>

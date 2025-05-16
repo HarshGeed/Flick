@@ -10,6 +10,7 @@ export async function GET() {
         accept: "application/json",
         Authorization: `Bearer ${process.env.TMDB_API_TOKEN}`,
       },
+      next: { revalidate: 3600 },
     });
 
     if (!res.ok) {
