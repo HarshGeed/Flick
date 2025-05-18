@@ -5,12 +5,14 @@ export async function GET(
   { params }: { params: { genre_id: string } }
 ) {
   const { genre_id } = await params;
+  const {searchParams} = new URL(req.url);
+  const page = searchParams.get("page") || "1";
 
   if (!genre_id) {
     return NextResponse.json({ error: "Genre ID is required" }, { status: 400 });
   }
 
-  const url = `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=${genre_id}`;
+  const url = `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${page}&sort_by=popularity.desc&with_genres=${genre_id}`;
 
   try {
     const res = await fetch(url, {
