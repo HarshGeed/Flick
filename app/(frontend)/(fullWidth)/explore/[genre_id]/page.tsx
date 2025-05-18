@@ -92,7 +92,7 @@ export default function GenrePage() {
                     className="object-cover"
                   />
                 </div>
-                <div className="p-3 flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col">
                   <h3 className="text-white text-base font-semibold line-clamp-2">
                     {item.title || item.name}
                   </h3>
