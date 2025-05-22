@@ -4,7 +4,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { movie_id: string } }
 ) {
-  const { movie_id } = params;
+  const { movie_id } = await params;
   if (!movie_id) {
     return NextResponse.json({ error: "Movie ID is required" }, { status: 400 });
   }

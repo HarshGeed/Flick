@@ -14,9 +14,23 @@ const io = new Server(server, {
     }
 })
 
+const onlineUsers = new Map();
  
 io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
+
+    socket.on("register", (userId) => {
+        if(userId){
+            onlineUsers.set(userId, socket.id);
+        }
+    })
+
+    socket.on("send_notification", ({recipientId, notification}) => {
+        const recipientSocketId = onlineUsers.get(recipientId);
+        if(recipientId){
+            io.to(recipientSocketId).emit("notification", notification);
+        }
+    })
 
     // when someone post something
     socket.on("new_post", (data) => {
@@ -35,7 +49,21 @@ io.on("connection", (socket) => {
         io.emit("new_reply", data);
     })
 
+    socket.on("new_review", (review) => {
+        io.emit("new_review", review);
+    })
+
+    socket.on("like_review", ({reviewId, likesNum}) => {
+        io.emit("review_liked", {reviewId, likesNum})
+    })
+
     socket.on("disconnect", () => {
+        for(const[userId, sockId] of onlineUsers.entries()){
+            if(sockId === socket.id){
+                onlineUsers.delete(userId);
+                break;
+            }
+        }
         console.log("User disconnected", socket.id)
     })
 })
@@ -43,3 +71,5 @@ io.on("connection", (socket) => {
 server.listen(4000, () => {
     console.log("Socket.io server running on http://localhost:4000")
 })
+
+module.exports = {io, onlineUsers}

@@ -12,6 +12,11 @@ import "swiper/css";
 import "swiper/css/scrollbar";
 import { Scrollbar } from "swiper/modules";
 import { Virtual } from "swiper/modules";
+import Modal from "react-modal";
+import socket from "@/lib/socket";
+import { Heart } from "lucide-react";
+
+Modal.setAppElement("body");
 
 export default function MovieDetailsPage() {
   const { movie_id } = useParams();
@@ -23,6 +28,72 @@ export default function MovieDetailsPage() {
   const [recommendations, setRecommendations] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [content, setContent] = useState("");
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [reviews, setReviews] = useState<any[]>([]);
+
+  const handleOpenModal = () => setModalIsOpen(true);
+  const handleCloseModal = () => {
+    setModalIsOpen(false);
+    setContent("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!content.trim()) return;
+    setBtnLoading(true);
+    try {
+      await fetch("/api/movies_section/createReview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          movieId: movie_id,
+          review: content,
+        }),
+      });
+      setModalIsOpen(false);
+      setContent("");
+      // Optionally refetch reviews here
+    } finally {
+      setBtnLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!movie_id) return;
+    fetch(`/api/movies_section/fetchReview/${movie_id}`)
+      .then((res) => res.json())
+      .then(setReviews);
+  }, [movie_id]);
+
+  useEffect(() => {
+    socket.on("new_review", (review) => {
+      if (review.movieId === movie_id) {
+        setReviews((prev) => [review, ...prev]);
+      }
+    });
+
+    socket.on("review_liked", ({ reviewId, likesNum }) => {
+      setReviews((prev) =>
+        prev.map((r) => (r._id === reviewId ? { ...r, likesNum } : r))
+      );
+    });
+    return () => {
+      socket.off("new_review");
+      socket.off("review_liked");
+    };
+  }, [movie_id]);
+
+  const handleLike = async (reviewId: string) => {
+    const res = await fetch(`/api/movies_section/likeReview/${reviewId}`, {
+      method: "POST",
+    });
+    if(res.ok){
+      const data = await res.json();
+      socket.emit("like_review", {reviewId: data.reviewId, likesNum: data.likesNum})
+    }
+  };
 
   useEffect(() => {
     if (!movie_id) return;
@@ -217,7 +288,10 @@ export default function MovieDetailsPage() {
                   <button className="bg-[#141414] p-3 rounded-full">
                     <Bookmark />
                   </button>
-                  <button className="bg-[#141414] px-3 py-1 rounded-xl">
+                  <button
+                    className="bg-[#141414] px-3 py-1 rounded-xl"
+                    onClick={handleOpenModal}
+                  >
                     Review
                   </button>
                 </div>
@@ -276,8 +350,8 @@ export default function MovieDetailsPage() {
           >
             {credits.cast
               .filter((actor: any) => actor.known_for_department === "Acting")
-              .map((actor: any) => (
-                <SwiperSlide key={actor.id}>
+              .map((actor: any, index) => (
+                <SwiperSlide key={`${actor.id}-${index}`}>
                   <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col items-center h-[22rem]">
                     <div className="relative w-full h-[17rem] overflow-hidden mb-3">
                       <Image
@@ -315,7 +389,7 @@ export default function MovieDetailsPage() {
             className="mySwiper"
           >
             {images.backdrops.map((img: any, idx: number) => (
-              <SwiperSlide key={img.file_path || idx}>
+              <SwiperSlide key={`${img.file_path}-${idx}` || idx}>
                 <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col items-center h-[17rem]">
                   <div className="relative w-full h-[17rem] overflow-hidden">
                     <Image
@@ -345,7 +419,7 @@ export default function MovieDetailsPage() {
             {videos.results
               .filter((v: any) => v.site === "YouTube")
               .map((v: any, index: number) => (
-                <SwiperSlide key={v.id} virtualIndex={index}>
+                <SwiperSlide key={`${v.id}-${index}`} virtualIndex={index}>
                   <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col items-center h-[17rem]">
                     <div className="relative w-full h-full flex flex-col items-center justify-center">
                       <iframe
@@ -366,50 +440,200 @@ export default function MovieDetailsPage() {
         </div>
       )}
 
-      {/* Recommendations */}
-{/* Recommendations */}
-{recommendations?.results && recommendations.results.length > 0 && (
-  <div className="max-w-[60rem] mx-auto mt-10">
-    <h2 className="text-2xl font-semibold mb-4 text-white">Recommendations</h2>
-    <Swiper
-      spaceBetween={20}
-      slidesPerView={5}
-      modules={[Scrollbar]}
-      className="mySwiper"
-    >
-      {recommendations.results.slice(0, 20).map((rec: any) => (
-        <SwiperSlide key={rec.id} className="!w-[11rem]">
-          <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[22rem]">
-            <div className="relative w-full aspect-[2/3] overflow-hidden mb-3">
-              <Image
-                src={
-                  rec.poster_path
-                    ? `https://image.tmdb.org/t/p/w500${rec.poster_path}`
-                    : "/placeholder.jpg"
-                }
-                alt={rec.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-3 flex-1 flex flex-col justify-between">
-              <h3 className="text-white text-base font-semibold line-clamp-2 min-h-[2.5rem]">
-                {rec.title || rec.name}
-              </h3>
-              <p className="text-xs text-gray-400 mt-1 line-clamp-2 ">
-                {rec.overview || "No description."}
-              </p>
-              <span className="mt-2 text-xs text-yellow-400">
-                ⭐ {rec.vote_average}
-              </span>
-            </div>
-          </div>
-        </SwiperSlide>
-      ))}
-    </Swiper>
-  </div>
-)}
+      {/* Reviews  */}
+        <h2 className="text-2xl font-semibold mt-10 text-white">Reviews</h2>
+      <div className="max-w-[60rem] mx-auto mt-4 min-h-[3rem] max-h-[20rem] overflow-y-auto">
+        {reviews.length === 0 && (
+          <p className="text-gray-400">No reviews yet.</p>
+        )}
+        <ul className="space-y-4">
+          {reviews.map((review) => (
+            <li
+              key={review._id}
+              className="bg-[#0e0e0f] rounded-lg p-3 flex flex-col"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className="font-bold">{review.username}</span>
+              </div>
+              <p className="mb-2">{review.review}</p>
+              <button
+                className="text-yellow-400 hover:text-yellow-300"
+                onClick={() => handleLike(review._id)}
+              >
+                <div className="flex space-x-1">
+                  <span>
+                    <Heart/>
+                  </span>
+                  <span>
+                    {review.likesNum || 0}
+                  </span>
+                </div>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
 
+      {/* Recommendations */}
+      {/* Recommendations */}
+      {recommendations?.results && recommendations.results.length > 0 && (
+        <div className="max-w-[60rem] mx-auto mt-10">
+          <h2 className="text-2xl font-semibold mb-4 text-white">
+            Recommendations
+          </h2>
+          <Swiper
+            spaceBetween={20}
+            slidesPerView={5}
+            modules={[Scrollbar]}
+            className="mySwiper"
+          >
+            {recommendations.results.slice(0, 20).map((rec: any, idx) => (
+              <SwiperSlide key={`${rec.id}-${idx}`} className="!w-[11rem]">
+                <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[22rem]">
+                  <div className="relative w-full aspect-[2/3] overflow-hidden">
+                    <Image
+                      src={
+                        rec.poster_path
+                          ? `https://image.tmdb.org/t/p/w500${rec.poster_path}`
+                          : "/placeholder.jpg"
+                      }
+                      alt={rec.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-3 flex-1 flex flex-col justify-between">
+                    <h3 className="text-white text-base font-semibold line-clamp-2 min-h-[2.5rem]">
+                      {rec.title || rec.name}
+                    </h3>
+                    <p className="text-xs text-gray-400 mt-1 line-clamp-2 ">
+                      {rec.overview || "No description."}
+                    </p>
+                    <span className="mt-2 text-xs text-yellow-400">
+                      ⭐ {rec.vote_average}
+                    </span>
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      )}
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={handleCloseModal}
+        className="modal-content" // Apply animation class
+        overlayClassName="modal-overlay" // Custom overlay styling
+        bodyOpenClassName="overflow-hidden"
+      >
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col h-full min-h-[300px] max-h-[80vh] overflow-hidden"
+        >
+          <div className="flex-grow overflow-y-auto">
+            <textarea
+              id="content"
+              placeholder="What's on your mind?"
+              className="pl-[3rem] pr-2 w-full text-white rounded-md resize-none focus:outline-none overflow-y-auto bg-transparent"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              style={{ lineHeight: "1.5", minHeight: "100px", color: "white" }}
+            />
+          </div>
+          <div className="flex justify-between items-center bg-black mt-2">
+            <button
+              type="submit"
+              disabled={!content.trim()}
+              className={`bg-amber-200 text-black text-md px-4 py-2 rounded-md hover:opacity-90 transition duration-300 ease-in-out ${
+                content.trim()
+                  ? "bg-amber-200 text-black hover:opacity-90"
+                  : "bg-white text-gray-700 cursor-not-allowed"
+              }`}
+            >
+              {btnLoading ? "Posting..." : "Post"}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      <style jsx global>{`
+        .modal-overlay {
+          background-color: rgba(0, 0, 0, 0.5);
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start; /* Align modal to the top */
+          padding-top: 20px; /* Add some space from the top */
+          margin-top: 9rem;
+          z-index: 1050;
+        }
+
+        .modal-content {
+          width: 800px;
+          max-height: 80vh;
+          display: flex;
+          flex-direction: column;
+          padding: 20px;
+          background: black; /* Changed background to black */
+          border-radius: 10px;
+          box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+          overflow-y: auto;
+          transform: translateY(100%);
+          animation: slide-up 0.3s ease-out forwards;
+          color: white;
+          z-index: 1100;
+        }
+
+        .overflow-hidden {
+          overflow: hidden;
+        }
+
+        /* Scrollbar Customization */
+        .modal-content::-webkit-scrollbar,
+        .flex-grow::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb,
+        .flex-grow::-webkit-scrollbar-thumb {
+          background-color: black !important; /* Scrollbar thumb color */
+          border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-track,
+        .flex-grow::-webkit-scrollbar-track {
+          background-color: gray !important; /* Scrollbar track color */
+        }
+
+        /* Firefox Scrollbar */
+        .modal-content,
+        .flex-grow {
+          scrollbar-color: black #f0f0f0; /* Thumb color and track color */
+          scrollbar-width: thin; /* Make the scrollbar thinner */
+        }
+
+        @keyframes slide-up {
+          from {
+            transform: translateY(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(-20%);
+            opacity: 1;
+          }
+        }
+
+        #content:empty::before {
+          content: attr(placeholder);
+          color: gray;
+          pointer-events: none;
+        }
+      `}</style>
     </>
   );
 }

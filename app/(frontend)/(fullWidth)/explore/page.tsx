@@ -184,8 +184,8 @@ export default function Explore() {
             pagination={{ clickable: true }}
             className="w-full h-full"
           >
-            {popular.map((item) => (
-              <SwiperSlide key={item.id}>
+            {popular.map((item, index) => (
+              <SwiperSlide key={`${item.id}-${index}`}>
                 <div className="relative w-full h-full cursor-pointer">
                   <Image
                     src={
@@ -236,8 +236,8 @@ export default function Explore() {
           navigation
           className="w-full"
         >
-          {movies.map((item) => (
-            <SwiperSlide key={item.id}>
+          {movies.map((item, index) => (
+            <SwiperSlide key={`${item.id}-${index}`}>
               <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px]">
                 <div className="relative w-full h-[220px] cursor-pointer hover:opacity-80">
                   <Image
@@ -281,8 +281,8 @@ export default function Explore() {
           navigation
           className="w-full"
         >
-          {shows.map((item) => (
-            <SwiperSlide key={item.id}>
+          {shows.map((item, index) => (
+            <SwiperSlide key={`${item.id}-${index}`}>
               <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px]">
                 <div className="relative w-full h-[220px] cursor-pointer hover:opacity-80">
                   <Image

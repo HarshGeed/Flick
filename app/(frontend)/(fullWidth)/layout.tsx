@@ -4,8 +4,6 @@ import SideBar from "@/components/SideBar";
 import { ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
 
-
-
 export const lato = Lato({
   subsets: ["latin"],
   weight: ["100", "300", "400", "700", "900"],
@@ -25,7 +23,6 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  
   return (
     <SessionProvider>
       <html lang="en" className={lato.className}>

@@ -2,6 +2,7 @@
 import { getNewsArticles, getHotPicks } from "@/sanity/sanity-utils";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import LogoutBtn from "./LogoutBtn";
 
 export default function RightsideBar() {
   const [news, setNews] = useState([]);
@@ -41,6 +42,10 @@ export default function RightsideBar() {
   console.log("This is the news incoming", news);
   return (
     <div className="sticky top-0 pt-2 ml-4">
+      {/* temporary log out button */}
+      <div className="mb-4">
+        <LogoutBtn/>
+      </div>
       <div className="space-y-4">
         {/* News */}
         <div className="w-full rounded-2xl border-1 border-stone-800 px-2 pb-3">

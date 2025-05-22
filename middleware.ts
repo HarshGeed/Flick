@@ -14,5 +14,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"], // Protect the dashboard route
+  matcher: ["/dashboard/:path*", "/profile/:path*", "/notifications/:path*", "/explore/:path*"],
 };

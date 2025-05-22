@@ -5,6 +5,9 @@ import { auth } from "@/auth";
 import { connect } from "@/lib/dbConn";
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
+import Notification from "@/models/notificationModel";
+
+const { io, onlineUsers } = require("../../../../../socket-server");
 
 export const PUT = async (req, { params }) => {
   try {
@@ -40,8 +43,8 @@ export const PUT = async (req, { params }) => {
     }
 
     const alreadyLiked = post
-      ? post.likedBy.includes(userId) // Check if the user already liked the post
-      : comment.likedBy.includes(userId); // Check if the user already liked the comment
+      ? post.likedBy.includes(userId)
+      : comment.likedBy.includes(userId);
 
     if (alreadyLiked) {
       // Unlike
@@ -59,9 +62,52 @@ export const PUT = async (req, { params }) => {
       if (post) {
         post.likedBy.push(userId);
         post.likes = (post.likes || 0) + 1;
+
+        if (post.user.toString() !== userId) {
+          const notification = await Notification.create({
+            recipientId: post.user,
+            senderId: userId,
+            type: "like",
+            postId: post._id,
+          });
+
+          const recipientSocketId = onlineUsers.get(post.user.toString());
+          if (recipientSocketId) {
+            io.to(recipientSocketId).emit("notification", {
+              ...notification.toObject(),
+              senderId: {
+                _id: user._id,
+                username: user.username,
+                image: user.profileImage,
+              },
+            });
+          }
+        }
       } else {
         comment.likedBy.push(userId);
         comment.likes = (comment.likes || 0) + 1;
+
+        if (comment.user.toString() !== userId) {
+          const notification = await Notification.create({
+            recipientId: comment.user,
+            senderId: userId,
+            type: "like",
+            commentId: comment._id,
+            postId: comment.post,
+          });
+
+          const recipientSocketId = onlineUsers.get(comment.user.toString());
+          if (recipientSocketId) {
+            io.to(recipientSocketId).emit("notification", {
+              ...notification.toObject(),
+              senderId: {
+                _id: user._id,
+                username: user.username,
+                image: user.profileImage,
+              },
+            });
+          }
+        }
       }
     }
 

@@ -67,18 +67,18 @@ const userSchema = new Schema<IUser>(
         return !this.isOauth; // ✅ Corrected
       },
     },
-    passwordConfirm: {
-      type: String,
-      required: [true, "Please confirm your password"],
-      validate: {
-        // This only works on CREATE and SAVE!!!
-        validator: function (el) {
-          return el === this.password;
-        },
-        message: "Passwords are not the same!",
-      },
-      select: false,
-    },
+    // passwordConfirm: {
+    //   type: String,
+    //   required: [true, "Please confirm your password"],
+    //   validate: {
+    //     // This only works on CREATE and SAVE!!!
+    //     validator: function (el) {
+    //       return el === this.password;
+    //     },
+    //     message: "Passwords are not the same!",
+    //   },
+    //   select: false,
+    // },
     fullName: {
       type: String,
       trim: true,

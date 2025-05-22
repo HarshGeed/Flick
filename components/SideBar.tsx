@@ -2,6 +2,7 @@ import { Anton_SC } from "next/font/google";
 import SideBarLink from "./SideBarLink";
 import Image from "next/image";
 import avatar from "@/public/avatar.jpg";
+import { auth } from "@/auth";
 
 import {
   Search,
@@ -21,7 +22,10 @@ const logoFont = Anton_SC({
   subsets: ["latin"],
 });
 
-export default function SideBar() {
+export default async function SideBar() {
+
+  const session = await auth();
+
   return (
     <div className="fixed h-screen w-[12rem] flex flex-col">
       {/* logo */}
@@ -70,8 +74,8 @@ export default function SideBar() {
           />
         </div>
           <div className="ml-4">
-            <p className="font-bold">Name</p>
-            <p className="font-extralight opacity-75">Username</p>
+            <p className="font-bold">{session?.user?.name || "Guest"}</p>
+            <p className="font-extralight opacity-75">{session?.user?.email || ""}</p>
           </div>
         </div>
       </div>

@@ -40,7 +40,7 @@ export const POST = catchAsync(async (req: NextRequest) => {
         const newUser = new User({
             username,
             email,
-            password, // No need to hash it manually
+            password,
             fullName,
             bio,
             profileImage,
@@ -55,6 +55,7 @@ export const POST = catchAsync(async (req: NextRequest) => {
         }, { status: 201 });
 
     } catch (error) {
+        console.log(error);
         return NextResponse.json({ error: "Server error, try again later" }, { status: 500 });
     }
 });
