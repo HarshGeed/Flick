@@ -15,6 +15,7 @@ import { Virtual } from "swiper/modules";
 import Modal from "react-modal";
 import socket from "@/lib/socket";
 import { Heart } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 Modal.setAppElement("body");
 
@@ -33,13 +34,16 @@ export default function MovieDetailsPage() {
   const [btnLoading, setBtnLoading] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
 
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+
   const handleOpenModal = () => setModalIsOpen(true);
   const handleCloseModal = () => {
     setModalIsOpen(false);
     setContent("");
   };
 
-   // Submit review
+  // Submit review
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
@@ -93,16 +97,31 @@ export default function MovieDetailsPage() {
     };
   }, [movie_id]);
 
-
   // Like/unlike handler
   const handleLike = async (reviewId: string) => {
     const res = await fetch(`/api/movies_section/likeReview/${reviewId}`, {
       method: "POST",
     });
+    console.log("This is the response of like", res);
     if (res.ok) {
       const data = await res.json();
-      // Emit like_review event with reviewId and likesNum
-      socket.emit("like_review", { reviewId: data.reviewId, likesNum: data.likesNum });
+      socket.emit("like_review", {
+        reviewId: data.reviewId,
+        likesNum: data.likesNum,
+      });
+      setReviews((prev) =>
+        prev.map((r) =>
+          r._id === reviewId
+            ? {
+                ...r,
+                likesNum: data.likesNum,
+                likedBy: data.liked
+                  ? [...(r.likedBy || []), userId]
+                  : (r.likedBy || []).filter((id) => id !== userId),
+              }
+            : r
+        )
+      );
     }
   };
 
@@ -452,36 +471,52 @@ export default function MovieDetailsPage() {
       )}
 
       {/* Reviews  */}
-        <h2 className="text-2xl font-semibold mt-10 text-white">Reviews</h2>
+      <h2 className="text-2xl font-semibold mt-10 text-white">Reviews</h2>
       <div className="max-w-[60rem] mx-auto mt-4 min-h-[3rem] max-h-[20rem] overflow-y-auto">
         {reviews.length === 0 && (
           <p className="text-gray-400">No reviews yet.</p>
         )}
         <ul className="space-y-4">
-          {reviews.map((review) => (
-            <li
-              key={review._id}
-              className="bg-[#0e0e0f] rounded-lg p-3 flex flex-col"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="font-bold">{review.username}</span>
-              </div>
-              <p className="mb-2">{review.review}</p>
-              <button
-                className="text-yellow-400 hover:text-yellow-300"
-                onClick={() => handleLike(review._id)}
+          {reviews.map((review) => {
+            const isLiked = review.liked
+            console.log(isLiked)
+            const profileImg =
+              review.user?.profileImage && review.user.profileImage !== ""
+                ? review.user.profileImage
+                : "/placeholder.jpg";
+
+            return (
+              <li
+                key={review._id}
+                className="bg-[#0e0e0f] rounded-lg p-3 flex flex-col"
               >
-                <div className="flex space-x-1">
-                  <span>
-                    <Heart/>
-                  </span>
-                  <span>
-                    {review.likesNum || 0}
+                <div className="flex items-center gap-2 mb-2">
+                  <Image
+                    src={profileImg}
+                    alt={review.user?.username || "User"}
+                    width={32}
+                    height={32}
+                    className="rounded-full object-cover"
+                  />
+                  <span className="font-bold">
+                    {review.user?.username || "User"}
                   </span>
                 </div>
-              </button>
-            </li>
-          ))}
+                <p className="mb-2">{review.review}</p>
+                <button onClick={() => handleLike(review._id)}>
+                  <div className="flex space-x-1 items-center">
+                    <span>
+                      <Heart
+                        color={isLiked ? "red" : "gray"}
+                        fill={isLiked ? "red" : "none"}
+                      />
+                    </span>
+                    <span>{review.likesNum || 0}</span>
+                  </div>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </div>
 

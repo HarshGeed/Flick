@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Review from "@/models/reviewModel";
 import { connect } from "@/lib/dbConn";
+import { auth } from "@/auth";
 
 export async function GET(
   req: NextRequest,
@@ -15,11 +16,25 @@ export async function GET(
         { status: 400 }
       );
     }
+
+    const session = await auth();
+    const userId = session?.user?.id;
+
     const reviews = await Review.find({ movieId })
-      .populate("user", "username profileImg")
+      .populate("user", "username profileImage")
       .sort({ createdAt: -1 });
-      
-    return NextResponse.json(reviews, { status: 200 });
+
+    const reviewsWithLiked = reviews.map((review) => {
+      const liked =
+        userId &&
+        review.likedBy?.some((id) => id.toString() === userId.toString());
+      return {
+        ...review.toObject(),
+        liked,
+      };
+    });
+
+    return NextResponse.json(reviewsWithLiked, { status: 200 });
   } catch (error) {
     console.log("Fetch review error", error);
     return NextResponse.json(
