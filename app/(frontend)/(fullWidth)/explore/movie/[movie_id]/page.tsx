@@ -39,12 +39,13 @@ export default function MovieDetailsPage() {
     setContent("");
   };
 
+   // Submit review
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
     setBtnLoading(true);
     try {
-      await fetch("/api/movies_section/createReview", {
+      const res = await fetch("/api/movies_section/createReview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -52,9 +53,13 @@ export default function MovieDetailsPage() {
           review: content,
         }),
       });
-      setModalIsOpen(false);
-      setContent("");
-      // Optionally refetch reviews here
+      if (res.ok) {
+        const data = await res.json();
+        // Emit new_review event with the created review
+        socket.emit("new_review", data.review);
+        setModalIsOpen(false);
+        setContent("");
+      }
     } finally {
       setBtnLoading(false);
     }
@@ -67,31 +72,37 @@ export default function MovieDetailsPage() {
       .then(setReviews);
   }, [movie_id]);
 
+  // Real-time: Listen for new reviews and likes
   useEffect(() => {
-    socket.on("new_review", (review) => {
+    if (!socket) return;
+    const handleNewReview = (review) => {
       if (review.movieId === movie_id) {
         setReviews((prev) => [review, ...prev]);
       }
-    });
-
-    socket.on("review_liked", ({ reviewId, likesNum }) => {
+    };
+    const handleReviewLiked = ({ reviewId, likesNum }) => {
       setReviews((prev) =>
         prev.map((r) => (r._id === reviewId ? { ...r, likesNum } : r))
       );
-    });
+    };
+    socket.on("new_review", handleNewReview);
+    socket.on("review_liked", handleReviewLiked);
     return () => {
-      socket.off("new_review");
-      socket.off("review_liked");
+      socket.off("new_review", handleNewReview);
+      socket.off("review_liked", handleReviewLiked);
     };
   }, [movie_id]);
 
+
+  // Like/unlike handler
   const handleLike = async (reviewId: string) => {
     const res = await fetch(`/api/movies_section/likeReview/${reviewId}`, {
       method: "POST",
     });
-    if(res.ok){
+    if (res.ok) {
       const data = await res.json();
-      socket.emit("like_review", {reviewId: data.reviewId, likesNum: data.likesNum})
+      // Emit like_review event with reviewId and likesNum
+      socket.emit("like_review", { reviewId: data.reviewId, likesNum: data.likesNum });
     }
   };
 
