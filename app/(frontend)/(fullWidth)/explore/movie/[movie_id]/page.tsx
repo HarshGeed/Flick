@@ -10,12 +10,13 @@ import { Bookmark } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/scrollbar";
-import { Scrollbar } from "swiper/modules";
+import { Scrollbar, Mousewheel } from "swiper/modules";
 import { Virtual } from "swiper/modules";
 import Modal from "react-modal";
 import socket from "@/lib/socket";
 import { Heart } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useCallback } from "react";
 
 Modal.setAppElement("body");
 
@@ -375,7 +376,11 @@ export default function MovieDetailsPage() {
           <Swiper
             spaceBetween={20}
             slidesPerView={5}
-            modules={[Scrollbar]}
+            modules={[Scrollbar, Mousewheel]}
+            mousewheel={{
+              forceToAxis: true,
+            }}
+            freeMode={true}
             className="mySwiper"
           >
             {credits.cast
@@ -415,7 +420,11 @@ export default function MovieDetailsPage() {
           <Swiper
             spaceBetween={20}
             slidesPerView={2}
-            modules={[Scrollbar]}
+            modules={[Scrollbar, Mousewheel]}
+            mousewheel={{
+              forceToAxis: true,
+            }}
+            freeMode={true}
             className="mySwiper"
           >
             {images.backdrops.map((img: any, idx: number) => (
@@ -443,7 +452,11 @@ export default function MovieDetailsPage() {
           <Swiper
             spaceBetween={20}
             slidesPerView={2}
-            modules={[Scrollbar]}
+            modules={[Scrollbar, Mousewheel]}
+            mousewheel={{
+              forceToAxis: true,
+            }}
+            freeMode={true}
             className="mySwiper"
           >
             {videos.results
@@ -478,8 +491,8 @@ export default function MovieDetailsPage() {
         )}
         <ul className="space-y-4">
           {reviews.map((review) => {
-            const isLiked = review.liked
-            console.log(isLiked)
+            const isLiked = review.liked;
+            console.log(isLiked);
             const profileImg =
               review.user?.profileImage && review.user.profileImage !== ""
                 ? review.user.profileImage
@@ -530,7 +543,11 @@ export default function MovieDetailsPage() {
           <Swiper
             spaceBetween={20}
             slidesPerView={5}
-            modules={[Scrollbar]}
+            modules={[Scrollbar, Mousewheel]}
+            mousewheel={{
+              forceToAxis: true,
+            }}
+            freeMode={true}
             className="mySwiper"
           >
             {recommendations.results.slice(0, 20).map((rec: any, idx) => (
@@ -578,20 +595,24 @@ export default function MovieDetailsPage() {
           className="flex flex-col h-full min-h-[300px] max-h-[80vh] overflow-hidden"
         >
           <div className="flex-grow overflow-y-auto">
-            <textarea
+            <div
+              contentEditable
               id="content"
               placeholder="What's on your mind?"
-              className="pl-[3rem] pr-2 w-full text-white rounded-md resize-none focus:outline-none overflow-y-auto bg-transparent"
+              className="pr-2 w-full text-white rounded-md resize-none focus:outline-none overflow-y-auto"
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onInput={(e) => {
+                const div = e.target as HTMLDivElement;
+                setContent(div.innerText);
+              }}
               style={{ lineHeight: "1.5", minHeight: "100px", color: "white" }}
-            />
+            ></div>
           </div>
           <div className="flex justify-between items-center bg-black mt-2">
             <button
               type="submit"
               disabled={!content.trim()}
-              className={`bg-amber-200 text-black text-md px-4 py-2 rounded-md hover:opacity-90 transition duration-300 ease-in-out ${
+              className={`bg-amber-200 text-black text-md px-4 py-1 rounded-md hover:opacity-90 transition duration-300 ease-in-out ${
                 content.trim()
                   ? "bg-amber-200 text-black hover:opacity-90"
                   : "bg-white text-gray-700 cursor-not-allowed"
@@ -602,84 +623,7 @@ export default function MovieDetailsPage() {
           </div>
         </form>
       </Modal>
-
-      <style jsx global>{`
-        .modal-overlay {
-          background-color: rgba(0, 0, 0, 0.5);
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          display: flex;
-          justify-content: center;
-          align-items: flex-start; /* Align modal to the top */
-          padding-top: 20px; /* Add some space from the top */
-          margin-top: 9rem;
-          z-index: 1050;
-        }
-
-        .modal-content {
-          width: 800px;
-          max-height: 80vh;
-          display: flex;
-          flex-direction: column;
-          padding: 20px;
-          background: black; /* Changed background to black */
-          border-radius: 10px;
-          box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
-          overflow-y: auto;
-          transform: translateY(100%);
-          animation: slide-up 0.3s ease-out forwards;
-          color: white;
-          z-index: 1100;
-        }
-
-        .overflow-hidden {
-          overflow: hidden;
-        }
-
-        /* Scrollbar Customization */
-        .modal-content::-webkit-scrollbar,
-        .flex-grow::-webkit-scrollbar {
-          width: 10px;
-        }
-
-        .modal-content::-webkit-scrollbar-thumb,
-        .flex-grow::-webkit-scrollbar-thumb {
-          background-color: black !important; /* Scrollbar thumb color */
-          border-radius: 4px;
-        }
-
-        .modal-content::-webkit-scrollbar-track,
-        .flex-grow::-webkit-scrollbar-track {
-          background-color: gray !important; /* Scrollbar track color */
-        }
-
-        /* Firefox Scrollbar */
-        .modal-content,
-        .flex-grow {
-          scrollbar-color: black #f0f0f0; /* Thumb color and track color */
-          scrollbar-width: thin; /* Make the scrollbar thinner */
-        }
-
-        @keyframes slide-up {
-          from {
-            transform: translateY(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(-20%);
-            opacity: 1;
-          }
-        }
-
-        #content:empty::before {
-          content: attr(placeholder);
-          color: gray;
-          pointer-events: none;
-        }
-      `}</style>
+      
     </>
   );
 }

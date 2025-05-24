@@ -45,3 +45,79 @@ body {
     animation: bounce-like 0.5s ease-in-out;
   }
 }
+
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align modal to the top */
+  padding-top: 20px; /* Add some space from the top */
+  margin-top: 9rem;
+  z-index: 1050;
+}
+
+.modal-content {
+  width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: black; /* Changed background to black */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+  overflow-y: auto;
+  transform: translateY(100%);
+  animation: slide-up 0.3s ease-out forwards;
+  color: white;
+  z-index: 1100;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+/* Scrollbar Customization */
+.modal-content::-webkit-scrollbar,
+.flex-grow::-webkit-scrollbar {
+  width: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb,
+.flex-grow::-webkit-scrollbar-thumb {
+  background-color: black !important; /* Scrollbar thumb color */
+  border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-track,
+.flex-grow::-webkit-scrollbar-track {
+  background-color: gray !important; /* Scrollbar track color */
+}
+
+/* Firefox Scrollbar */
+.modal-content,
+.flex-grow {
+  scrollbar-color: black #f0f0f0; /* Thumb color and track color */
+  scrollbar-width: thin; /* Make the scrollbar thinner */
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(-20%);
+    opacity: 1;
+  }
+}
+
+#content:empty::before {
+  content: attr(placeholder);
+  color: gray;
+  pointer-events: none;
+}
