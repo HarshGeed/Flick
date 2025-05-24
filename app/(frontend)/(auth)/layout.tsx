@@ -3,6 +3,8 @@ import { SessionProvider } from "next-auth/react";
 import SplitText from "../../../components/LogoAnimation";
 import "./globals.css";
 import { ReactNode } from "react";
+import Image from "next/image";
+import bgImage from "@/public/bg-image.jpg";
 
 export const lato = Lato({
   subsets: ["latin"],
@@ -18,15 +20,27 @@ export const metadata = {
     "Here you can share views about movies, chat, make stories and posts, and do a lot more!",
 };
 
-interface RootLayoutProps{
-  children: ReactNode
+interface RootLayoutProps {
+  children: ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className={lato.className}>
       <body>
-        <div className="flex flex-col items-start justify-center h-screen mx-[10.25rem]">
+        {/* Background image */}
+        <div className="fixed inset-0 -z-20">
+          <Image
+            src={bgImage}
+            alt="Background"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
+        {/* Content */}
+        <div className="relative flex flex-col items-start justify-center h-screen mx-[10.25rem] z-10">
           <SplitText
             text=".Flick"
             className="text-9xl"
@@ -35,8 +49,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
             animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
             easing="easeOutCubic"
             threshold={0.2}
-            // rootMargin="-50px"
-            // onLetterAnimationComplete={handleAnimationComplete}
           />
           <div className="w-[25rem] mt-[2rem] text-lg transform transition-transform duration-1000 ease-out translate-y-[-50px] animate-slide-in">
             <p className="opacity-75">

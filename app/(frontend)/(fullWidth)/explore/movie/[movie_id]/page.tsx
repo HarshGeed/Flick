@@ -11,12 +11,12 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/scrollbar";
 import { Scrollbar, Mousewheel } from "swiper/modules";
-import { Virtual } from "swiper/modules";
 import Modal from "react-modal";
 import socket from "@/lib/socket";
 import { Heart } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useCallback } from "react";
+import { BookmarkCheck } from "lucide-react";
+
 
 Modal.setAppElement("body");
 
@@ -34,6 +34,7 @@ export default function MovieDetailsPage() {
   const [content, setContent] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [inWatchlist, setInWatchlist] = useState(false);
 
   const { data: session } = useSession();
   const userId = session?.user?.id;
@@ -623,7 +624,7 @@ export default function MovieDetailsPage() {
           </div>
         </form>
       </Modal>
-      
+
     </>
   );
 }

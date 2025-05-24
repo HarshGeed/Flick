@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, Model, model, models } from "mongoose";
 import validator from "validator";
-import bcrypt from "bcryptjs"; 
+import bcrypt from "bcryptjs";
 
 export interface IUser extends Document {
   username: string;
@@ -41,7 +41,7 @@ const userSchema = new Schema<IUser>(
       required: true,
       trim: true,
     },
-    userID:{
+    userID: {
       type: String,
       trim: true,
       unique: true,
@@ -105,7 +105,6 @@ const userSchema = new Schema<IUser>(
       type: Number,
       default: 0,
     },
-    watchlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }],
     reviews: [
       {
         movieId: {
@@ -123,7 +122,13 @@ const userSchema = new Schema<IUser>(
     userCreatedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
     location: {
       type: String, // enhance it more
-    }
+    },
+    watchlist: [
+      {
+        type: String
+      }
+    ],
+
   },
   { timestamps: true }
 );

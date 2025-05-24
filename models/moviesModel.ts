@@ -1,1 +1,0 @@
-// this will be created to store movies we might not use is as we will use sanity to maintain the content of the movies
