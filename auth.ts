@@ -53,9 +53,9 @@ interface CustomUser extends NextAuthUser{
     strategy: "jwt",
     maxAge: 7 * 24 * 60 * 60,
   },
-  // pages: {
-  //   signIn: "auth/login",
-  // },
+  pages: {
+    signIn: "/login",
+  },
   callbacks: {
     async jwt({ token, user, account }) {
       // connect();

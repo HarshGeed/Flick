@@ -1,9 +1,8 @@
 "use client";
-import { useState } from "react";
-import { signIn } from "@/auth";
+import { useState, useEffect } from "react";
+import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import bgImage from "@/public/bg-image.jpg";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -11,6 +10,13 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/dashboard");
+    }
+  }, [status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,9 +30,8 @@ export default function LoginPage() {
     setLoading(false);
     if (res?.error) {
       setError("Invalid email or password.");
-    } else {
-      router.replace("/");
     }
+    // Do NOT redirect here!
   };
 
   const handleGoogleSignIn = async () => {
@@ -36,7 +41,6 @@ export default function LoginPage() {
   };
 
   return (
-    // The parent layout is already flex and positions children, so we use absolute/fixed here
     <div className="fixed right-0 top-0 h-screen flex items-center justify-end w-1/2 z-10">
       <div className="bg-[#18181b] p-8 rounded-lg shadow-lg w-full max-w-md mr-[18rem]">
         <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -44,10 +48,7 @@ export default function LoginPage() {
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label
-              className="block text-gray-300 mb-1"
-              htmlFor="email"
-            >
+            <label className="block text-gray-300 mb-1" htmlFor="email">
               Email
             </label>
             <input
@@ -62,10 +63,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label
-              className="block text-gray-300 mb-1"
-              htmlFor="password"
-            >
+            <label className="block text-gray-300 mb-1" htmlFor="password">
               Password
             </label>
             <input
