@@ -19,18 +19,27 @@ export default function EditProfileModal({
   const [location, setLocation] = useState("");
   const [coverImage, setCoverImage] = useState(initialCoverImage);
   const [profileImage, setProfileImage] = useState(initialProfileImage);
-  const [previousCoverImage, setPreviousCoverImage] = useState(initialCoverImage); // Track previous cover image
-  const [previousProfileImage, setPreviousProfileImage] = useState(initialProfileImage); // Track previous profile image
+  const [previousCoverImage, setPreviousCoverImage] = useState(initialCoverImage);
+  const [previousProfileImage, setPreviousProfileImage] = useState(initialProfileImage);
   const [loadingCover, setLoadingCover] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(false);
+  const [sessionUserId, setSessionUserId] = useState<string | null>(null);
 
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
 
   useEffect(() => {
+    fetch("/api/auth/session")
+      .then((res) => res.json())
+      .then((data) => setSessionUserId(data.userId))
+      .catch(() => setSessionUserId(null));
+  }, []);
+
+  useEffect(() => {
+    if (!sessionUserId) return;
     const fetchUserData = async () => {
       try {
-        const res = await fetch("/api/profilePageData/profileData");
+        const res = await fetch(`/api/profilePageData/profileData/${sessionUserId}`);
         if (!res.ok) throw new Error("Failed to fetch the user data");
         const userData = await res.json();
         setUser(userData);
@@ -39,13 +48,15 @@ export default function EditProfileModal({
         setLocation(userData.location || "");
         setCoverImage(userData.coverImage || "");
         setProfileImage(userData.profileImage || "");
+        setPreviousCoverImage(userData.coverImage || "");
+        setPreviousProfileImage(userData.profileImage || "");
       } catch (err) {
         console.error("Error fetching user data:", err);
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [sessionUserId]);
 
   const uploadImage = async (file) => {
     const formData = new FormData();
@@ -67,13 +78,13 @@ export default function EditProfileModal({
     if (type === "cover") {
       setLoadingCover(true);
       const url = await uploadImage(file);
-      setPreviousCoverImage(coverImage); // Store the current cover image as the previous one
+      setPreviousCoverImage(coverImage);
       setCoverImage(url);
       setLoadingCover(false);
     } else if (type === "profile") {
       setLoadingProfile(true);
       const url = await uploadImage(file);
-      setPreviousProfileImage(profileImage); // Store the current profile image as the previous one
+      setPreviousProfileImage(profileImage);
       setProfileImage(url);
       setLoadingProfile(false);
     }
@@ -91,8 +102,8 @@ export default function EditProfileModal({
           location,
           coverImage,
           profileImage,
-          previousCoverImage, // Send the previous cover image URL
-          previousProfileImage, // Send the previous profile image URL
+          previousCoverImage,
+          previousProfileImage,
         }),
       });
 
@@ -115,8 +126,8 @@ export default function EditProfileModal({
       <Modal
         isOpen={openState}
         onRequestClose={onClose}
-        className="modal-content" // Apply animation class
-        overlayClassName="modal-overlay" // Custom overlay styling
+        className="modal-content"
+        overlayClassName="modal-overlay"
         bodyOpenClassName="overflow-hidden"
       >
         <div className="flex-col">
@@ -132,7 +143,7 @@ export default function EditProfileModal({
           <div className="w-full h-[10rem] bg-gray-800 rounded-t-xl opacity-70 relative mt-4 z-10">
             {loadingCover && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30">
-                <div className="loader"></div> {/* Spinner */}
+                <div className="loader"></div>
               </div>
             )}
             {coverImage && (
@@ -161,7 +172,7 @@ export default function EditProfileModal({
           <div className="bg-gray-700 w-[7rem] h-[7rem] left-10 absolute top-[11rem] rounded-full overflow-hidden z-10">
             {loadingProfile && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30">
-                <div className="loader"></div> {/* Spinner */}
+                <div className="loader"></div>
               </div>
             )}
             <Image
@@ -243,12 +254,11 @@ export default function EditProfileModal({
           bottom: 0;
           display: flex;
           justify-content: center;
-          align-items: flex-start; /* Align modal to the top */
-          padding-top: 20px; /* Add some space from the top */
+          align-items: flex-start;
+          padding-top: 20px;
           margin-top: 9rem;
           z-index: 1050;
         }
-
         .modal-content {
           width: 650px;
           min-height: 85vh;
@@ -256,7 +266,7 @@ export default function EditProfileModal({
           display: flex;
           flex-direction: column;
           padding: 20px;
-          background: black; /* Changed background to black */
+          background: black;
           border-radius: 10px;
           box-shadow: 0 1px 10px rgba(255, 255, 255, 0.2);
           overflow-y: auto;
@@ -265,36 +275,28 @@ export default function EditProfileModal({
           color: white;
           z-index: 1100;
         }
-
         .overflow-hidden {
           overflow: hidden;
         }
-
-        /* Scrollbar Customization */
         .modal-content::-webkit-scrollbar,
         .flex-grow::-webkit-scrollbar {
           width: 10px;
         }
-
         .modal-content::-webkit-scrollbar-thumb,
         .flex-grow::-webkit-scrollbar-thumb {
-          background-color: black !important; /* Scrollbar thumb color */
+          background-color: black !important;
           border-radius: 4px;
         }
-
         .modal-content::-webkit-scrollbar-track,
         .flex-grow::-webkit-scrollbar-track {
-          background-color: gray !important; /* Scrollbar track color */
+          background-color: gray !important;
         }
-
-        /* Firefox Scrollbar */
         .modal-content,
         .flex-grow {
-          scrollbar-color: black #f0f0f0; /* Thumb color and track color */
-          scrollbar-width: thin; /* Make the scrollbar thinner */
+          scrollbar-color: black #f0f0f0;
+          scrollbar-width: thin;
         }
-        
-         .loader {
+        .loader {
           border: 4px solid rgba(255, 255, 255, 0.3);
           border-top: 4px solid white;
           border-radius: 50%;
@@ -302,7 +304,6 @@ export default function EditProfileModal({
           height: 30px;
           animation: spin 1s linear infinite;
         }
-
         @keyframes spin {
           0% {
             transform: rotate(0deg);
@@ -311,7 +312,6 @@ export default function EditProfileModal({
             transform: rotate(360deg);
           }
         }
-
         @keyframes slide-up {
           from {
             transform: translateY(100%);
@@ -322,7 +322,6 @@ export default function EditProfileModal({
             opacity: 1;
           }
         }
-
         #content:empty::before {
           content: attr(placeholder);
           color: gray;

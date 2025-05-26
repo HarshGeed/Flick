@@ -1,34 +1,31 @@
-"use client";
-import EditProfileModal from "@/components/EditProfileModal";
+'use client';
+import { useEffect, useState } from "react";
 import PostCard from "@/components/PostCard";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import defaultProfileImg from "@/public/default-userImg.png";
+import defaultProfileImg from '@/public/default-userImg.png';
+import FollowBtn from "@/components/FollowBtn";
+import { useParams } from "next/navigation";
 
 const btnClass =
   "cursor-pointer px-4 py-2 rounded-xl opacity-60 hover:bg-stone-900 transition ease-in-out duration-200";
 
-export default function ProfilePage() {
+export default function ProfilePageOther() {
   const [activeSession, setActiveSection] = useState("Posts");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sessionUserId, setSessionUserId] = useState<string | null>(null);
+  
+
+  const params = useParams();
+  const userId = params.userId;
+  console.log("This is the userId at profilePageOthers", userId);
 
   useEffect(() => {
-    fetch("/api/auth/session")
-      .then((res) => res.json())
-      .then((data) => setSessionUserId(data.userId))
-      .catch(() => setSessionUserId(null));
-  }, []);
-
-  useEffect(() => {
-    if (!sessionUserId) return;
+    if(!userId) return;
     const fetchUserData = async () => {
       try {
-        const res = await fetch(`/api/profilePageData/profileData/${sessionUserId}`);
+        const res = await fetch(`/api/profilePageData/profileData/${userId}`);
         if (!res.ok) throw new Error("Failed to fetch the user data");
         const userData = await res.json();
         setUser(userData);
@@ -38,18 +35,16 @@ export default function ProfilePage() {
     };
 
     fetchUserData();
-  }, [sessionUserId]);
+  }, [userId]);
 
   useEffect(() => {
-    if (!sessionUserId) return;
+    if(!userId) return;
     const fetchData = async () => {
       setLoading(true);
       setError("");
 
       try {
-        const res = await fetch(
-          `/api/profilePageData/${activeSession.toLowerCase()}/${sessionUserId}`
-        );
+        const res = await fetch(`/api/profilePageData/${activeSession.toLowerCase()}/${userId}`);
         if (!res.ok) throw new Error("Failed to fetch data");
         const result = await res.json();
         setData(result);
@@ -62,9 +57,10 @@ export default function ProfilePage() {
     };
 
     fetchData();
-  }, [activeSession, sessionUserId]);
+  }, [activeSession, userId]);
 
   const renderMainContent = () => {
+    if(!userId) return <p>Loading...</p>
     if (loading) return <p>Loading...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
     if (data.length === 0) return <p>No data available.</p>;
@@ -93,7 +89,7 @@ export default function ProfilePage() {
   };
 
   if (!user) {
-    return <p>Loading the user data...</p>;
+    return <p>Loading the user data...</p>
   }
 
   return (
@@ -130,12 +126,15 @@ export default function ProfilePage() {
         <div className="mt-[5rem] ml-4">
           <div className="flex justify-between items-center">
             <p className="text-xl font-bold">{user.username}</p>
-            <button
-              className="bg-stone-900 rounded-2xl px-4 py-1 font-light opacity-80 transition ease-in-out duration-300 cursor-pointer shadow-2xl hover:bg-stone-800"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <p>Edit Profile</p>
-            </button>
+            <div className="flex gap-2">
+              <FollowBtn userId={user._id} />
+              <button
+                className="bg-amber-200 text-black rounded-2xl px-4 py-1 font-light transition hover:bg-amber-300"
+                // onClick={...} // Add your message handler here
+              >
+                Message
+              </button>
+            </div>
           </div>
           <p className="text-sm opacity-60 font-medium">{user.userID}</p>
           <p className="mt-4">{user.bio}</p>
@@ -156,49 +155,21 @@ export default function ProfilePage() {
         {/* Session Buttons */}
         <div className="sticky top-0 z-50 mt-8 shadow-md">
           <div className="flex justify-center space-x-4">
-            <button
-              onClick={() => setActiveSection("Posts")}
-              className={`${btnClass} ${activeSession === "Posts" ? "bg-stone-900" : ""}`}
-            >
-              Posts
-            </button>
-            <button
-              onClick={() => setActiveSection("Reviews")}
-              className={`${btnClass} ${activeSession === "Reviews" ? "bg-stone-900" : ""}`}
-            >
-              Reviews
-            </button>
-            <button
-              onClick={() => setActiveSection("LikedPosts")}
-              className={`${btnClass} ${activeSession === "LikedPosts" ? "bg-stone-900" : ""}`}
-            >
-              Liked Posts
-            </button>
-            <button
-              onClick={() => setActiveSection("LikedReviews")}
-              className={`${btnClass} ${activeSession === "LikedReviews" ? "bg-stone-900" : ""}`}
-            >
-              Liked Reviews
-            </button>
-            <button
-              onClick={() => setActiveSection("Watchlist")}
-              className={`${btnClass} ${activeSession === "Watchlist" ? "bg-stone-900" : ""}`}
-            >
-              Watchlist
-            </button>
+            <button onClick={() => setActiveSection("Posts")} className={`${btnClass} ${activeSession === "Posts" ? "bg-stone-900" : ""}`}>Posts</button>
+            <button onClick={() => setActiveSection("Reviews")} className={`${btnClass} ${activeSession === "Reviews" ? "bg-stone-900" : ""}`}>Reviews</button>
+            <button onClick={() => setActiveSection("LikedPosts")} className={`${btnClass} ${activeSession === "LikedPosts" ? "bg-stone-900" : ""}`}>Liked Posts</button>
+            <button onClick={() => setActiveSection("LikedReviews")} className={`${btnClass} ${activeSession === "LikedReviews" ? "bg-stone-900" : ""}`}>Liked Reviews</button>
+            <button onClick={() => setActiveSection("Watchlist")} className={`${btnClass} ${activeSession === "Watchlist" ? "bg-stone-900" : ""}`}>Watchlist</button>
           </div>
         </div>
       </div>
 
       {/* Posts Section */}
       <div className="flex-1 mt-6 px-4">
-        <div className="pb-[2rem]">{renderMainContent()}</div>
+        <div className="pb-[2rem]">
+          {renderMainContent()}
+        </div>
       </div>
-
-      <EditProfileModal
-        openState={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </div>
   );
 }

@@ -1,18 +1,19 @@
 import { NextResponse } from "next/server";
 import { connect } from "@/lib/dbConn";
 import User from "@/models/userModel";
-import { auth } from "@/auth";
 
-export const GET = async () => {
+export const GET = async (req: Request, { params }: { params: { userId: string } }) => {
   try {
     await connect();
 
-    const session = await auth();
-    if (!session || !session.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { userId } = params;
+    if (!userId) {
+      return NextResponse.json({ error: "User ID required" }, { status: 400 });
     }
 
-    const user = await User.findById(session.user.id).select("profileImage coverImage followers following bio username").lean();
+    const user = await User.findById(userId)
+      .select("profileImage coverImage followers following bio username userID followerCount followingCount profileImage")
+      .lean();
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });

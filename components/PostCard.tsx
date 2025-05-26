@@ -45,7 +45,6 @@ export default function PostCard({
           />
           <p className="font-medium">{username}</p>
         </div>
-        <FollowBtn userId={userId}/>
       </div>
       <div className="mt-4">
         {Array.isArray(postImg) && postImg.length > 0 && (
