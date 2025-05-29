@@ -2,13 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/lib/dbConn";
 import User from "@/models/userModel";
 
+// Follow/Unfollow logic
 export const POST = async (req: NextRequest) => {
   try {
-    connect();
+    await connect();
 
     const { postUserId, currentUserId } = await req.json();
-    console.log("User ID", postUserId);
-    console.log("current user id", currentUserId);
     if (!postUserId || !currentUserId) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
@@ -28,25 +27,33 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    // Check if already following
-    const isFollowing = userToFollow.followers.includes(currentUserId);
-
-    if (userToFollow !== currentUser) {
-      if (isFollowing) {
-        // Unfollow logic
-        userToFollow.followers = userToFollow.followers.filter(
-          (id) => id.toString() !== currentUserId
-        );
-        currentUser.following = currentUser.following.filter(
-          (id) => id.toString() !== postUserId
-        );
-      } else {
-        // Follow logic
-        userToFollow.followers.push(currentUserId);
-        currentUser.following.push(postUserId);
-      }
+    // Prevent self-follow
+    if (postUserId === currentUserId) {
+      return NextResponse.json(
+        { error: "You cannot follow yourself" },
+        { status: 400 }
+      );
     }
-    // Save changes
+
+    // Check if already following
+    const isFollowing = userToFollow.followers
+      .map((id: any) => id.toString())
+      .includes(currentUserId);
+
+    if (isFollowing) {
+      // Unfollow logic
+      userToFollow.followers = userToFollow.followers.filter(
+        (id: any) => id.toString() !== currentUserId
+      );
+      currentUser.following = currentUser.following.filter(
+        (id: any) => id.toString() !== postUserId
+      );
+    } else {
+      // Follow logic
+      userToFollow.followers.push(currentUserId);
+      currentUser.following.push(postUserId);
+    }
+
     await userToFollow.save();
     await currentUser.save();
 
@@ -62,3 +69,32 @@ export const POST = async (req: NextRequest) => {
     );
   }
 };
+
+// Check follow status
+export async function GET(req: NextRequest) {
+  try {
+    await connect();
+    const { searchParams } = new URL(req.url);
+    const profileUserId = searchParams.get("profileUserId");
+    const currentUserId = searchParams.get("currentUserId");
+
+    if (!profileUserId || !currentUserId) {
+      return NextResponse.json({ isFollowing: false }, { status: 200 });
+    }
+
+    const profileUser = await User.findById(profileUserId)
+      .select("followers")
+      .lean();
+    if (!profileUser) {
+      return NextResponse.json({ isFollowing: false }, { status: 200 });
+    }
+
+    const isFollowing = (profileUser.followers || []).some(
+      (id: any) => id.toString() === currentUserId
+    );
+
+    return NextResponse.json({ isFollowing }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ isFollowing: false }, { status: 200 });
+  }
+}

@@ -1,28 +1,37 @@
 import { useEffect, useState } from "react";
 
 export default function FollowBtn({ userId }) {
-
-  const [isFollowing, setIsFollowing] = useState(false); 
+  const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
-    const fetchSession = async () => {
-        try{
-            const res = await fetch("/api/auth/session");
-            if(!res.ok) throw new Error("Failed to fetch session");
-            const data = await res.json();
-            setCurrentUserId(data.userId)
-                
-        }catch(err){
-            console.error("Error fetching session:", err);
+    const fetchSessionAndStatus = async () => {
+      try {
+        const res = await fetch("/api/auth/session");
+        if (!res.ok) throw new Error("Failed to fetch session");
+        const data = await res.json();
+        setCurrentUserId(data.userId);
+
+        // Fetch follow status only if both IDs are present and not self
+        if (data.userId && userId && data.userId !== userId) {
+          const followRes = await fetch(
+            `/api/follow?profileUserId=${userId}&currentUserId=${data.userId}`
+          );
+          if (followRes.ok) {
+            const followData = await followRes.json();
+            setIsFollowing(followData.isFollowing);
+          }
         }
+      } catch (err) {
+        console.error("Error fetching session or follow status:", err);
+      }
     };
-    fetchSession();
-  }, []);
+    fetchSessionAndStatus();
+  }, [userId]);
 
   const handleFollow = async () => {
-    if (loading) return; // Prevent multiple clicks during loading
+    if (loading) return;
     setLoading(true);
 
     try {
@@ -34,13 +43,16 @@ export default function FollowBtn({ userId }) {
 
       if (!res.ok) throw new Error("Failed to update follow status");
 
-      setIsFollowing(!isFollowing); // Toggle follow state
+      setIsFollowing((prev) => !prev);
     } catch (err) {
       console.error("Error updating follow status:", err);
     } finally {
       setLoading(false);
     }
   };
+
+  // Hide button if user is viewing their own profile
+  if (currentUserId === userId) return null;
 
   return (
     <button
@@ -50,7 +62,7 @@ export default function FollowBtn({ userId }) {
           ? "bg-amber-200 text-black hover:bg-amber-300"
           : "bg-amber-50 text-black hover:bg-amber-200"
       }`}
-      disabled={loading} // Disable button while loading
+      disabled={loading}
     >
       {loading ? "Processing..." : isFollowing ? "Following" : "Follow"}
     </button>
