@@ -1,8 +1,18 @@
 import { connect } from "@/lib/dbConn";
 import Post from "@/models/postModel";
 import User from "@/models/userModel";
+import Notification from "@/models/notificationModel";
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
+
+// Socket server import (adjust path if needed)
+let io, onlineUsers;
+try {
+  ({ io, onlineUsers } = require("socket-server"));
+} catch (e) {
+  io = null;
+  onlineUsers = new Map();
+}
 
 export const PUT = async (req, { params }) => {
   try {
@@ -37,12 +47,42 @@ export const PUT = async (req, { params }) => {
       // Unsave the post
       post.savedBy.pull(userId);
       user.savedPosts.pull(id);
-      post.saveCounts = Math.max((post.saveCounts || 0) -1, 0)
+      post.saveCounts = Math.max((post.saveCounts || 0) - 1, 0);
     } else {
       // Save the post
       post.savedBy.push(userId);
       user.savedPosts.push(id);
       post.saveCounts = (post.saveCounts || 0) + 1;
+
+      // Create notification if the post owner is not the one saving
+      if (post.user.toString() !== userId) {
+        try {
+          const notification = await Notification.create({
+            recipientId: post.user,
+            senderId: userId,
+            type: "save",
+            postId: post._id,
+          });
+          // Log for debugging
+          console.log("Notification created:", notification);
+
+          if (io && onlineUsers) {
+            const recipientSocketId = onlineUsers.get(post.user.toString());
+            if (recipientSocketId) {
+              io.to(recipientSocketId).emit("notification", {
+                ...notification.toObject(),
+                senderId: {
+                  _id: user._id,
+                  username: user.username,
+                  image: user.profileImage,
+                },
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Error creating notification:", err);
+        }
+      }
     }
 
     // Save the changes

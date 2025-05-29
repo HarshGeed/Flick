@@ -14,12 +14,17 @@ export async function GET(
     }
 
     // Fetch notifications for the user, most recent first
+    const count = await Notification.countDocuments({ recipientId: userId, isRead: false });
     const notifications = await Notification.find({ recipientId: userId })
       .sort({ createdAt: -1 })
       .populate("senderId", "username image")
       .lean();
 
-    return NextResponse.json(notifications, { status: 200 });
+    // Always return an array for notifications
+    return NextResponse.json(
+      { notifications: Array.isArray(notifications) ? notifications : [], unread: count > 0 },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch notifications" },

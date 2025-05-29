@@ -7,7 +7,14 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Notification from "@/models/notificationModel";
 
-const { io, onlineUsers } = require("../../../../../socket-server");
+
+let io, onlineUsers;
+try {
+  ({ io, onlineUsers } = require("socket-server"));
+} catch (e) {
+  io = null;
+  onlineUsers = new Map();
+}
 
 export const PUT = async (req, { params }) => {
   try {
@@ -19,7 +26,7 @@ export const PUT = async (req, { params }) => {
     }
 
     const { id } = params; // `id` can be a postId or commentId
-    const userId = session?.user?.id;
+    const userId = session.user.id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json("Invalid ID", { status: 400 });
@@ -58,54 +65,70 @@ export const PUT = async (req, { params }) => {
       }
     } else {
       // Like
-      user.likedPosts.push(id);
+      if (!user.likedPosts.includes(id)) user.likedPosts.push(id);
       if (post) {
-        post.likedBy.push(userId);
+        if (!post.likedBy.includes(userId)) post.likedBy.push(userId);
         post.likes = (post.likes || 0) + 1;
 
         if (post.user.toString() !== userId) {
-          const notification = await Notification.create({
-            recipientId: post.user,
-            senderId: userId,
-            type: "like",
-            postId: post._id,
-          });
-
-          const recipientSocketId = onlineUsers.get(post.user.toString());
-          if (recipientSocketId) {
-            io.to(recipientSocketId).emit("notification", {
-              ...notification.toObject(),
-              senderId: {
-                _id: user._id,
-                username: user.username,
-                image: user.profileImage,
-              },
+          try {
+            const notification = await Notification.create({
+              recipientId: post.user,
+              senderId: userId,
+              type: "like",
+              postId: post._id,
             });
+            // Log for debugging
+            console.log("Notification created:", notification);
+
+            if (io && onlineUsers) {
+              const recipientSocketId = onlineUsers.get(post.user.toString());
+              if (recipientSocketId) {
+                io.to(recipientSocketId).emit("notification", {
+                  ...notification.toObject(),
+                  senderId: {
+                    _id: user._id,
+                    username: user.username,
+                    image: user.profileImage,
+                  },
+                });
+              }
+            }
+          } catch (err) {
+            console.error("Error creating notification:", err);
           }
         }
       } else {
-        comment.likedBy.push(userId);
+        if (!comment.likedBy.includes(userId)) comment.likedBy.push(userId);
         comment.likes = (comment.likes || 0) + 1;
 
         if (comment.user.toString() !== userId) {
-          const notification = await Notification.create({
-            recipientId: comment.user,
-            senderId: userId,
-            type: "like",
-            commentId: comment._id,
-            postId: comment.post,
-          });
-
-          const recipientSocketId = onlineUsers.get(comment.user.toString());
-          if (recipientSocketId) {
-            io.to(recipientSocketId).emit("notification", {
-              ...notification.toObject(),
-              senderId: {
-                _id: user._id,
-                username: user.username,
-                image: user.profileImage,
-              },
+          try {
+            const notification = await Notification.create({
+              recipientId: comment.user,
+              senderId: userId,
+              type: "like",
+              commentId: comment._id,
+              postId: comment.post,
             });
+            // Log for debugging
+            console.log("Notification created:", notification);
+
+            if (io && onlineUsers) {
+              const recipientSocketId = onlineUsers.get(comment.user.toString());
+              if (recipientSocketId) {
+                io.to(recipientSocketId).emit("notification", {
+                  ...notification.toObject(),
+                  senderId: {
+                    _id: user._id,
+                    username: user.username,
+                    image: user.profileImage,
+                  },
+                });
+              }
+            }
+          } catch (err) {
+            console.error("Error creating notification:", err);
           }
         }
       }

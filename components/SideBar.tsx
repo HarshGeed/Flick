@@ -3,6 +3,7 @@ import SideBarLink from "./SideBarLink";
 import Image from "next/image";
 import avatar from "@/public/avatar.jpg";
 import { auth } from "@/auth";
+import NotificationDot from "./NotificationDot";
 
 import {
   Search,
@@ -48,8 +49,9 @@ export default async function SideBar() {
         <SideBarLink href="#" Icon={MessageCircleMore}>
           Messages
         </SideBarLink>
-        <SideBarLink href="#" Icon={Megaphone}>
+        <SideBarLink href="/dashboard/notifications" Icon={Megaphone}>
           Notifications
+          {session?.user?.id && <NotificationDot userId={session?.user?.id}/>}
         </SideBarLink>
         <SideBarLink href="/dashboard/bookmarks" Icon={Bookmark}>
           Bookmarks

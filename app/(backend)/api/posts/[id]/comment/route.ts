@@ -3,10 +3,17 @@ import { NextResponse } from "next/server";
 import Post from "@/models/postModel";
 import Comment from "@/models/commentModel";
 import Notification from "@/models/notificationModel";
+import User from "@/models/userModel";
 import { connect } from "@/lib/dbConn";
 
 // Import socket server and onlineUsers map
-const { io, onlineUsers } = require("../../../../../socket-server");
+let io, onlineUsers;
+try {
+  ({ io, onlineUsers } = require("socket-server"));
+} catch (e) {
+  io = null;
+  onlineUsers = new Map();
+}
 
 export const POST = async (req, { params }) => {
   try {
@@ -68,6 +75,7 @@ export const POST = async (req, { params }) => {
         recipientId = parentComment.user;
         notificationPostId = parentComment.postId;
         notificationCommentId = parentComment._id;
+        notificationType = "reply";
       }
     }
 
@@ -76,24 +84,31 @@ export const POST = async (req, { params }) => {
 
     // Create and emit notification if needed
     if (recipientId && recipientId.toString() !== userId) {
-      const notification = await Notification.create({
-        recipientId,
-        senderId: userId,
-        type: notificationType,
-        postId: notificationPostId,
-        commentId: notificationCommentId,
-      });
-
-      const recipientSocketId = onlineUsers.get(recipientId.toString());
-      if (recipientSocketId) {
-        io.to(recipientSocketId).emit("notification", {
-          ...notification.toObject(),
-          senderId: {
-            _id: session.user.id,
-            username: session.user.name,
-            image: session.user.image,
-          },
+      try {
+        const notification = await Notification.create({
+          recipientId,
+          senderId: userId,
+          type: notificationType,
+          postId: notificationPostId,
+          commentId: notificationCommentId,
         });
+
+        // Get sender user info for socket emission
+        const senderUser = await User.findById(userId);
+
+        const recipientSocketId = onlineUsers.get(recipientId.toString());
+        if (recipientSocketId) {
+          io.to(recipientSocketId).emit("notification", {
+            ...notification.toObject(),
+            senderId: {
+              _id: senderUser?._id,
+              username: senderUser?.username,
+              image: senderUser?.profileImage,
+            },
+          });
+        }
+      } catch (err) {
+        console.error("Error creating notification:", err);
       }
     }
 
