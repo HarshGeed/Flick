@@ -5,6 +5,7 @@ import Image from "next/image";
 import defaultProfileImg from '@/public/default-userImg.png';
 import FollowBtn from "@/components/FollowBtn";
 import { useParams } from "next/navigation";
+import { Mail } from "lucide-react";
 
 const btnClass =
   "cursor-pointer px-4 py-2 rounded-xl opacity-60 hover:bg-stone-900 transition ease-in-out duration-200";
@@ -129,10 +130,10 @@ export default function ProfilePageOther() {
             <div className="flex gap-2">
               <FollowBtn userId={user._id} />
               <button
-                className="bg-amber-200 text-black rounded-2xl px-4 py-1 font-light transition hover:bg-amber-300"
+                className="bg-amber-200 text-black rounded-2xl px-3 py-1 font-light transition hover:opacity-70 cursor-pointer"
                 // onClick={...} // Add your message handler here
               >
-                Message
+                <Mail/>
               </button>
             </div>
           </div>

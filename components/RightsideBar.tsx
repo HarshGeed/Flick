@@ -1,5 +1,4 @@
 "use client";
-import { getNewsArticles, getHotPicks } from "@/sanity/sanity-utils";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import LogoutBtn from "./LogoutBtn";
@@ -26,33 +25,36 @@ export default function RightsideBar() {
       .catch(() => setSessionUserId(null));
   }, []);
 
+  // Fetch news and movies from backend API routes
   useEffect(() => {
-    async function fetchNews() {
+    const fetchNews = async () => {
+      setLoadingNews(true);
       try {
-        setLoadingNews(true);
-        const articles = await getNewsArticles();
-        setNews(articles);
+        const res = await fetch("/api/fetchNews");
+        const data = await res.json();
+        setNews(data.results ? data.results.slice(0, 10) : []);
       } catch (error) {
-        console.error("Error fetching news articles:", error);
+        setNews([]);
       } finally {
         setLoadingNews(false);
       }
-    }
+    };
 
-    async function fetchHotPicks() {
+    const fetchMovies = async () => {
+      setLoadingHotPicks(true);
       try {
-        setLoadingHotPicks(true);
-        const picks = await getHotPicks();
-        setHotPicks(picks);
+        const res = await fetch("/api/movies_section/popularMovies");
+        const data = await res.json();
+        setHotPicks(data ? data.slice(0, 10) : []);
       } catch (error) {
-        console.error("Error fetching hot picks:", error);
+        setHotPicks([]);
       } finally {
         setLoadingHotPicks(false);
       }
-    }
+    };
 
     fetchNews();
-    fetchHotPicks();
+    fetchMovies();
   }, []);
 
   // Debounced user search
@@ -148,13 +150,13 @@ export default function RightsideBar() {
           {loadingNews ? (
             <p className="text-gray-500">Loading news...</p>
           ) : news.length > 0 ? (
-            news.slice(0, 6).map((article) => (
+            news.map((article, idx) => (
               <div
-                key={article._id}
+                key={article._id || article.link || idx}
                 className="w-full rounded-2xl p-4 shadow-2xl mt-[1rem]"
                 style={{ backgroundColor: "#0f0f0f" }}
               >
-                <Link href={article.sourceUrl}>
+                <Link href={article.sourceUrl || article.link || "#"}>
                   <h2 className="font-bold">{article.title}</h2>
                   <p className="pt-2 opacity-70 line-clamp-4">
                     {article.description || "No description available"}
@@ -172,18 +174,30 @@ export default function RightsideBar() {
           {loadingHotPicks ? (
             <p className="text-gray-500">Loading Hot Picks...</p>
           ) : hotPicks.length > 0 ? (
-            hotPicks.slice(0, 6).map((article) => (
+            hotPicks.map((movie, idx) => (
               <div
-                key={article._id}
-                className="w-full rounded-2xl p-4 shadow-2xl mt-[1rem]"
+                key={movie.id || movie._id || idx}
+                className="w-full rounded-2xl p-4 shadow-2xl mt-[1rem] flex items-center gap-4"
                 style={{ backgroundColor: "#0f0f0f" }}
               >
-                <Link href={article.sourceUrl}>
-                  <h2 className="font-bold">{article.title}</h2>
-                  <p className="pt-2 opacity-70 line-clamp-4">
-                    {article.description || "No description available"}
+                {movie.poster_path && (
+                  <Image
+                    src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                    alt={movie.title || "Movie Poster"}
+                    width={60}
+                    height={90}
+                    className="rounded-lg object-cover"
+                  />
+                )}
+                <div>
+                  <Link href={`/explore/movie/${movie.id}`}>
+                    <h2 className="font-bold">{movie.title}</h2>
+                  
+                  <p className="pt-2 opacity-70 line-clamp-3">
+                    {movie.overview || "No description available"}
                   </p>
-                </Link>
+                  </Link>
+                </div>
               </div>
             ))
           ) : (

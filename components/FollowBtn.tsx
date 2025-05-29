@@ -57,10 +57,10 @@ export default function FollowBtn({ userId }) {
   return (
     <button
       onClick={handleFollow}
-      className={`px-3 py-2 rounded-md transition ${
+      className={`px-3 py-2 rounded-2xl shadow-lg cursor-pointer transition ${
         isFollowing
-          ? "bg-amber-200 text-black hover:bg-amber-300"
-          : "bg-amber-50 text-black hover:bg-amber-200"
+          ? "bg-[#582c79] text-white hover:opacity-70"
+          : "bg-amber-50 text-black hover:opacity-70"
       }`}
       disabled={loading}
     >
