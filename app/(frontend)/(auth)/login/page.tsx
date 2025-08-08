@@ -35,9 +35,38 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = async () => {
-    setLoading(true);
-    await signIn("google");
-    setLoading(false);
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log("Initiating Google sign-in...");
+      
+      const result = await signIn("google", {
+        callbackUrl: "/dashboard",
+        redirect: false
+      });
+      
+      console.log("Google sign-in result:", result);
+      
+      if (result?.error) {
+        if (result.error === "OAuthCallback") {
+          setError("Google OAuth callback failed. Please check your redirect URI configuration.");
+        } else if (result.error === "AccessDenied") {
+          setError("Access denied. Please try again or contact support.");
+        } else {
+          setError(`Google sign-in failed: ${result.error}`);
+        }
+        console.error("Google sign-in error:", result.error);
+      } else if (result?.url) {
+        // Successful redirect
+        window.location.href = result.url;
+      }
+    } catch (error) {
+      setError("Google sign-in failed. Please try again.");
+      console.error("Google sign-in error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
