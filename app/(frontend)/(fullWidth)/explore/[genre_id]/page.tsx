@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 
 // Movie genres for name lookup
@@ -17,6 +17,7 @@ const movieGenres = [
 
 export default function GenrePage() {
   const { genre_id } = useParams();
+  const router = useRouter();
   const [movies, setMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,9 +79,10 @@ export default function GenrePage() {
               <div
                 ref={lastMovieRef}
                 key={`${item.id}-${idx}`}
-                className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px]"
+                className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px] cursor-pointer"
+                onClick={() => router.push(`/explore/movie/${item.id}`)}
               >
-                <div className="relative w-full h-[220px] cursor-pointer hover:opacity-80">
+                <div className="relative w-full h-[220px] hover:opacity-80">
                   <Image
                     src={
                       item.poster_path
@@ -109,9 +111,10 @@ export default function GenrePage() {
           return (
             <div
               key={`${item.id}-${idx}`}
-              className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px]"
+              className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px] cursor-pointer"
+              onClick={() => router.push(`/explore/movie/${item.id}`)}
             >
-              <div className="relative w-full h-[220px] cursor-pointer hover:opacity-80">
+              <div className="relative w-full h-[220px] hover:opacity-80">
                 <Image
                   src={
                     item.poster_path

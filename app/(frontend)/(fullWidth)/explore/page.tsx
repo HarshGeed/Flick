@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const genres = [
   { name: "Action", id: 28, color: "bg-indigo-700" },
@@ -30,6 +31,7 @@ export default function Explore() {
   const [shows, setShows] = useState([]);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const router = useRouter();
 
@@ -111,16 +113,19 @@ export default function Explore() {
 
   // Hide dropdown when clicking outside
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
+    function handleDocumentClick(e: MouseEvent) {
+      const target = e.target as Node;
+      const clickedInsideInput = !!inputRef.current && inputRef.current.contains(target);
+      const clickedInsideDropdown = !!dropdownRef.current && dropdownRef.current.contains(target);
+      if (!clickedInsideInput && !clickedInsideDropdown) {
         setShowDropdown(false);
       }
     }
     if (showDropdown) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("click", handleDocumentClick);
     }
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", handleDocumentClick);
     };
   }, [showDropdown]);
 
@@ -144,25 +149,48 @@ export default function Explore() {
 
         {/* Dropdown results */}
         {showDropdown && (
-          <div className="absolute mt-[3rem] bg-[#0c0c0c] border border-gray-700 rounded-xl shadow-lg z-50 max-h-96 overflow-y-auto px-2 py-1 w-[25rem]">
+          <div
+            ref={dropdownRef}
+            className="absolute mt-[3rem] bg-[#0c0c0c] border border-gray-700 rounded-xl shadow-lg z-50 max-h-96 overflow-y-auto px-2 py-1 w-[25rem]"
+          >
             {loading && <p className="text-gray-400 p-4">Searching...</p>}
             {!loading && results.length === 0 && (
               <p className="text-gray-500 p-4">No results found.</p>
             )}
-            {results.map((item) => (
-              <div
-                key={`${item.id}-${item.media_type}-${item.name || item.title}`}
-                className="p-3 border-b border-gray-800 last:border-b-0 hover:bg-stone-600 cursor-pointer rounded-xl"
-              >
-                <h2 className="text-lg font-semibold text-white">
-                  {item.title || item.name || "Untitled"}
-                </h2>
-                <span className="text-xs text-gray-400">{item.media_type}</span>
-                <p className="text-sm text-gray-300 mt-1 line-clamp-2">
-                  {item.overview || "No description available."}
-                </p>
-              </div>
-            ))}
+            {results.map((item) => {
+              const isMovie = item.media_type === "movie" || !!item.title;
+              const content = (
+                <>
+                  <h2 className="text-lg font-semibold text-white">
+                    {item.title || item.name || "Untitled"}
+                  </h2>
+                  <span className="text-xs text-gray-400">{item.media_type}</span>
+                  <p className="text-sm text-gray-300 mt-1 line-clamp-2">
+                    {item.overview || "No description available."}
+                  </p>
+                </>
+              );
+              return isMovie ? (
+                <Link
+                  href={`/explore/movie/${item.id}`}
+                  key={`${item.id}-${item.media_type}-${item.name || item.title}`}
+                  className="block p-3 border-b border-gray-800 last:border-b-0 hover:bg-stone-600 cursor-pointer rounded-xl"
+                  onClick={() => {
+                    setShowDropdown(false);
+                    setQuery("");
+                  }}
+                >
+                  {content}
+                </Link>
+              ) : (
+                <div
+                  key={`${item.id}-${item.media_type}-${item.name || item.title}`}
+                  className="p-3 border-b border-gray-800 last:border-b-0 rounded-xl"
+                >
+                  {content}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
@@ -186,7 +214,10 @@ export default function Explore() {
           >
             {popular.map((item, index) => (
               <SwiperSlide key={`${item.id}-${index}`}>
-                <div className="relative w-full h-full cursor-pointer">
+                <div
+                  className="relative w-full h-full cursor-pointer"
+                  onClick={() => router.push(`/explore/movie/${item.id}`)}
+                >
                   <Image
                     src={
                       item.poster_path
@@ -238,8 +269,9 @@ export default function Explore() {
         >
           {movies.map((item, index) => (
             <SwiperSlide key={`${item.id}-${index}`}>
-              <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px]">
-                <div className="relative w-full h-[220px] cursor-pointer hover:opacity-80">
+              <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px] cursor-pointer"
+                   onClick={() => router.push(`/explore/movie/${item.id}`)}>
+                <div className="relative w-full h-[220px] hover:opacity-80">
                   <Image
                     src={
                       item.poster_path
@@ -283,8 +315,9 @@ export default function Explore() {
         >
           {shows.map((item, index) => (
             <SwiperSlide key={`${item.id}-${index}`}>
-              <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px]">
-                <div className="relative w-full h-[220px] cursor-pointer hover:opacity-80">
+              <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px] cursor-pointer"
+                   onClick={() => router.push(`/explore/movie/${item.id}`)}>
+                <div className="relative w-full h-[220px] hover:opacity-80">
                   <Image
                     src={
                       item.poster_path

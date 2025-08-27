@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Trending() {
@@ -37,9 +38,10 @@ export default function Trending() {
       ) : movies.length > 0 ? (
         <div className="grid grid-cols-2 gap-4">
           {movies.map((movie) => (
-            <div
+            <Link
+              href={`/explore/movie/${movie.id}`}
               key={movie.id}
-              className="rounded-lg shadow-lg bg-gray-800 text-white overflow-hidden"
+              className="rounded-lg shadow-lg bg-gray-800 text-white overflow-hidden hover:opacity-90 transition"
             >
               <div className="relative w-full h-64">
                 <Image
@@ -55,7 +57,7 @@ export default function Trending() {
                   {movie.overview || "No description available."}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       ) : (
