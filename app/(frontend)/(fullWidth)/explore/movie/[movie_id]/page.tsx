@@ -6,7 +6,7 @@ import Link from "next/link";
 import fb from "@/public/fb.png";
 import instagram from "@/public/instagram.png";
 import x from "@/public/twitter.png";
-import { Bookmark } from "lucide-react";
+import { Bookmark, Clock10 } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/scrollbar";
@@ -14,8 +14,7 @@ import { Scrollbar, Mousewheel } from "swiper/modules";
 import Modal from "react-modal";
 import socket from "@/lib/socket";
 import { Heart } from "lucide-react";
-import { useSession } from "next-auth/react";
-import { BookmarkCheck } from "lucide-react";
+import { CircleCheckBig } from "lucide-react";
 
 
 Modal.setAppElement("body");
@@ -35,14 +34,76 @@ export default function MovieDetailsPage() {
   const [btnLoading, setBtnLoading] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
   const [inWatchlist, setInWatchlist] = useState(false);
+  const [watchlistLoading, setWatchlistLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [sessionLoading, setSessionLoading] = useState(true);
 
-  const { data: session } = useSession();
-  const userId = session?.user?.id;
+  // Get user session from API
+  useEffect(() => {
+    const getSession = async () => {
+      try {
+        const res = await fetch('/api/auth/session');
+        if (res.ok) {
+          const data = await res.json();
+          setUserId(data.userId);
+        } else {
+          setUserId(null);
+        }
+      } catch (error) {
+        console.error('Error fetching session:', error);
+        setUserId(null);
+      } finally {
+        setSessionLoading(false);
+      }
+    };
+
+    getSession();
+  }, []);
 
   const handleOpenModal = () => setModalIsOpen(true);
   const handleCloseModal = () => {
     setModalIsOpen(false);
     setContent("");
+  };
+
+  // Check if movie is in watchlist on component mount
+  useEffect(() => {
+    if (!movie_id || !userId) return;
+    
+    const checkWatchlist = async () => {
+      try {
+        const res = await fetch(`/api/movies_section/checkWatchlist/${movie_id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setInWatchlist(data.inWatchlist);
+        }
+      } catch (error) {
+        console.error("Error checking watchlist:", error);
+      }
+    };
+
+    checkWatchlist();
+  }, [movie_id, userId]);
+
+  // Handle watchlist toggle
+  const handleWatchlistToggle = async () => {
+    if (!userId || watchlistLoading) return;
+    
+    setWatchlistLoading(true);
+    try {
+      const res = await fetch(`/api/movies_section/watchlistMovie/${movie_id}`, {
+        method: "POST",
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setInWatchlist(data.inWatchlist);
+      }
+    } catch (error) {
+      console.error("Error updating watchlist:", error);
+    } finally {
+      setWatchlistLoading(false);
+    }
   };
 
   // Submit review
@@ -126,6 +187,8 @@ export default function MovieDetailsPage() {
       );
     }
   };
+
+
 
   useEffect(() => {
     if (!movie_id) return;
@@ -317,9 +380,24 @@ export default function MovieDetailsPage() {
                   )}
                 </div>
                 <div className="flex mt-4 space-x-3">
-                  <button className="bg-[#141414] p-3 rounded-full">
-                    <Bookmark />
-                  </button>
+                  {/* Watchlist - Only show if user is logged in */}
+                  {userId && (
+                    <button 
+                      className="bg-[#141414] p-3 rounded-full hover:bg-[#1f1f1f] transition-colors duration-200"
+                      onClick={handleWatchlistToggle}
+                      disabled={watchlistLoading}
+                      title={inWatchlist ? "Remove from watchlist" : "Add to watchlist"}
+                    >
+                      {watchlistLoading ? (
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      ) : inWatchlist ? (
+                        <CircleCheckBig className="text-green-400" size={20} />
+                      ) : (
+                        <Clock10 className="text-white" size={20} />
+                      )}
+                    </button>
+                  )}
+                  {/* Review */}
                   <button
                     className="bg-[#141414] px-3 py-1 rounded-xl"
                     onClick={handleOpenModal}
@@ -599,9 +677,7 @@ export default function MovieDetailsPage() {
             <div
               contentEditable
               id="content"
-              placeholder="What's on your mind?"
               className="pr-2 w-full text-white rounded-md resize-none focus:outline-none overflow-y-auto"
-              value={content}
               onInput={(e) => {
                 const div = e.target as HTMLDivElement;
                 setContent(div.innerText);

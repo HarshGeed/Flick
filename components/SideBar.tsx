@@ -47,7 +47,7 @@ export default async function SideBar() {
         <SideBarLink href="/dashboard/trending" Icon={TrendingUp}>
           Trending
         </SideBarLink>
-        <SideBarLink href="#" Icon={Clock10}>
+        <SideBarLink href="/dashboard/watchlist" Icon={Clock10}>
           Watchlist
         </SideBarLink>
         <SideBarLink href="/dashboard/notifications" Icon={Megaphone}>
