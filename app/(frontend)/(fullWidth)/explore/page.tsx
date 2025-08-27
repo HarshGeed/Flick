@@ -28,7 +28,7 @@ export default function Explore() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [popular, setPopular] = useState([]);
   const [movies, setMovies] = useState([]);
-  const [shows, setShows] = useState([]);
+  const [topRatedMovies, setTopRatedMovies] = useState([]);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -50,17 +50,17 @@ export default function Explore() {
   },[])
 
   useEffect(() => {
-    async function fetchShows(){
+    async function fetchTopRated(){
       try{
-        const showRes = await fetch("/api/movies_section/tvShows");
-        if(!showRes.ok) throw new Error("Fetching TV shows failed");
-        const showsData = await showRes.json();
-        setShows(showsData);
+        const topRatedRes = await fetch("/api/movies_section/topRatedMovies");
+        if(!topRatedRes.ok) throw new Error("Fetching top rated movies failed");
+        const topRatedData = await topRatedRes.json();
+        setTopRatedMovies(topRatedData);
       }catch(err){
-        console.log("Failed to fetch shows", err);
+        console.log("Failed to fetch top rated movies", err);
       }
     }
-     fetchShows();
+     fetchTopRated();
   },[])
 
   useEffect(() => {
@@ -302,9 +302,9 @@ export default function Explore() {
         </div>
       </div>
 
-      {/* TV shows */}
+      {/* Top Rated Movies */}
       <div className="mt-10">
-        <h2 className="text-3xl font-semibold">TV Shows</h2>
+        <h2 className="text-3xl font-semibold">Top Rated Movies</h2>
         <div className="w-full max-w-[60rem] h-[20rem] mt-4">
         <Swiper
           modules={[Navigation]}
@@ -313,7 +313,7 @@ export default function Explore() {
           navigation
           className="w-full"
         >
-          {shows.map((item, index) => (
+          {topRatedMovies.map((item, index) => (
             <SwiperSlide key={`${item.id}-${index}`}>
               <div className="bg-[#18181b] rounded-xl shadow-lg overflow-hidden flex flex-col h-[340px] cursor-pointer"
                    onClick={() => router.push(`/explore/movie/${item.id}`)}>

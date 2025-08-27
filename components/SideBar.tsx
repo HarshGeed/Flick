@@ -13,6 +13,7 @@ import {
   House,
   Bookmark,
   User,
+  Clock10,
 } from "lucide-react";
 import Link from "next/link";
 import CreatePostModal from "./CreatePostModal";
@@ -46,8 +47,8 @@ export default async function SideBar() {
         <SideBarLink href="/dashboard/trending" Icon={TrendingUp}>
           Trending
         </SideBarLink>
-        <SideBarLink href="#" Icon={MessageCircleMore}>
-          Messages
+        <SideBarLink href="#" Icon={Clock10}>
+          Watchlist
         </SideBarLink>
         <SideBarLink href="/dashboard/notifications" Icon={Megaphone}>
           Notifications
