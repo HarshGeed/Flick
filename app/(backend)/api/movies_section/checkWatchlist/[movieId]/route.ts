@@ -30,3 +30,4 @@ export async function GET(req: NextRequest, { params }: { params: { movieId: str
     return NextResponse.json({ error: "Failed to check watchlist" }, { status: 500 });
   }
 }
+

@@ -90,7 +90,7 @@ export default function RightsideBar() {
   }, [search]);
 
   return (
-    <div className="sticky top-0 pt-2 ml-4 w-[22rem]">
+    <div className="sticky top-0 pt-2 ml-4 w-[22rem] flex-shrink-0">
       {/* Modern Search bar for searching user */}
       <div className="relative mb-6">
         <input

@@ -29,9 +29,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <SessionProvider>
       <html lang="en" className={lato.className}>
-        <body className="flex mx-[10.25rem] mt-[1.5rem]">
+        <body className="flex mx-[10.25rem] mt-[1.5rem] min-h-screen">
           <SideBar />
-          <main className="ml-[15rem] flex-grow pb-8">{children}</main>
+          <main className="ml-[15rem] flex-1 pb-8 min-w-0">{children}</main>
 
           <RightsideBar/>
         </body>

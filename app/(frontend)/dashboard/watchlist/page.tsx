@@ -187,7 +187,7 @@ export default function WatchlistPage() {
 
   if (loading) {
     return (
-      <div className="w-full max-w-6xl mx-auto p-6">
+      <div className="w-full max-w-7xl mx-auto p-6">
         {/* Header Skeleton */}
         <div className="mb-8">
           <div className="h-12 bg-gray-700/50 rounded-lg w-64 mb-4 animate-pulse"></div>
