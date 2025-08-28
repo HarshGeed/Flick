@@ -50,16 +50,16 @@ export const POST = async (req: NextRequest) => {
         (id: any) => id.toString() !== postUserId
       );
       // Decrement counts
-      userToFollow.followerCount = Math.max((userToFollow.followerCount || 1) - 1, 0);
-      currentUser.followingCount = Math.max((currentUser.followingCount || 1) - 1, 0);
+      userToFollow.followerCount = Math.max((Number(userToFollow.followerCount) || 1) - 1, 0);
+      currentUser.followingCount = Math.max((Number(currentUser.followingCount) || 1) - 1, 0);
       followStatus = false;
     } else {
       // Follow logic
       userToFollow.followers.push(currentUserId);
       currentUser.following.push(postUserId);
       // Increment counts
-      userToFollow.followerCount = (userToFollow.followerCount || 0) + 1;
-      currentUser.followingCount = (currentUser.followingCount || 0) + 1;
+      userToFollow.followerCount = Number(userToFollow.followerCount || 0) + 1;
+      currentUser.followingCount = Number(currentUser.followingCount || 0) + 1;
       followStatus = true;
     }
 

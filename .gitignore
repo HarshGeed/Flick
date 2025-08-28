@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# Socket server folder (will be in separate repo)
+socket-server/
+
 # vercel
 .vercel
 

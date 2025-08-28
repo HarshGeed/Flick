@@ -16,7 +16,7 @@ try {
   onlineUsers = new Map();
 }
 
-export const PUT = async (req, { params }) => {
+export const PUT = async (req, { params }: { params: Promise<{ id: string }> }) => {
   try {
     await connect();
     const session = await auth();
@@ -25,7 +25,7 @@ export const PUT = async (req, { params }) => {
       return NextResponse.json("Unauthorized", { status: 401 });
     }
 
-    const { id } = params; // `id` can be a postId or commentId
+    const { id } = await params; // `id` can be a postId or commentId
     const userId = session.user.id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {

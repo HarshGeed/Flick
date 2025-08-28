@@ -4,7 +4,7 @@ import SideBar from "@/components/SideBar";
 import { ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
 
-export const lato = Lato({
+const lato = Lato({
   subsets: ["latin"],
   weight: ["100", "300", "400", "700", "900"],
   style: ["normal", "italic"],

@@ -3,11 +3,11 @@ import { connect } from "@/lib/dbConn";
 import Review from "@/models/reviewModel";
 import User from "@/models/userModel";
 
-export const GET = async (req: Request, { params }: { params: { userId: string } }) => {
+export const GET = async (req: Request, { params }: { params: Promise<{ userId: string }> }) => {
   try {
     await connect();
 
-    const { userId } = params;
+    const { userId } = await params;
     if (!userId) {
       return NextResponse.json({ error: "User ID required" }, { status: 400 });
     }

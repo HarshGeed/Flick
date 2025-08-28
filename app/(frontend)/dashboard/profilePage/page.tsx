@@ -5,6 +5,7 @@ import ReviewCard from "@/components/ReviewCard";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import defaultProfileImg from "@/public/default-userImg.png";
+import LogoutBtn from "@/components/LogoutBtn";
 
 const btnClass =
   "cursor-pointer px-4 py-2 rounded-xl opacity-60 hover:bg-stone-900 transition ease-in-out duration-200";
@@ -216,12 +217,15 @@ export default function ProfilePage() {
         <div className="mt-[5rem] ml-4">
           <div className="flex justify-between items-center">
             <p className="text-xl font-bold">{user.username}</p>
-            <button
-              className="bg-stone-900 rounded-2xl px-4 py-1 font-light opacity-80 transition ease-in-out duration-300 cursor-pointer shadow-2xl hover:bg-stone-800"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <p>Edit Profile</p>
-            </button>
+            <div className="flex gap-2">
+              <button
+                className="bg-stone-900 rounded-2xl px-4 py-1 font-light opacity-80 transition ease-in-out duration-300 cursor-pointer shadow-2xl hover:bg-stone-800"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <p>Edit Profile</p>
+              </button>
+              <LogoutBtn/>
+            </div>
           </div>
           <p className="text-sm opacity-60 font-medium">{user.userID}</p>
           <p className="mt-4">{user.bio}</p>

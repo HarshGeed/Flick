@@ -222,10 +222,6 @@ export default function RightsideBar() {
           )}
         </div>
       </div>
-      {/* temporary log out button */}
-      <div className="mt-4">
-        <LogoutBtn />
-      </div>
     </div>
   );
 }

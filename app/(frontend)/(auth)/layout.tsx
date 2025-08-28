@@ -6,7 +6,7 @@ import { ReactNode } from "react";
 import Image from "next/image";
 import bgImage from "@/public/bg-image.jpg";
 
-export const lato = Lato({
+const lato = Lato({
   subsets: ["latin"],
   weight: ["100", "300", "400", "700", "900"],
   style: ["normal", "italic"],

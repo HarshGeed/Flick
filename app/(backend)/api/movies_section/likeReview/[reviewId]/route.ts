@@ -5,10 +5,10 @@ import { connect } from "@/lib/dbConn";
 import { auth } from "@/auth";
 
 
-export async function POST(req: NextRequest, { params }: { params: { reviewId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ reviewId: string }> }) {
   try {
     await connect();
-    const { reviewId } = params;
+    const { reviewId } = await params;
     if (!reviewId) return NextResponse.json({ error: "Review ID required" }, { status: 400 });
 
     const session = await auth();

@@ -4,11 +4,11 @@ import { connect } from "@/lib/dbConn";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     await connect();
-    const { userId } = params;
+    const { userId } = await params;
     if (!userId) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
     }

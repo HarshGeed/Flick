@@ -64,6 +64,12 @@ interface CustomUser extends NextAuthUser{
     signIn: "/login",
   },
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      // Redirect to dashboard after successful signin
+      if (url.startsWith("/")) return `${baseUrl}/dashboard`;
+      if (new URL(url).origin === baseUrl) return `${baseUrl}/dashboard`;
+      return `${baseUrl}/dashboard`;
+    },
     async signIn({ user, account, profile }) {
       console.log("SignIn callback triggered:", { user, account, provider: account?.provider });
       if (account?.provider === "google") {

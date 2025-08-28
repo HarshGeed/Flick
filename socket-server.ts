@@ -3,16 +3,24 @@ const http = require("http")
 const {Server} = require("socket.io")
 const cors = require("cors")
 
-
 const app = express();
 const server = http.createServer(app);
 
+// Configure CORS for both development and production
+const allowedOrigins = [
+    "http://localhost:3000",
+    "http://localhost:3001", 
+    "https://your-vercel-app.vercel.app", // Replace with your actual Vercel URL
+    process.env.FRONTEND_URL // Add this env var on Render
+];
+
 const io = new Server(server, {
-    cors:{
-        origin: "*",
+    cors: {
+        origin: allowedOrigins,
         methods: ["GET", "POST", "PUT"],
+        credentials: true
     }
-})
+});
 
 const onlineUsers = new Map();
  
@@ -68,8 +76,11 @@ io.on("connection", (socket) => {
     })
 })
 
-server.listen(4000, () => {
-    console.log("Socket.io server running on http://localhost:4000")
+// Use PORT from environment or default to 4000
+const PORT = process.env.PORT || 4000;
+
+server.listen(PORT, () => {
+    console.log(`Socket.io server running on port ${PORT}`)
 })
 
 module.exports = {io, onlineUsers}

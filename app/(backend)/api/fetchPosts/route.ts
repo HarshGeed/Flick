@@ -10,7 +10,12 @@ export const GET = catchAsync(async () => {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const posts = await Post.find({}).populate("user", "_id username profileImg").select("user username content image likes shares bookmarks reposts likedBy commentCount savedBy saveCounts").sort({ createdAt: -1 }).lean();
+  const posts = await (Post as any).find({})
+    .populate("user", "_id username profileImg")
+    .select("user username content image likes shares bookmarks reposts likedBy commentCount savedBy saveCounts")
+    .sort({ createdAt: -1 })
+    .lean()
+    .exec();
 
   const enhancedPosts = posts.map((post) => ({
     ...post,

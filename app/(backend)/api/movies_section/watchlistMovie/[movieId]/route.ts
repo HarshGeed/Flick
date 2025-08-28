@@ -3,10 +3,10 @@ import User from "@/models/userModel";
 import { connect } from "@/lib/dbConn";
 import { auth } from "@/auth";
 
-export async function POST(req: NextRequest, { params }: { params: { movieId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ movieId: string }> }) {
   try {
     await connect();
-    const { movieId } = params;
+    const { movieId } = await params;
     if (!movieId) return NextResponse.json({ error: "Movie ID required" }, { status: 400 });
 
     const session = await auth();

@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth"; // Import NextAuth authentication function
 
 export async function middleware(req: NextRequest) {
-  const session = await auth();
-  // console.log("This is coming from middleware", session);
-
+  // Simple token check - for production, you might want to verify JWT differently
+  const token = req.cookies.get("authjs.session-token") || req.cookies.get("__Secure-authjs.session-token");
+  
   // If user is not authenticated, redirect to sign-in page
-  if (!session) {
-    return NextResponse.redirect(new URL("/login", req.url)); // Redirect to actual auth page
+  if (!token) {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   return NextResponse.next(); // Allow access if authenticated

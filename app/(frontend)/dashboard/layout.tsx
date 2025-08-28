@@ -6,7 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import RightsideBar from "@/components/RightsideBar";
 
 
-export const lato = Lato({
+const lato = Lato({
   subsets: ["latin"],
   weight: ["100", "300", "400", "700", "900"],
   style: ["normal", "italic"],

@@ -15,7 +15,7 @@ try {
   onlineUsers = new Map();
 }
 
-export const POST = async (req, { params }) => {
+export const POST = async (req, { params }: { params: Promise<{ id: string }> }) => {
   try {
     await connect();
 
@@ -24,7 +24,7 @@ export const POST = async (req, { params }) => {
       return NextResponse.json("Unauthorized", { status: 401 });
     }
 
-    const { id } = params; // postId or commentId
+    const { id } = await params; // postId or commentId
     const userId = session.user.id;
     const { text, image } = await req.json();
 

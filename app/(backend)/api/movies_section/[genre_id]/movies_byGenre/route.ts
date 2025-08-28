@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { genre_id: string } }
+  { params }: { params: Promise<{ genre_id: string }> }
 ) {
   const { genre_id } = await params;
   const {searchParams} = new URL(req.url);

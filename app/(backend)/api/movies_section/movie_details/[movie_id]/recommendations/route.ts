@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { movie_id: string } }
+  { params }: { params: Promise<{ movie_id: string }> }
 ) {
   const { movie_id } = await params;
   if (!movie_id) {
