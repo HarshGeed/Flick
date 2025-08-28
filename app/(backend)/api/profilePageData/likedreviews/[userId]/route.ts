@@ -28,12 +28,18 @@ export const GET = async (req: Request, { params }: { params: { userId: string }
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    console.log("User found:", user.username);
+    console.log("User's likedReviews array:", user.likedReviews);
+    console.log("Number of liked reviews:", user.likedReviews?.length || 0);
+
     // Transform the data to include user info at the root level for consistency
     const transformedReviews = (user.likedReviews || []).map(review => ({
       ...review,
       username: review.user?.username || review.username,
       profileImg: review.user?.profileImage || ""
     }));
+
+    console.log("Transformed reviews:", transformedReviews.length);
 
     // Return the populated liked reviews
     return NextResponse.json(transformedReviews, { status: 200 });

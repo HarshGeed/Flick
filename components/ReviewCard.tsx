@@ -62,17 +62,17 @@ export default function ReviewCard({
 
   const handleLike = async () => {
     try {
-      const response = await fetch('/api/movies_section/likeReview', {
+      const response = await fetch(`/api/movies_section/likeReview/${reviewId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ reviewId }),
       });
 
       if (response.ok) {
-        setIsLiked(!isLiked);
-        setLikes(isLiked ? likes - 1 : likes + 1);
+        const data = await response.json();
+        setIsLiked(data.liked);
+        setLikes(data.likesNum);
       }
     } catch (error) {
       console.error('Error liking review:', error);
