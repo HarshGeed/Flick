@@ -225,8 +225,13 @@ export default function ProfilePageOther() {
             <p className="text-xl font-bold">{user.username}</p>
             <div className="flex gap-2">
               <FollowBtn userId={user._id} onCountsUpdate={(counts) => {
-                if (typeof counts.followerCount === 'number') setFollowerCount(counts.followerCount);
-                if (typeof counts.followingCount === 'number') setFollowingCount(counts.followingCount);
+                // On someone else's profile, only update their followerCount
+                // The followingCount belongs to the current user, not the viewed user
+                if (typeof counts.followerCount === 'number') {
+                  setFollowerCount(counts.followerCount);
+                  setUser((prev) => prev ? { ...prev, followerCount: counts.followerCount } : prev);
+                }
+                // Do NOT update followingCount here since this is someone else's profile
               }} />
             </div>
           </div>

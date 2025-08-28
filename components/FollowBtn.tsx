@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import socket from "@/lib/socket";
 
 export default function FollowBtn({ userId, onCountsUpdate }) {
   const [isFollowing, setIsFollowing] = useState(false);
@@ -33,26 +32,13 @@ export default function FollowBtn({ userId, onCountsUpdate }) {
     fetchSessionAndStatus();
   }, [userId]);
 
-  // Listen for real-time follow updates
-  useEffect(() => {
-    if (!socket) return;
-    const handleFollowUpdate = (data) => {
-      if (data.userId === userId && typeof data.followerCount === "number") {
-        setFollowerCount(data.followerCount);
-        if (onCountsUpdate) onCountsUpdate({ followerCount: data.followerCount });
-      }
-      if (data.userId === currentUserId && typeof data.followingCount === "number") {
-        setFollowingCount(data.followingCount);
-        if (onCountsUpdate) onCountsUpdate({ followingCount: data.followingCount });
-      }
-    };
-    socket.on("follow_update", handleFollowUpdate);
-    return () => { socket.off("follow_update", handleFollowUpdate); };
-  }, [userId, currentUserId, onCountsUpdate]);
-
   const handleFollow = async () => {
     if (loading) return;
+    
+    // Prevent multiple rapid clicks with 1 second cooldown
     setLoading(true);
+    
+    console.log("[FollowBtn] Follow button clicked, calling API...");
 
     try {
       const res = await fetch("/api/follow", {
@@ -64,17 +50,23 @@ export default function FollowBtn({ userId, onCountsUpdate }) {
       if (!res.ok) throw new Error("Failed to update follow status");
 
       const data = await res.json();
+      console.log("[FollowBtn] Full API response:", JSON.stringify(data, null, 2));
+      console.log("[FollowBtn] followerCount:", data.followerCount, "followingCount:", data.followingCount);
+      
       setIsFollowing(data.isFollowing);
       if (typeof data.followerCount === "number") setFollowerCount(data.followerCount);
       if (typeof data.followingCount === "number") setFollowingCount(data.followingCount);
-      if (onCountsUpdate) onCountsUpdate({
-        followerCount: data.followerCount,
-        followingCount: data.followingCount,
-      });
+      
+      // Only send followerCount to the parent (since this is the user being followed)
+      // The followingCount belongs to the current user, not the viewed user
+      if (onCountsUpdate && typeof data.followerCount === "number") {
+        onCountsUpdate({ followerCount: data.followerCount });
+      }
     } catch (err) {
       console.error("Error updating follow status:", err);
     } finally {
-      setLoading(false);
+      // Add a small delay before re-enabling the button
+      setTimeout(() => setLoading(false), 1000);
     }
   };
 

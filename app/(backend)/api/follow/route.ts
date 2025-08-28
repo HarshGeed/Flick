@@ -66,24 +66,11 @@ export const POST = async (req: NextRequest) => {
     await userToFollow.save();
     await currentUser.save();
 
-    // Real-time update via socket.io (optional, only if you want to broadcast)
-    try {
-      const io = require("../../../../socket-server").io;
-      io.to(postUserId).emit("follow_update", {
-        userId: postUserId,
-        followerCount: userToFollow.followerCount,
-        followingCount: userToFollow.followingCount,
-        type: "followers"
-      });
-      io.to(currentUserId).emit("follow_update", {
-        userId: currentUserId,
-        followerCount: currentUser.followerCount,
-        followingCount: currentUser.followingCount,
-        type: "following"
-      });
-    } catch (e) {
-      // If socket-server is not available, ignore
-    }
+    console.log("[Follow API] Response data:", {
+      isFollowing: followStatus,
+      followerCount: userToFollow.followerCount,
+      followingCount: currentUser.followingCount,
+    });
 
     return NextResponse.json(
       {
