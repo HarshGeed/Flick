@@ -52,10 +52,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           />
           <div className="w-[25rem] mt-[2rem] text-lg transform transition-transform duration-1000 ease-out translate-y-[-50px] animate-slide-in">
             <p className="opacity-75">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus
-              eius adipisci minima deserunt sed aut corrupti nihil! Magni
-              numquam architecto, dolores, suscipit minima necessitatibus
-              reprehenderit officia quaerat quidem quibusdam eos.
+              Welcome to Flick – your space to explore movies and web series, share honest reviews, connect with others, and discover stories worth watching
             </p>
           </div>
         </div>
