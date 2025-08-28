@@ -65,9 +65,17 @@ interface CustomUser extends NextAuthUser{
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      // Redirect to dashboard after successful signin
-      if (url.startsWith("/")) return `${baseUrl}/dashboard`;
-      if (new URL(url).origin === baseUrl) return `${baseUrl}/dashboard`;
+      // Always redirect to dashboard after sign in
+      if (url.startsWith("/api/auth/signin") || url.startsWith("/api/auth/callback")) {
+        return `${baseUrl}/dashboard`;
+      }
+      // Redirect any base URL to dashboard
+      if (url === baseUrl || url === `${baseUrl}/`) {
+        return `${baseUrl}/dashboard`;
+      }
+      // Allow relative URLs and same-origin URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (new URL(url).origin === baseUrl) return url;
       return `${baseUrl}/dashboard`;
     },
     async signIn({ user, account, profile }) {
