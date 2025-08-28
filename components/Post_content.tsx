@@ -25,7 +25,11 @@ interface Post {
   savedBy?: string[];
 }
 
-export default function PostContent() {
+type Props = {
+  mode: "global" | "following";
+};
+
+export default function PostContent({ mode }: Props) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentUserId, setCurrentUserId] = useState(null);
 
@@ -49,7 +53,8 @@ export default function PostContent() {
 
   async function fetchPosts() {
     try {
-      const res = await fetch("/api/fetchPosts", { cache: "no-store" });
+      const url = mode === "following" ? "/api/posts/following" : "/api/fetchPosts";
+      const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to fetch posts");
       const data : Post[] = await res.json();
       setPosts(data);
@@ -59,7 +64,6 @@ export default function PostContent() {
   }
 
   useEffect(() => {
-    
     fetchPosts();
 
     // listen to real-time post updates
@@ -75,7 +79,7 @@ export default function PostContent() {
     return () => {
       socket.off("new_post");
     };
-  }, []);
+  }, [mode]);
 
   return (
     <main className="max-w-3xl mx-auto">

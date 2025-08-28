@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import socket from "@/lib/socket";
 
-export default function FollowBtn({ userId }) {
+export default function FollowBtn({ userId, onCountsUpdate }) {
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [followerCount, setFollowerCount] = useState<number | null>(null);
+  const [followingCount, setFollowingCount] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchSessionAndStatus = async () => {
@@ -30,6 +33,23 @@ export default function FollowBtn({ userId }) {
     fetchSessionAndStatus();
   }, [userId]);
 
+  // Listen for real-time follow updates
+  useEffect(() => {
+    if (!socket) return;
+    const handleFollowUpdate = (data) => {
+      if (data.userId === userId && typeof data.followerCount === "number") {
+        setFollowerCount(data.followerCount);
+        if (onCountsUpdate) onCountsUpdate({ followerCount: data.followerCount });
+      }
+      if (data.userId === currentUserId && typeof data.followingCount === "number") {
+        setFollowingCount(data.followingCount);
+        if (onCountsUpdate) onCountsUpdate({ followingCount: data.followingCount });
+      }
+    };
+    socket.on("follow_update", handleFollowUpdate);
+    return () => { socket.off("follow_update", handleFollowUpdate); };
+  }, [userId, currentUserId, onCountsUpdate]);
+
   const handleFollow = async () => {
     if (loading) return;
     setLoading(true);
@@ -43,7 +63,14 @@ export default function FollowBtn({ userId }) {
 
       if (!res.ok) throw new Error("Failed to update follow status");
 
-      setIsFollowing((prev) => !prev);
+      const data = await res.json();
+      setIsFollowing(data.isFollowing);
+      if (typeof data.followerCount === "number") setFollowerCount(data.followerCount);
+      if (typeof data.followingCount === "number") setFollowingCount(data.followingCount);
+      if (onCountsUpdate) onCountsUpdate({
+        followerCount: data.followerCount,
+        followingCount: data.followingCount,
+      });
     } catch (err) {
       console.error("Error updating follow status:", err);
     } finally {

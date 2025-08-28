@@ -1,9 +1,11 @@
 "use client";
-import { useState } from "react";
 
-export default function ClientButtons() {
-  const [activeBtn, setActiveBtn] = useState<"global" | "following">("global"); // Default active button
+type Props = {
+  activeBtn: "global" | "following";
+  setActiveBtn: (btn: "global" | "following") => void;
+};
 
+export default function ClientButtons({ activeBtn, setActiveBtn }: Props) {
   return (
     <div className="flex justify-center space-x-[5rem]">
       {/* For You Button */}
@@ -16,7 +18,7 @@ export default function ClientButtons() {
         Global
       </button>
 
-      {/* Genres Button */}
+      {/* Following Button */}
       <button
         onClick={() => setActiveBtn("following")}
         className={`w-[10rem] h-[3rem] rounded-xl ${

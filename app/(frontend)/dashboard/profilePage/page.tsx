@@ -17,6 +17,8 @@ export default function ProfilePage() {
   const [user, setUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sessionUserId, setSessionUserId] = useState<string | null>(null);
+  const [followerCount, setFollowerCount] = useState<number | null>(null);
+  const [followingCount, setFollowingCount] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/auth/session")
@@ -33,11 +35,12 @@ export default function ProfilePage() {
         if (!res.ok) throw new Error("Failed to fetch the user data");
         const userData = await res.json();
         setUser(userData);
+        setFollowerCount(userData.followerCount ?? 0);
+        setFollowingCount(userData.followingCount ?? 0);
       } catch (err) {
         console.error("Error fetching user data:", err);
       }
     };
-
     fetchUserData();
   }, [sessionUserId]);
 
@@ -226,11 +229,11 @@ export default function ProfilePage() {
           {/* Followers and Following */}
           <div className="flex space-x-5 mt-4">
             <div className="flex space-x-1">
-              <p>{user.followerCount || 0}</p>
+              <p>{followerCount ?? user.followerCount ?? 0}</p>
               <p className="opacity-50 font-light">Followers</p>
             </div>
             <div className="flex space-x-1">
-              <p>{user.followingCount || 0}</p>
+              <p>{followingCount ?? user.followingCount ?? 0}</p>
               <p className="opacity-50">Following</p>
             </div>
           </div>

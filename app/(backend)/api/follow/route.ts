@@ -40,6 +40,7 @@ export const POST = async (req: NextRequest) => {
       .map((id: any) => id.toString())
       .includes(currentUserId);
 
+    let followStatus;
     if (isFollowing) {
       // Unfollow logic
       userToFollow.followers = userToFollow.followers.filter(
@@ -48,17 +49,49 @@ export const POST = async (req: NextRequest) => {
       currentUser.following = currentUser.following.filter(
         (id: any) => id.toString() !== postUserId
       );
+      // Decrement counts
+      userToFollow.followerCount = Math.max((userToFollow.followerCount || 1) - 1, 0);
+      currentUser.followingCount = Math.max((currentUser.followingCount || 1) - 1, 0);
+      followStatus = false;
     } else {
       // Follow logic
       userToFollow.followers.push(currentUserId);
       currentUser.following.push(postUserId);
+      // Increment counts
+      userToFollow.followerCount = (userToFollow.followerCount || 0) + 1;
+      currentUser.followingCount = (currentUser.followingCount || 0) + 1;
+      followStatus = true;
     }
 
     await userToFollow.save();
     await currentUser.save();
 
+    // Real-time update via socket.io (optional, only if you want to broadcast)
+    try {
+      const io = require("../../../../socket-server").io;
+      io.to(postUserId).emit("follow_update", {
+        userId: postUserId,
+        followerCount: userToFollow.followerCount,
+        followingCount: userToFollow.followingCount,
+        type: "followers"
+      });
+      io.to(currentUserId).emit("follow_update", {
+        userId: currentUserId,
+        followerCount: currentUser.followerCount,
+        followingCount: currentUser.followingCount,
+        type: "following"
+      });
+    } catch (e) {
+      // If socket-server is not available, ignore
+    }
+
     return NextResponse.json(
-      { message: "Follow status updated successfully" },
+      {
+        message: "Follow status updated successfully",
+        isFollowing: followStatus,
+        followerCount: userToFollow.followerCount,
+        followingCount: currentUser.followingCount,
+      },
       { status: 200 }
     );
   } catch (error) {
