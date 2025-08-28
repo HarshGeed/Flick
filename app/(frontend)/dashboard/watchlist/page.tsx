@@ -204,7 +204,7 @@ export default function WatchlistPage() {
         </div>
         
         {/* Movie Grid Skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700/50">
               <div className="aspect-[2/3] bg-gray-700/50 animate-pulse"></div>
@@ -407,7 +407,7 @@ export default function WatchlistPage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredAndSortedMovies.map((movie) => (
             <div
               key={movie.id}

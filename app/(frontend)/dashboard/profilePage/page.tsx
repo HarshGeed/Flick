@@ -65,7 +65,51 @@ export default function ProfilePage() {
   }, [activeSession, sessionUserId]);
 
   const renderMainContent = () => {
-    if (loading) return <p>Loading...</p>;
+    if (loading) return (
+      <div className="space-y-4">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50">
+            {/* Header Skeleton */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-gray-700/50 rounded-full animate-pulse"></div>
+              <div>
+                <div className="h-5 bg-gray-700/50 rounded w-32 animate-pulse mb-1"></div>
+                <div className="h-3 bg-gray-700/50 rounded w-20 animate-pulse"></div>
+              </div>
+            </div>
+            
+            {/* Content Skeleton */}
+            <div className="space-y-3 mb-4">
+              <div className="h-4 bg-gray-700/50 rounded animate-pulse"></div>
+              <div className="h-4 bg-gray-700/50 rounded w-3/4 animate-pulse"></div>
+              <div className="h-4 bg-gray-700/50 rounded w-1/2 animate-pulse"></div>
+            </div>
+            
+            {/* Image Skeleton */}
+            <div className="h-48 bg-gray-700/50 rounded-lg animate-pulse mb-4"></div>
+            
+            {/* Actions Skeleton */}
+            <div className="flex justify-between items-center">
+              <div className="flex gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-gray-700/50 rounded animate-pulse"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-8 animate-pulse"></div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-gray-700/50 rounded animate-pulse"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-8 animate-pulse"></div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-gray-700/50 rounded animate-pulse"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-8 animate-pulse"></div>
+                </div>
+              </div>
+              <div className="w-5 h-5 bg-gray-700/50 rounded animate-pulse"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
     if (error) return <p className="text-red-500">{error}</p>;
     if (data.length === 0) return <p>No data available.</p>;
 
@@ -155,7 +199,7 @@ export default function ProfilePage() {
 
         {/* Session Buttons */}
         <div className="sticky top-0 z-50 mt-8 shadow-md">
-          <div className="flex justify-center space-x-4">
+          <div className="flex justify-center space-x-8">
             <button
               onClick={() => setActiveSection("Posts")}
               className={`${btnClass} ${activeSession === "Posts" ? "bg-stone-900" : ""}`}
@@ -179,12 +223,6 @@ export default function ProfilePage() {
               className={`${btnClass} ${activeSession === "LikedReviews" ? "bg-stone-900" : ""}`}
             >
               Liked Reviews
-            </button>
-            <button
-              onClick={() => setActiveSection("Watchlist")}
-              className={`${btnClass} ${activeSession === "Watchlist" ? "bg-stone-900" : ""}`}
-            >
-              Watchlist
             </button>
           </div>
         </div>

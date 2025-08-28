@@ -5,7 +5,6 @@ import Image from "next/image";
 import defaultProfileImg from '@/public/default-userImg.png';
 import FollowBtn from "@/components/FollowBtn";
 import { useParams } from "next/navigation";
-import { Mail } from "lucide-react";
 
 const btnClass =
   "cursor-pointer px-4 py-2 rounded-xl opacity-60 hover:bg-stone-900 transition ease-in-out duration-200";
@@ -129,12 +128,6 @@ export default function ProfilePageOther() {
             <p className="text-xl font-bold">{user.username}</p>
             <div className="flex gap-2">
               <FollowBtn userId={user._id} />
-              <button
-                className="bg-amber-200 text-black rounded-2xl px-3 py-1 font-light transition hover:opacity-70 cursor-pointer"
-                // onClick={...} // Add your message handler here
-              >
-                <Mail/>
-              </button>
             </div>
           </div>
           <p className="text-sm opacity-60 font-medium">{user.userID}</p>
@@ -155,12 +148,11 @@ export default function ProfilePageOther() {
 
         {/* Session Buttons */}
         <div className="sticky top-0 z-50 mt-8 shadow-md">
-          <div className="flex justify-center space-x-4">
+          <div className="flex justify-center space-x-8">
             <button onClick={() => setActiveSection("Posts")} className={`${btnClass} ${activeSession === "Posts" ? "bg-stone-900" : ""}`}>Posts</button>
             <button onClick={() => setActiveSection("Reviews")} className={`${btnClass} ${activeSession === "Reviews" ? "bg-stone-900" : ""}`}>Reviews</button>
             <button onClick={() => setActiveSection("LikedPosts")} className={`${btnClass} ${activeSession === "LikedPosts" ? "bg-stone-900" : ""}`}>Liked Posts</button>
             <button onClick={() => setActiveSection("LikedReviews")} className={`${btnClass} ${activeSession === "LikedReviews" ? "bg-stone-900" : ""}`}>Liked Reviews</button>
-            <button onClick={() => setActiveSection("Watchlist")} className={`${btnClass} ${activeSession === "Watchlist" ? "bg-stone-900" : ""}`}>Watchlist</button>
           </div>
         </div>
       </div>

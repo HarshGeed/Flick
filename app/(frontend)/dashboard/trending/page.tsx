@@ -133,35 +133,32 @@ export default function Trending() {
           </div>
         </div>
         
-                 {/* Movie Row Skeleton */}
-         <div className="space-y-6">
-           {[...Array(6)].map((_, i) => (
-             <div key={i} className="bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700/50">
-               <div className="flex">
-                 <div className="w-48 h-72 bg-gray-700/50 animate-pulse flex-shrink-0"></div>
-                 <div className="p-6 flex-1">
-                   <div className="flex justify-between items-start mb-4">
-                     <div>
-                       <div className="h-8 bg-gray-700/50 rounded mb-2 animate-pulse w-64"></div>
-                       <div className="h-4 bg-gray-700/50 rounded w-20 animate-pulse"></div>
-                     </div>
-                     <div className="h-10 bg-gray-700/50 rounded w-24 animate-pulse"></div>
-                   </div>
-                   <div className="flex gap-2 mb-4">
-                     <div className="h-6 bg-gray-700/50 rounded w-16 animate-pulse"></div>
-                     <div className="h-6 bg-gray-700/50 rounded w-20 animate-pulse"></div>
-                     <div className="h-6 bg-gray-700/50 rounded w-16 animate-pulse"></div>
-                   </div>
-                   <div className="space-y-2">
-                     <div className="h-4 bg-gray-700/50 rounded animate-pulse"></div>
-                     <div className="h-4 bg-gray-700/50 rounded w-3/4 animate-pulse"></div>
-                     <div className="h-4 bg-gray-700/50 rounded w-2/3 animate-pulse"></div>
-                   </div>
-                 </div>
-               </div>
-             </div>
-           ))}
-         </div>
+                          {/* Movie Row Skeleton */}
+          <div className="space-y-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700/50">
+                <div className="flex">
+                  <div className="w-48 h-72 bg-gray-700/50 animate-pulse flex-shrink-0"></div>
+                  <div className="p-6 flex-1">
+                    <div className="mb-4">
+                      <div className="h-8 bg-gray-700/50 rounded mb-2 animate-pulse w-64"></div>
+                      <div className="h-4 bg-gray-700/50 rounded w-20 animate-pulse"></div>
+                    </div>
+                    <div className="flex gap-2 mb-4">
+                      <div className="h-6 bg-gray-700/50 rounded w-16 animate-pulse"></div>
+                      <div className="h-6 bg-gray-700/50 rounded w-20 animate-pulse"></div>
+                      <div className="h-6 bg-gray-700/50 rounded w-16 animate-pulse"></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-gray-700/50 rounded animate-pulse"></div>
+                      <div className="h-4 bg-gray-700/50 rounded w-3/4 animate-pulse"></div>
+                      <div className="h-4 bg-gray-700/50 rounded w-2/3 animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
       </div>
     );
   }

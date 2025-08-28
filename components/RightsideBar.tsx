@@ -148,7 +148,14 @@ export default function RightsideBar() {
         <div className="w-full rounded-2xl border-1 border-stone-800 px-2 pb-3">
           <h1 className="text-xl font-bold px-2 pt-2">News on the go</h1>
           {loadingNews ? (
-            <p className="text-gray-500">Loading news...</p>
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="bg-gray-800/50 rounded-lg p-3 animate-pulse">
+                  <div className="h-4 bg-gray-700/50 rounded w-3/4 animate-pulse mb-2"></div>
+                  <div className="h-3 bg-gray-700/50 rounded w-full animate-pulse"></div>
+                </div>
+              ))}
+            </div>
           ) : news.length > 0 ? (
             news.map((article, idx) => (
               <div
@@ -172,7 +179,17 @@ export default function RightsideBar() {
         <div className="w-full rounded-2xl border-1 border-stone-800 px-2 mt-3 pb-3">
           <h1 className="text-xl font-bold px-2 pt-2">Hot Picks</h1>
           {loadingHotPicks ? (
-            <p className="text-gray-500">Loading Hot Picks...</p>
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="bg-gray-800/50 rounded-lg p-3 flex items-center gap-3 animate-pulse">
+                  <div className="w-12 h-16 bg-gray-700/50 rounded animate-pulse"></div>
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-700/50 rounded w-3/4 animate-pulse mb-2"></div>
+                    <div className="h-3 bg-gray-700/50 rounded w-full animate-pulse"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : hotPicks.length > 0 ? (
             hotPicks.map((movie, idx) => (
               <div

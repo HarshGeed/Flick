@@ -2,28 +2,28 @@
 import { useState } from "react";
 
 export default function ClientButtons() {
-  const [activeBtn, setActiveBtn] = useState<"forYou" | "genres">("forYou"); // Default active button
+  const [activeBtn, setActiveBtn] = useState<"global" | "following">("global"); // Default active button
 
   return (
     <div className="flex justify-center space-x-[5rem]">
       {/* For You Button */}
       <button
-        onClick={() => setActiveBtn("forYou")}
+        onClick={() => setActiveBtn("global")}
         className={`w-[10rem] h-[3rem] rounded-xl ${
-          activeBtn === "forYou" ? "bg-amber-200/90 text-black" : "bg-zinc-700 text-white"
+          activeBtn === "global" ? "bg-amber-200/90 text-black" : "bg-zinc-700 text-white"
         }`}
       >
-        For You
+        Global
       </button>
 
       {/* Genres Button */}
       <button
-        onClick={() => setActiveBtn("genres")}
+        onClick={() => setActiveBtn("following")}
         className={`w-[10rem] h-[3rem] rounded-xl ${
-          activeBtn === "genres" ? "bg-amber-200/90 text-black" : "bg-zinc-700 text-white"
+          activeBtn === "following" ? "bg-amber-200/90 text-black" : "bg-zinc-700 text-white"
         }`}
       >
-        Genres
+        Following
       </button>
     </div>
   );

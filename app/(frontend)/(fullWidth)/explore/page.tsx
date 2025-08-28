@@ -29,6 +29,7 @@ export default function Explore() {
   const [popular, setPopular] = useState([]);
   const [movies, setMovies] = useState([]);
   const [topRatedMovies, setTopRatedMovies] = useState([]);
+  const [pageLoading, setPageLoading] = useState(true);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -72,6 +73,8 @@ export default function Explore() {
         setPopular(popularData);
       }catch(err){
         console.error("Failed to fetch Popular", err)
+      } finally {
+        setPageLoading(false);
       }
     }
 
@@ -198,21 +201,24 @@ export default function Explore() {
       {/* Carousel */}
       <div className="mt-4 w-full max-w-[60rem]">
         <div className="relative w-full h-[450px] rounded overflow-hidden">
-          <Swiper
-            key={popular.length}
-            modules={[Pagination, Autoplay]}
-            spaceBetween={16}
-            slidesPerView={1}
-            loop={true}
-            autoplay={{
-              delay: 3500,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-            }}
-            pagination={{ clickable: true }}
-            className="w-full h-full"
-          >
-            {popular.map((item, index) => (
+          {pageLoading ? (
+            <div className="w-full h-full bg-gray-800/50 animate-pulse rounded-lg"></div>
+          ) : (
+            <Swiper
+              key={popular.length}
+              modules={[Pagination, Autoplay]}
+              spaceBetween={16}
+              slidesPerView={1}
+              loop={true}
+              autoplay={{
+                delay: 3500,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }}
+              pagination={{ clickable: true }}
+              className="w-full h-full"
+            >
+              {popular.map((item, index) => (
               <SwiperSlide key={`${item.id}-${index}`}>
                 <div
                   className="relative w-full h-full cursor-pointer"
@@ -239,7 +245,8 @@ export default function Explore() {
                 </div>
               </SwiperSlide>
             ))}
-          </Swiper>
+            </Swiper>
+          )}
         </div>
       </div>
 

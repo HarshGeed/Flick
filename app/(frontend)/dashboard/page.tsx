@@ -10,6 +10,7 @@ const HomePage: React.FC = () => {
       <div className="flex justify-center space-x-[5rem] fixed ml-[6rem] z-10">
         <ClientButtons />
       </div>
+
       {/* This section will contain infinite posts */}
       <div className="mt-[4.4rem] w-[36.5rem]">
         {/* <Post_content/> */}
