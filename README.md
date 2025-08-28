@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Flick Logo](public/bg-image.jpg)
+<!--![Flick Logo](public/bg-image.jpg)-->
 
 **Connect. Share. Discover. Experience Movies Together.**
 
