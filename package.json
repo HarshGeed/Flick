@@ -31,7 +31,7 @@
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
     "react-modal": "^3.16.3",
-    "react-spring": "^9.7.5",
+    "react-spring": "^10.0.1",
     "sanity": "^3.87.1",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
