@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from "react";
 import PostCard from "@/components/PostCard";
+import ReviewCard from "@/components/ReviewCard";
 import Image from "next/image";
 import defaultProfileImg from '@/public/default-userImg.png';
 import FollowBtn from "@/components/FollowBtn";
@@ -15,11 +16,20 @@ export default function ProfilePageOther() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   
 
   const params = useParams();
   const userId = params.userId;
   console.log("This is the userId at profilePageOthers", userId);
+
+  // Get current user's session for like functionality
+  useEffect(() => {
+    fetch("/api/auth/session")
+      .then((res) => res.json())
+      .then((data) => setCurrentUserId(data.userId))
+      .catch(() => setCurrentUserId(null));
+  }, []);
 
   useEffect(() => {
     if(!userId) return;
@@ -44,9 +54,27 @@ export default function ProfilePageOther() {
       setError("");
 
       try {
-        const res = await fetch(`/api/profilePageData/${activeSession.toLowerCase()}/${userId}`);
-        if (!res.ok) throw new Error("Failed to fetch data");
+        // Map the active session to the correct API endpoint
+        const sessionToEndpoint = {
+          "Posts": "posts",
+          "Reviews": "reviews", 
+          "LikedPosts": "likedposts",
+          "LikedReviews": "likedreviews"
+        };
+        
+        const endpointName = sessionToEndpoint[activeSession] || activeSession.toLowerCase();
+        const endpoint = `/api/profilePageData/${endpointName}/${userId}`;
+        console.log("Fetching data from:", endpoint);
+        
+        const res = await fetch(endpoint);
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("API Error:", res.status, errorText);
+          throw new Error(`Failed to fetch data: ${res.status}`);
+        }
         const result = await res.json();
+        
+        console.log(`${activeSession} data:`, result);
         setData(result);
       } catch (err) {
         console.error(err);
@@ -61,29 +89,95 @@ export default function ProfilePageOther() {
 
   const renderMainContent = () => {
     if(!userId) return <p>Loading...</p>
-    if (loading) return <p>Loading...</p>;
+    if (loading) return (
+      <div className="space-y-4">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50">
+            {/* Header Skeleton */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-gray-700/50 rounded-full animate-pulse"></div>
+              <div>
+                <div className="h-5 bg-gray-700/50 rounded w-32 animate-pulse mb-1"></div>
+                <div className="h-3 bg-gray-700/50 rounded w-20 animate-pulse"></div>
+              </div>
+            </div>
+            
+            {/* Content Skeleton */}
+            <div className="space-y-3 mb-4">
+              <div className="h-4 bg-gray-700/50 rounded animate-pulse"></div>
+              <div className="h-4 bg-gray-700/50 rounded w-3/4 animate-pulse"></div>
+              <div className="h-4 bg-gray-700/50 rounded w-1/2 animate-pulse"></div>
+            </div>
+            
+            {/* Image Skeleton */}
+            <div className="h-48 bg-gray-700/50 rounded-lg animate-pulse mb-4"></div>
+            
+            {/* Actions Skeleton */}
+            <div className="flex justify-between items-center">
+              <div className="flex gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-gray-700/50 rounded animate-pulse"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-8 animate-pulse"></div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-gray-700/50 rounded animate-pulse"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-8 animate-pulse"></div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-gray-700/50 rounded animate-pulse"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-8 animate-pulse"></div>
+                </div>
+              </div>
+              <div className="w-5 h-5 bg-gray-700/50 rounded animate-pulse"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
     if (error) return <p className="text-red-500">{error}</p>;
     if (data.length === 0) return <p>No data available.</p>;
 
     return (
       <div className="space-y-4">
-        {data.map((post) => (
-          <PostCard
-            key={post._id}
-            postId={post._id}
-            username={post.username}
-            content={post.content}
-            likes={post.likes || 0}
-            commentCount={post.commentCount || 0}
-            shares={post.shares || 0}
-            profileImg={post.profileImg}
-            postImg={post.image || []}
-            likedInitially={post.likedBy?.includes(post.userId)}
-            initialBookmarkCount={post.saveCounts || 0}
-            initiallySaved={post.savedBy?.includes(post.userId)}
-            navigateTo={`/dashboard/posts/${post._id}`}
-          />
-        ))}
+        {data.map((item) => {
+          // Check if this is a review or a post
+          if (activeSession === "Reviews" || activeSession === "LikedReviews") {
+            return (
+              <ReviewCard
+                key={item._id}
+                reviewId={item._id}
+                movieId={item.movieId}
+                username={item.username}
+                review={item.review}
+                likesNum={item.likesNum || 0}
+                likedBy={item.likedBy || []}
+                createdAt={item.createdAt}
+                profileImg={item.profileImg}
+                userId={currentUserId}
+              />
+            );
+          } else {
+            // For Posts and LikedPosts
+            return (
+              <PostCard
+                key={item._id}
+                userId={currentUserId}
+                postId={item._id}
+                username={item.username}
+                content={item.content}
+                likes={item.likes || 0}
+                commentCount={item.commentCount || 0}
+                shares={item.shares || 0}
+                profileImg={item.profileImg}
+                postImg={item.image || []}
+                likedInitially={item.likedBy?.includes(currentUserId)}
+                initialBookmarkCount={item.saveCounts || 0}
+                initiallySaved={item.savedBy?.includes(currentUserId)}
+                navigateTo={`/dashboard/posts/${item._id}`}
+              />
+            );
+          }
+        })}
       </div>
     );
   };
