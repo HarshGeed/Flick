@@ -1,6 +1,7 @@
 "use client";
 import EditProfileModal from "@/components/EditProfileModal";
 import PostCard from "@/components/PostCard";
+import ReviewCard from "@/components/ReviewCard";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import defaultProfileImg from "@/public/default-userImg.png";
@@ -47,11 +48,27 @@ export default function ProfilePage() {
       setError("");
 
       try {
-        const res = await fetch(
-          `/api/profilePageData/${activeSession.toLowerCase()}/${sessionUserId}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch data");
+        // Map the active session to the correct API endpoint
+        const sessionToEndpoint = {
+          "Posts": "posts",
+          "Reviews": "reviews", 
+          "LikedPosts": "likedposts",
+          "LikedReviews": "likedreviews"
+        };
+        
+        const endpointName = sessionToEndpoint[activeSession] || activeSession.toLowerCase();
+        const endpoint = `/api/profilePageData/${endpointName}/${sessionUserId}`;
+        console.log("Fetching data from:", endpoint);
+        
+        const res = await fetch(endpoint);
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("API Error:", res.status, errorText);
+          throw new Error(`Failed to fetch data: ${res.status}`);
+        }
         const result = await res.json();
+        
+        console.log(`${activeSession} data:`, result);
         setData(result);
       } catch (err) {
         console.error(err);
@@ -115,23 +132,45 @@ export default function ProfilePage() {
 
     return (
       <div className="space-y-4">
-        {data.map((post) => (
-          <PostCard
-            key={post._id}
-            postId={post._id}
-            username={post.username}
-            content={post.content}
-            likes={post.likes || 0}
-            commentCount={post.commentCount || 0}
-            shares={post.shares || 0}
-            profileImg={post.profileImg}
-            postImg={post.image || []}
-            likedInitially={post.likedBy?.includes(post.userId)}
-            initialBookmarkCount={post.saveCounts || 0}
-            initiallySaved={post.savedBy?.includes(post.userId)}
-            navigateTo={`/dashboard/posts/${post._id}`}
-          />
-        ))}
+        {data.map((item) => {
+          // Check if this is a review or a post
+          if (activeSession === "Reviews" || activeSession === "LikedReviews") {
+            return (
+              <ReviewCard
+                key={item._id}
+                reviewId={item._id}
+                movieId={item.movieId}
+                username={item.username}
+                review={item.review}
+                likesNum={item.likesNum || 0}
+                likedBy={item.likedBy || []}
+                createdAt={item.createdAt}
+                profileImg={item.profileImg}
+                userId={sessionUserId}
+              />
+            );
+          } else {
+            // For Posts and LikedPosts
+            return (
+              <PostCard
+                key={item._id}
+                userId={sessionUserId}
+                postId={item._id}
+                username={item.username}
+                content={item.content}
+                likes={item.likes || 0}
+                commentCount={item.commentCount || 0}
+                shares={item.shares || 0}
+                profileImg={item.profileImg}
+                postImg={item.image || []}
+                likedInitially={item.likedBy?.includes(sessionUserId)}
+                initialBookmarkCount={item.saveCounts || 0}
+                initiallySaved={item.savedBy?.includes(sessionUserId)}
+                navigateTo={`/dashboard/posts/${item._id}`}
+              />
+            );
+          }
+        })}
       </div>
     );
   };
@@ -236,6 +275,8 @@ export default function ProfilePage() {
       <EditProfileModal
         openState={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        initialCoverImage={user?.coverImage || ""}
+        initialProfileImage={user?.profileImage || ""}
       />
     </div>
   );
