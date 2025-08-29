@@ -13,7 +13,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://typescriptlang.org/)
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://vercel.com/)
 
-[Live Demo](https://your-vercel-app.vercel.app) • [Documentation](./DEPLOYMENT.md) • [Socket Server](https://your-render-app.onrender.com)
+[Website URL](http://flick-five.vercel.app/)
 
 </div>
 
