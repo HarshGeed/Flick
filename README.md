@@ -81,7 +81,6 @@ Flick is a revolutionary social media platform designed specifically for movie e
 ### External Services
 - **TMDB API** - Movie database and information
 - **Cloudinary** - Image and media management
-- **Sanity CMS** - Content management
 - **News API** - Latest entertainment news
 
 ### Deployment
@@ -89,6 +88,7 @@ Flick is a revolutionary social media platform designed specifically for movie e
 - **Render** - Socket server hosting
 - **MongoDB Atlas** - Database hosting
 
+<!--
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -168,6 +168,7 @@ NEXT_PUBLIC_SOCKET_URL=http://localhost:4000
 # App URLs
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
+-->
 
 ## 📁 Project Structure
 
@@ -184,7 +185,7 @@ flick/
 ├── public/                # Static assets
 └── utils/                 # Helper functions
 ```
-
+<!--
 ## 🌐 Deployment
 
 ### Frontend (Vercel)
@@ -212,7 +213,7 @@ We welcome contributions! Please feel free to submit a Pull Request. For major c
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. -->
 
 ## 👨‍💻 Author
 
